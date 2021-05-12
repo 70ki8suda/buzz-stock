@@ -1,0 +1,54 @@
+@import '/src/styles/variables';
+
+.container {
+  font-size: 16px;
+  margin-top: 60px;
+  display: flex;
+  justify-content: center;
+
+  @media #{$bp-tab} {
+    font-size: 13px;
+  }
+
+  @media #{$bp-sp} {
+    display: flex;
+    flex-wrap: wrap;
+  }
+}
+
+.group {
+  margin-right: 4em;
+  display: flex;
+  flex-flow: column;
+
+  @media #{$bp-sp} {
+    margin: 0 auto 10px;
+    &:nth-of-type(2n + 1) {
+      margin-right: 10%;
+    }
+    width: 45%;
+    display: block;
+  }
+}
+
+.group-ttl {
+  font-weight: bold;
+  margin-bottom: 0.6em;
+}
+
+.group-item {
+  width: 100%;
+  margin-bottom: 0.3em;
+  display: flex;
+  justify-content: space-between;
+}
+
+.item-label {
+  color: $gray-text;
+  padding-right: 1em;
+}
+
+.item-value {
+  margin-left: auto;
+  font-weight: bold;
+}

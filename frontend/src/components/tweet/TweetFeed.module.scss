@@ -1,0 +1,113 @@
+@import '/src/styles/variables';
+
+.fav-container {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+.fav-wrapper {
+  width: 16px;
+  margin-right: 8px;
+}
+.fav-num {
+  color: $gray;
+  font-size: 14px;
+}
+
+.fav-star {
+  fill: #dddddd;
+
+  &.fav-star--favorited {
+    fill: $blue;
+  }
+
+  path {
+    stroke: #000000;
+    stroke-width: 2px;
+  }
+}
+
+.delete-btn {
+  @include btn($red);
+  border: 1px solid $red;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.tweet-image {
+  margin-top: 14px;
+  width: 50%;
+
+  img {
+    width: 100%;
+  }
+}
+
+.tweet-container {
+  margin: 4% auto;
+}
+
+.tweet-content {
+  position: relative;
+  width: 100%;
+  padding-top: 14px;
+}
+
+.tweet-box {
+  display: flex;
+  width: 70%;
+  margin: 0 auto;
+  border-bottom: 1px solid $gray;
+  padding: 14px 0;
+  @media #{$bp-tab} {
+    width: 90%;
+  }
+}
+
+.profile-image-wrap {
+  @media #{$bp-pc} {
+    @include profile-image-wrap(100px);
+  }
+  margin-right: 20px;
+  cursor: pointer;
+  @media #{$bp-tab} {
+    @include profile-image-wrap(70px);
+  }
+}
+
+.profile-info-top {
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 10px;
+}
+
+.profile-name {
+  font-size: 16px;
+}
+
+.display-id,
+.tweet-date {
+  color: gray;
+  font-size: 12px;
+}
+
+.profile-name,
+.display-id {
+  margin-right: 0.4em;
+}
+
+.ticker-container {
+  @include ticker-container;
+}
+
+.ticker {
+  @include ticker;
+  margin-top: 10px;
+}
+
+.no-tweet-yet {
+  text-align: center;
+  margin: 3em 0;
+  line-height: 1.4;
+}

@@ -1,0 +1,241 @@
+@import '/src/styles/variables';
+
+.quote-name {
+  font-size: 36px;
+  margin-bottom: 1.2em;
+  margin-top: 0.3em;
+
+  &.loading {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: $gray;
+    height: 50px;
+    font-size: inherit;
+  }
+  @media #{$bp-tab} {
+    font-size: 28px;
+  }
+  @media #{$bp-sp} {
+    font-size: 18px;
+  }
+}
+
+.quote-name-dummy {
+  display: inline-block;
+  width: 100%;
+  height: 1em;
+  background: $gray;
+  opacity: 0.5;
+}
+
+.lead-border {
+  position: relative;
+  display: block;
+  height: 3px;
+  margin-top: 0.3em;
+  background: #000;
+
+  .lead-border-edge {
+    @include border-edge;
+  }
+}
+
+.info-top-container {
+  display: flex;
+  position: relative;
+  margin-bottom: 50px;
+  background: $yellow;
+  min-height: 144px;
+  padding: 20px 0;
+  filter: drop-shadow(0px 1px 0 $gray) drop-shadow(0px -1px 0 $gray);
+  @media #{$bp-tab} {
+    margin-bottom: 30px;
+    min-height: 80px;
+    padding: 10px 0;
+  }
+  @media #{$bp-sp} {
+    min-height: 60px;
+    padding: 10px 0 8px;
+  }
+  * {
+    position: relative;
+    z-index: 2;
+  }
+
+  .triangle1 {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    width: 41px;
+    height: 41px;
+    border-style: solid;
+    border-width: 0 40px 40px 0;
+    border-color: transparent $yellow transparent transparent;
+  }
+
+  .triangle2 {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translateX(100%);
+    width: 41px;
+    height: 41px;
+    border-style: solid;
+    border-width: 40px 0 0 40px;
+    border-color: transparent transparent transparent $yellow;
+  }
+
+  &:before {
+    content: '';
+    display: block;
+    z-index: 1;
+    width: 50vw;
+    height: 80%;
+    background: $yellow;
+    position: absolute;
+    top: 0;
+    left: 1px;
+    transform: translateX(-100%);
+  }
+
+  &:after {
+    content: '';
+    display: block;
+    z-index: 1;
+    width: 50vw;
+    height: 80%;
+    background: $yellow;
+    position: absolute;
+    bottom: 0;
+    right: 1px;
+    transform: translateX(100%);
+  }
+}
+
+.ticker {
+  font-weight: bold;
+  font-size: 30px;
+  @media #{$bp-tab} {
+    font-size: 20px;
+  }
+  @media #{$bp-sp} {
+    font-size: 14px;
+  }
+}
+
+.exchange {
+  font-size: 0.77em;
+  display: inline-block;
+  margin-left: 0.4em;
+  color: #555;
+}
+
+.current-price {
+  font-family: 'rifton-norm';
+  font-size: 70px;
+  margin-top: 5px;
+  @media #{$bp-tab} {
+    font-size: 56px;
+  }
+  @media #{$bp-sp} {
+    font-size: 20px;
+  }
+}
+
+.top-price-change {
+  margin-left: 30px;
+  @media #{$bp-tab} {
+    margin-left: 18px;
+  }
+}
+
+.top-right-box {
+  margin-left: auto;
+  padding-right: 30px;
+
+  > *:not(:last-of-type) {
+    margin-bottom: 7px;
+  }
+  @media #{$bp-tab} {
+    padding-right: 18px;
+  }
+}
+
+.regular-market-change {
+  margin-bottom: 12px;
+}
+
+.regular-market-change,
+.regular-market-change-percent {
+  font-size: 46px;
+  font-family: 'nulshock';
+
+  &.up {
+    color: $red;
+  }
+
+  &.down {
+    color: $dark-blue;
+  }
+
+  .serif {
+    font-weight: bold;
+    @include serif;
+  }
+  @media #{$bp-tab} {
+    font-size: 35px;
+  }
+  @media #{$bp-sp} {
+    font-size: 14px;
+  }
+}
+
+.top-right-box {
+  display: table;
+  margin-top: -0.4em;
+  border-collapse: separate;
+  border-spacing: 0.4em 0.4em;
+}
+
+.day-high,
+.day-low,
+.day-open,
+.day-close {
+  display: table-row;
+  color: #000;
+  font-size: 17px;
+  font-family: 'IBM Plex Serif', serif;
+  font-weight: 600;
+  text-align: right;
+
+  &.up {
+    color: $red;
+  }
+
+  &.down {
+    color: $dark-blue;
+  }
+}
+.day-open,
+.day-close {
+  @media #{$bp-sp} {
+    display: none;
+  }
+}
+.price-label,
+.price-num {
+  display: table-cell;
+  @media #{$bp-tab} {
+    font-size: 14px;
+  }
+}
+
+.price-label {
+  width: 5em;
+  text-align: right;
+  font-weight: 700;
+  @include serif;
+}

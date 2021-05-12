@@ -1,0 +1,14 @@
+@import '/src/styles/variables';
+
+.page-wrapper {
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #fff;
+}
+.chart-container {
+  width: 70%;
+  margin: 4% auto;
+  @media #{$bp-tab} {
+    width: 90%;
+  }
+}

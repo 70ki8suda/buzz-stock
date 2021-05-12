@@ -1,0 +1,10 @@
+@import './variables';
+.page-wrapper {
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #fff;
+}
+.chart-container {
+  width: 60%;
+  margin: 4% auto;
+}

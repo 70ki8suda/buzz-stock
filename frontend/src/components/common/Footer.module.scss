@@ -1,0 +1,41 @@
+@import '/src/styles/variables';
+
+.wrap {
+  padding: 20px;
+  background: #000;
+  color: #fff;
+  font-size: 12px;
+  text-align: centers;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  @media #{$bp-sp} {
+    display: block;
+  }
+}
+
+.data-source,
+.special-thanks {
+  margin-bottom: 10px;
+}
+
+.special-thanks {
+  display: flex;
+  align-items: center;
+
+  img {
+    margin-left: 10px;
+  }
+}
+.special-thanks-text {
+  margin-right: 4px;
+}
+.cyberpunk-logo {
+  width: 240px;
+}
+
+.copy {
+  @media #{$bp-sp} {
+    margin-top: 1em;
+  }
+}

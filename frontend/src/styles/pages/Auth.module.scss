@@ -1,0 +1,22 @@
+@import '/src/styles/variables';
+
+.auth-wrap {
+  padding-top: 4%;
+  min-height: 86vh;
+}
+.auth-title {
+  font-size: 20px;
+  text-align: center;
+  font-family: 'nulshock';
+  margin-bottom: 1em;
+}
+
+.auth-form {
+  display: flex;
+  justify-content: center;
+}
+
+.auth-submit {
+  margin: 0 auto;
+  @include btn;
+}

@@ -1,0 +1,173 @@
+@import './reset';
+@import '/src/styles/variables';
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@font-face {
+  font-family: 'rifton-norm';
+  src: url('/fonts/rifton-norm.ttf');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'nulshock';
+  src: url('/fonts/nulshock-bd.ttf');
+  font-style: medium;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;400;500;700&family=IBM+Plex+Serif:wght@200;400;500;600&display=swap');
+
+body {
+  font-family: 'IBM Plex Sans', 'Noto Sans JP', sans-serif;
+}
+
+input[type='text'],
+input[type='email'],
+input[type='password'],
+textarea,
+select {
+  outline: none;
+  padding: 0.6em;
+  border: solid 1px #ccc;
+  width: 300px;
+  box-shadow: 0px 1px rgba(255, 255, 255, 0.5);
+  border-radius: 3px;
+
+  &:focus {
+    border: 1px solid $blue;
+  }
+  @media #{$bp-sp} {
+    width: auto;
+  }
+}
+
+textarea {
+  resize: none;
+}
+
+label {
+  display: block;
+  font-size: 0.8em;
+  margin-bottom: 0.5em;
+}
+
+.submit-btn {
+  @include btn($blue);
+}
+
+.form-item {
+  margin-bottom: 1em;
+}
+
+.load-wrapper {
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.page-container {
+  overflow-x: hidden;
+}
+.page-wrapper {
+  background: #fff;
+  transition: 0.3s;
+  &.sp-menu-trigger-active {
+    transform: translateX(-25vw);
+  }
+}
+
+.chart-wrapper {
+  label,
+  select[name='type'] {
+    display: none;
+  }
+}
+
+body {
+  position: relative;
+  background: #000;
+}
+
+.image-input-wrap {
+  position: relative;
+
+  .image-input {
+    position: absolute;
+    visibility: hidden;
+  }
+
+  .image-input-label {
+    width: 30px;
+    height: 30px;
+    background: url('/images/photo-icon.png');
+    background-size: contain;
+    background-position: center center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+
+    &.active {
+      filter: invert(8%) sepia(99%) saturate(7044%) hue-rotate(247deg) brightness(100%)
+        contrast(145%);
+    }
+  }
+}
+
+.react-stockchart {
+  pointer-events: none;
+  cursor: default;
+}
+
+.react-stockcharts-crosshair-cursor {
+  display: none;
+}
+
+.interval-select-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.range-select {
+  width: 120px;
+  padding-right: 1em;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: url('/images/infographic.svg');
+  background-size: 18px 18px;
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+
+  option {
+    background: #fff;
+    padding: 1em 0;
+  }
+}
+
+.chartFetch-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
