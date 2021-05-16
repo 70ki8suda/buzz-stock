@@ -2,6 +2,7 @@ import { User } from '.prisma/client';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Param,
@@ -38,6 +39,16 @@ export class TweetController {
       ...userInput,
     };
     return this.tweetService.createTweet(tweetData);
+  }
+
+  @Delete('/:id')
+  @UseGuards(AuthGuard())
+  async deleteTweet(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User,
+  ): Promise<void> {
+    const userId = user.id;
+    return this.tweetService.deleteTweet(id, userId);
   }
 
   @Get('/user/:userId')
