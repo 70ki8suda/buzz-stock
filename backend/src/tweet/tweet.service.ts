@@ -1,5 +1,9 @@
-import { Tweet } from '.prisma/client';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Ticker, Tweet } from '.prisma/client';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { CreateTweetDto } from './tweet.dto';
 
@@ -8,10 +12,32 @@ export class TweetService {
   constructor(private prisma: PrismaService) {}
 
   async createTweet(tweetData: CreateTweetDto): Promise<void> {
+    //find or create tickersArray
+    const tickers: { id: number }[] = [];
+    await Promise.all(
+      tweetData.tickers.map(async (ticker) => {
+        const upsertTicker = await this.prisma.ticker.upsert({
+          where: {
+            name: ticker,
+          },
+          update: {},
+          create: {
+            name: ticker,
+          },
+        });
+        tickers.push({ id: upsertTicker.id });
+      }),
+    );
+
     await this.prisma.tweet.create({
       data: {
-        ...tweetData,
-        created_at: new Date(),
+        user: {
+          connect: {
+            id: tweetData.userId,
+          },
+        },
+        content: tweetData.content,
+        tickers: { connect: tickers },
       },
     });
   }
@@ -35,19 +61,28 @@ export class TweetService {
   }
 
   async getTweetsByUserId(userId: number) {
-    return await this.prisma.tweet.findMany({
-      where: {
-        userId: userId,
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            display_id: true,
-          },
+    try {
+      const tweets = await this.prisma.tweet.findMany({
+        where: {
+          userId: userId,
         },
-      },
-    });
+        orderBy: {
+          created_at: 'desc',
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              display_id: true,
+            },
+          },
+          tickers: true,
+        },
+      });
+      return tweets;
+    } catch {
+      new InternalServerErrorException();
+    }
   }
 }

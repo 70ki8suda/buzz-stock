@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { User, Prisma } from '@prisma/client';
 
@@ -9,9 +9,10 @@ export class UserService {
   async user(
     userWhereUniqueInput: Prisma.UserWhereUniqueInput,
   ): Promise<User | null> {
-    return this.prisma.user.findUnique({
+    const userData = await this.prisma.user.findUnique({
       where: userWhereUniqueInput,
     });
+    return userData;
   }
 
   async users(params: {

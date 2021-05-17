@@ -40,8 +40,12 @@ export class AuthController {
       display_id: string;
       password: string;
     },
+    @Res({ passthrough: true }) response: Response,
   ): Promise<void> {
-    return this.authService.signUp(userInput);
+    await this.authService.signUp(userInput);
+    response.status(HttpStatus.OK).json({
+      message: 'signup success',
+    });
   }
 
   @Post('/signin')
@@ -62,29 +66,18 @@ export class AuthController {
     const hour = 3600000;
     const expires = new Date(Date.now() + 14 * 24 * hour);
     const expiresNum = Date.parse(String(expires));
-    response.cookie('jwt', jwt, {
-      httpOnly: true,
-      expires: expires,
-    });
-
     response
-      .status(HttpStatus.OK)
+      .cookie('jwt', jwt, {
+        httpOnly: true,
+        expires: expires,
+      })
       .json({ expires: expiresNum, userId: userId });
   }
 
   @Get('/current_user')
   @UseGuards(AuthGuard())
-  current_user(
-    @GetUser() user: User,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    response.status(HttpStatus.OK).json({
-      id: user.id,
-      name: user.name,
-      display_id: user.display_id,
-      email: user.email,
-      introduction: user.introduction,
-    });
+  current_user(@GetUser() user: User) {
+    return user;
   }
 
   @Post('/logout')
