@@ -5,14 +5,14 @@ import {
   Param,
   ParseIntPipe,
   Patch,
-  Res,
+  Post,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { User } from '@prisma/client';
-import { Response } from 'express';
+
 import { GetUser } from 'src/auth/get-user.decorator';
 
 import { UserService } from './user.service';
@@ -38,5 +38,27 @@ export class UserController {
     const userId = user.id;
     return this.userService.updateProfile(updateProfile, userId);
     //console.log(updateProfile);
+  }
+
+  @Patch('/follow/:id')
+  @UseGuards(AuthGuard())
+  async followUser(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User,
+  ) {
+    const userId = user.id;
+    const followRequestId = id;
+    await this.userService.follow(userId, followRequestId);
+  }
+
+  @Patch('/unfollow/:id')
+  @UseGuards(AuthGuard())
+  async unfollowUser(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User,
+  ) {
+    const userId = user.id;
+    const unfollowRequestId = id;
+    await this.userService.unfollow(userId, unfollowRequestId);
   }
 }

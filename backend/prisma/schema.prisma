@@ -20,7 +20,10 @@ model User {
   password String
   salt String
   tweets Tweet[]
+  followedBy  User[]   @relation("UserRelation", references: [id])
+  following   User[]   @relation("UserRelation", references: [id])
 }
+
 
 model Tweet {
   id    Int     @default(autoincrement()) @id

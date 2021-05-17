@@ -28,4 +28,30 @@ export class UserService {
       },
     });
   }
+
+  async follow(userId: number, followRequestId: number): Promise<void> {
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        following: {
+          connect: [{ id: followRequestId }],
+        },
+      },
+    });
+  }
+
+  async unfollow(userId: number, unfollowRequestId: number): Promise<void> {
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        following: {
+          disconnect: [{ id: unfollowRequestId }],
+        },
+      },
+    });
+  }
 }
