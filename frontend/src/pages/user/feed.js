@@ -11,13 +11,14 @@ import auth from '../../utils/auth';
 
 //context data
 import { AuthUserData } from '../../pages/_app';
+import { LoggedInContext } from '../../pages/_app';
 
 //styles
 import style from '../../styles/pages/Feed.module.scss';
 
 const Feed = ({ userID }) => {
   const router = useRouter();
-  const isloggedIn = auth.isAuthenticated();
+  const { LoggedInState } = useContext(LoggedInContext);
 
   const { AuthUserProfile } = useContext(AuthUserData);
   const loggedin_userID = AuthUserProfile.id;
@@ -31,7 +32,7 @@ const Feed = ({ userID }) => {
 
   //未ログインならログインページへリダイレクト
   React.useEffect(() => {
-    if (!isloggedIn) {
+    if (!LoggedInState) {
       router.replace('/account/login');
     }
   });
@@ -62,7 +63,7 @@ const Feed = ({ userID }) => {
         <title>Feed</title>
       </Head>
 
-      {isloggedIn && (
+      {LoggedInState && (
         <>
           <h1 className={style['db-ttl']}>Feed</h1>
           <PostTweet setTweetPostState={setTweetPostState}></PostTweet>

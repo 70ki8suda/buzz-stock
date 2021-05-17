@@ -8,8 +8,10 @@ import auth from '../../utils/auth';
 import authStyle from '../../styles/pages/Auth.module.scss';
 //context
 import { LoggedInContext } from '../_app';
+import { AuthUserData } from '../_app';
 const Signup = () => {
-  const { LoggedInState, setLoggedInState } = useContext(LoggedInContext);
+  const { setLoggedInState } = useContext(LoggedInContext);
+  const { AuthUserProfile } = useContext(AuthUserData);
   const router = useRouter();
   const [data, setData] = React.useState({
     name: '',
@@ -37,7 +39,7 @@ const Signup = () => {
     formData.append('email', email);
     formData.append('password', password);
     const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
-    const signup_api_path = baseRequestUrl + '/api/v1/signup';
+    const signup_api_path = baseRequestUrl + '/auth/signup';
 
     const requestOptions = {
       method: 'POST',
@@ -59,7 +61,7 @@ const Signup = () => {
 
     //そのあと自動でtoken発行してログイン処理
     if (siguUpSuccess) {
-      const login_api_path = baseRequestUrl + '/api/v1/user_token';
+      const login_api_path = baseRequestUrl + '/auth/signin';
       let formData2 = new FormData();
       formData2.append('email', email);
       formData2.append('password', password);
@@ -74,8 +76,10 @@ const Signup = () => {
 
       const result = await loginApi.json();
       auth.login(result);
+
       setLoggedInState(auth.isAuthenticated());
-      let userID = auth.loggedin_userID();
+      //console.log(AuthUserProfile);
+      let userID = result.userId;
       router.push(`/user/${userID}`);
     }
   }

@@ -17,12 +17,9 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
   const [TickerOptions, setTickerOptions] = React.useState([]);
   //ticker data
   const [TickerData, setTickerData] = React.useState([defaultTicker]);
-  React.useEffect(
-    (TweetPostState) => {
-      defaultTicker == undefined ? setTickerData([]) : setTickerData([defaultTicker]);
-    },
-    [TweetPostState],
-  );
+  React.useEffect(() => {
+    defaultTicker == undefined ? setTickerData([]) : setTickerData([defaultTicker]);
+  }, [TweetPostState, defaultTicker]);
   const handlePostChange = (e) => {
     const target = e.target;
     const name = target.name;
@@ -125,26 +122,30 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
   async function PostTweet(e) {
     e.preventDefault();
     const { tweet_text, tweet_image } = TweetPostData;
-    const tickers = TickerData.join(',');
+    let tickers = TickerData.join(',');
+    if (tickers.length === 0) {
+      tickers = null;
+    }
     let formData = new FormData();
     formData.append('content', tweet_text);
     if (tweet_image !== undefined) {
       formData.append('image', tweet_image);
     }
-    if (tickers != null) {
+    if (tickers !== null) {
       formData.append('tickers', tickers);
     }
     const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
-    const api_path = baseRequestUrl + '/api/v1/tweets';
+    const create_tweet_api_path = baseRequestUrl + '/tweet';
 
-    await fetch(api_path, {
+    await fetch(create_tweet_api_path, {
       method: 'POST',
       mode: 'cors',
       credentials: 'include',
       body: formData,
     })
       .then((res) => {
-        setTweetPostState(res);
+        console.log(res);
+        setTweetPostState(TweetPostState + 1);
       })
       .then(() => {
         //input textarea空にする
@@ -160,6 +161,7 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
           input.value = '';
         }
       })
+
       .catch((error) => {
         console.error('Error:', error);
       });

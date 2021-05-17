@@ -10,15 +10,15 @@ import formatDate from '../../utils/format_date';
 //style
 import style from './TweetFeed.module.scss';
 import FavStarSVG from '../../../public/images/star.svg';
-const TweetFeed = ({ DisplayTweets, setTweetPostState, setDisplayTweets }) => {
+const TweetFeed = ({ DisplayTweets, setTweetPostState, TweetPostState, setDisplayTweets }) => {
   const { AuthUserProfile } = useContext(AuthUserData);
   const loggedin_userID = AuthUserProfile.id;
   const { LoggedInState } = useContext(LoggedInContext);
+
   async function onTweetDeleteHandler(e, tweet_id) {
     e.preventDefault();
-
     const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
-    const api_path = baseRequestUrl + '/api/v1/tweets/' + tweet_id;
+    const api_path = baseRequestUrl + '/tweet/' + tweet_id;
     console.log(api_path);
 
     await fetch(api_path, {
@@ -27,7 +27,7 @@ const TweetFeed = ({ DisplayTweets, setTweetPostState, setDisplayTweets }) => {
       credentials: 'include',
     })
       .then((res) => {
-        setTweetPostState(res);
+        setTweetPostState(TweetPostState + 1);
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -74,7 +74,7 @@ const TweetFeed = ({ DisplayTweets, setTweetPostState, setDisplayTweets }) => {
     <div className={style['tweet-container']}>
       {DisplayTweets && DisplayTweets.length > 0 ? (
         DisplayTweets.map((tweet, i) => (
-          <div key={i} id={tweet.tweet.id} className={style['tweet-box']}>
+          <div key={i} id={tweet.id} className={style['tweet-box']}>
             <div className={style['profile-image-wrap']}>
               <Link href={`/user/${tweet.user.id}`}>
                 {tweet.user.profile_image_url != null ? (
@@ -88,17 +88,18 @@ const TweetFeed = ({ DisplayTweets, setTweetPostState, setDisplayTweets }) => {
               <div className={style['profile-info-top']}>
                 <h2 className={style['profile-name']}>{tweet.user.name}</h2>
                 <div className={style['display-id']}> @{tweet.user.display_id}</div>
-                <div className={style['tweet-date']}>{formatDate(tweet.tweet.created_at)}</div>
+                <div className={style['tweet-date']}>{formatDate(tweet.created_at)}</div>
               </div>
-              <div> {tweet.tweet.content}</div>
-              {tweet.tweet.image_url !== null && (
+              <div> {tweet.content}</div>
+              {tweet.image_url !== null && (
                 <div className={style['tweet-image']}>
-                  <img src={tweet.tweet.image_url} />
+                  <img src={tweet.image_url} />
                 </div>
               )}
               <div className={style['ticker-container']}>
-                {tweet.tweet.tickers.length > 0 &&
-                  tweet.tweet.tickers.map((ticker, j) => (
+                {tweet.tickers !== undefined &&
+                  tweet.tickers.length > 0 &&
+                  tweet.tickers.map((ticker, j) => (
                     <Link href={`/quote/${ticker.name}`} key={j}>
                       <span className={style['ticker']}>#{ticker.name}</span>
                     </Link>
@@ -108,7 +109,7 @@ const TweetFeed = ({ DisplayTweets, setTweetPostState, setDisplayTweets }) => {
               <div className={style['fav-container']}>
                 <div className={style['fav-wrapper']}>
                   <FavStarSVG
-                    onClick={(e) => FavoriteHandler(e, tweet.tweet.id, tweet.favorite, { i })}
+                    onClick={(e) => FavoriteHandler(e, tweet.id, tweet.favorite, { i })}
                     className={`${style['fav-star']} ${
                       tweet.favorite && style['fav-star--favorited']
                     }`}
@@ -119,7 +120,7 @@ const TweetFeed = ({ DisplayTweets, setTweetPostState, setDisplayTweets }) => {
               {tweet.user.id == loggedin_userID && (
                 <button
                   className={style['delete-btn']}
-                  onClick={(e) => onTweetDeleteHandler(e, tweet.tweet.id)}
+                  onClick={(e) => onTweetDeleteHandler(e, tweet.id)}
                 >
                   削除
                 </button>

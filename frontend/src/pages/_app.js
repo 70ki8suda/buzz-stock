@@ -27,7 +27,7 @@ const App = (props) => {
   const [SpMenuState, setSpMenuState] = React.useState(false);
   //ログイン済みの場合contextにプロフィールデータを入れる
   const [AuthUserProfile, setAuthUserProfile] = useState({});
-  const user_data_path = baseRequestUrl + '/api/v1/users/current_user';
+  const user_data_path = baseRequestUrl + '/auth/current_user';
   //page load処理
   Router.events.on('routeChangeStart', () => setLoadState(false));
   Router.events.on('routeChangeComplete', () => setLoadState(true));

@@ -9,7 +9,7 @@ import authStyle from '../../styles/pages/Auth.module.scss';
 //Context
 import { LoggedInContext } from '../_app';
 const Login = () => {
-  const { LoggedInState, setLoggedInState } = useContext(LoggedInContext);
+  const { setLoggedInState } = useContext(LoggedInContext);
   const router = useRouter();
   const [data, setData] = React.useState({
     email: '',
@@ -27,10 +27,9 @@ const Login = () => {
     e.preventDefault();
     // stateからemailとpasswordを取得する
     const { email, password } = data;
-    console.log('clicked');
-    console.log('email' + email);
+
     const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
-    const api_path = baseRequestUrl + '/api/v1/user_token';
+    const api_path = baseRequestUrl + '/auth/signin';
     // 4. firebaseにemailとpasswordをPOST
     let formData = new FormData();
     formData.append('email', email);
@@ -44,9 +43,10 @@ const Login = () => {
       console.error('Error:', error);
     });
     const result = await loginApi.json();
+    //console.log(result);
     auth.login(result);
     setLoggedInState(auth.isAuthenticated());
-    let userID = auth.loggedin_userID();
+    let userID = result.userId;
     router.push(`/user/${userID}`);
   }
 

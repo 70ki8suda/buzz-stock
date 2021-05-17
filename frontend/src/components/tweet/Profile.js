@@ -13,7 +13,7 @@ const Profile = ({ userID }) => {
   //editToggleState
   const [EditToggleState, setEditToggleState] = React.useState(false);
 
-  const user_data_path = baseRequestUrl + '/api/v1/users/' + userID;
+  const user_data_path = baseRequestUrl + '/user/' + userID;
   const { AuthUserProfile } = useContext(AuthUserData);
   const loggedin_userID = AuthUserProfile.id;
 
@@ -80,10 +80,10 @@ const Profile = ({ userID }) => {
       formData.append('profile_image', image);
     }
     const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
-    const api_path = baseRequestUrl + '/api/v1/users/mypage';
+    const api_path = baseRequestUrl + '/user/update_profile';
 
     await fetch(api_path, {
-      method: 'PUT',
+      method: 'PATCH',
       mode: 'cors',
       credentials: 'include',
       body: formData,
