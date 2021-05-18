@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ExecutionContext,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
@@ -31,6 +32,14 @@ export class AuthService {
     return bcrypt.hash(password, salt);
   }
 
+  async validate(cookie) {
+    const data = await this.jwtService.verifyAsync(cookie);
+    if (!data) {
+      throw new UnauthorizedException();
+    }
+    return data;
+  }
+
   async signUp(userInput: SingUpInput): Promise<void> {
     const salt = await bcrypt.genSalt();
     const hashedData: Prisma.UserCreateInput = { ...userInput, salt };
@@ -59,12 +68,11 @@ export class AuthService {
     userInput: SignInInput,
   ): Promise<{ accessToken: string; userId: number }> {
     const user = await this.validateUserPassword(userInput);
-    const user_email = user.email;
     const user_id = user.id;
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    const payload: JwtPayload = { user_email };
+    const payload: JwtPayload = { id: user_id };
     const accessToken = this.jwtService.sign(payload);
 
     return { accessToken: accessToken, userId: user_id };

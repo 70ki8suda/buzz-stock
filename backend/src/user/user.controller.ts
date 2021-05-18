@@ -6,6 +6,8 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Req,
+  Res,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -16,19 +18,30 @@ import { User } from '@prisma/client';
 import { GetUser } from 'src/auth/get-user.decorator';
 
 import { UserService } from './user.service';
+import { AuthService } from '../auth/auth.service';
+import { Request } from 'express';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly authService: AuthService,
+  ) {}
   @Get('/:id')
-  @UseGuards(AuthGuard())
   async getUserById(
     @Param('id', ParseIntPipe) targetId: number,
-    @GetUser() user: User | undefined,
+    @Req() request: Request,
   ) {
+    const cookie = request.cookies['jwt'];
+    let loggedinUser;
+    if (cookie) {
+      loggedinUser = await this.authService.validate(cookie);
+    } else {
+      loggedinUser = undefined;
+    }
     let loggedinUserId: number | null;
-    if (user != undefined) {
-      loggedinUserId = user.id;
+    if (loggedinUser != undefined) {
+      loggedinUserId = loggedinUser.id;
     } else {
       loggedinUserId = null;
     }
