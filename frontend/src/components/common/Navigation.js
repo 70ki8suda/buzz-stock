@@ -19,6 +19,7 @@ const Navigation = () => {
   const logoutHandler = () => {
     auth.logout();
     setLoggedInState(auth.isAuthenticated());
+    router.push('/');
   };
 
   //sp-menu state
