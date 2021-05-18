@@ -106,39 +106,33 @@ const Profile = ({ userID }) => {
   }
   const followUser = (e) => {
     const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
-    const api_path = baseRequestUrl + '/api/v1/user/follow';
-    let formData = new FormData();
-    formData.append('follow_id', userID);
+    const api_path = baseRequestUrl + `/user/follow/${userID}`;
 
     fetch(api_path, {
-      method: 'POST',
+      method: 'PATCH',
       mode: 'cors',
       credentials: 'include',
-      body: formData,
     });
     setProfileDisplayData({
       ...ProfileDisplayData,
       following: true,
-      followed_num: ProfileDisplayData.followed_num + 1,
+      followers_num: ProfileDisplayData.followers_num + 1,
     });
   };
 
   const unfollowUser = (e) => {
     const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
-    const api_path = baseRequestUrl + '/api/v1/user/unfollow';
-    let formData = new FormData();
-    formData.append('unfollow_id', userID);
+    const api_path = baseRequestUrl + `/user/unfollow/${userID}`;
 
     fetch(api_path, {
-      method: 'DELETE',
+      method: 'PATCH',
       mode: 'cors',
       credentials: 'include',
-      body: formData,
     });
     setProfileDisplayData({
       ...ProfileUpdateData,
       following: false,
-      followed_num: ProfileDisplayData.followed_num - 1,
+      followers_num: ProfileDisplayData.followers_num - 1,
     });
   };
 
@@ -161,7 +155,7 @@ const Profile = ({ userID }) => {
               Following: {ProfileDisplayData.following_num}
             </span>
             <span className={profileStyle['relationship-num']}>
-              Follower: {ProfileDisplayData.followed_num}
+              Follower: {ProfileDisplayData.followers_num}
             </span>
           </div>
         </div>
