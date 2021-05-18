@@ -21,10 +21,30 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
   @Get('/:id')
-  async getUserById(@Param('id', ParseIntPipe) id: number) {
-    const user = await this.userService.getUserById(id);
-    return user;
+  @UseGuards(AuthGuard())
+  async getUserById(
+    @Param('id', ParseIntPipe) targetId: number,
+    @GetUser() user: User | undefined,
+  ) {
+    let loggedinUserId: number | null;
+    if (user != undefined) {
+      loggedinUserId = user.id;
+    } else {
+      loggedinUserId = null;
+    }
+    const data = await this.userService.getUserById(loggedinUserId, targetId);
+    return data;
   }
+
+  // @Get('/:following_test/:id')
+  // @UseGuards(AuthGuard())
+  // async following(
+  //   @GetUser() user: User,
+  //   @Param('id', ParseIntPipe) followId: number,
+  // ) {
+  //   const userId = user.id;
+  //   return await this.userService.following_check(userId, followId);
+  // }
 
   @Patch('/update_profile')
   @UseInterceptors(
