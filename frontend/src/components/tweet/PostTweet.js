@@ -128,11 +128,12 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
     }
     let formData = new FormData();
     formData.append('content', tweet_text);
-    if (tweet_image !== undefined) {
-      formData.append('image', tweet_image);
-    }
+
     if (tickers !== null) {
       formData.append('tickers', tickers);
+    }
+    if (tweet_image !== undefined) {
+      formData.append('tweet_image', tweet_image);
     }
     const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
     const create_tweet_api_path = baseRequestUrl + '/tweet';

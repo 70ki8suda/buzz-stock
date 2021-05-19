@@ -5,6 +5,7 @@ import profileStyle from './Profile.module.scss';
 import postStyle from './PostTweet.module.scss';
 //context data
 import { AuthUserData } from '../../pages/_app';
+import Router from 'next/router';
 const Profile = ({ userID }) => {
   //profileデータ
   const [ProfileDisplayData, setProfileDisplayData] = React.useState({});
@@ -103,6 +104,7 @@ const Profile = ({ userID }) => {
       .catch((error) => {
         console.error('Error:', error);
       });
+    Router.reload();
   }
   const followUser = (e) => {
     const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;

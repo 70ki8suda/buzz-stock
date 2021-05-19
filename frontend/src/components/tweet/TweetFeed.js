@@ -91,9 +91,9 @@ const TweetFeed = ({ DisplayTweets, setTweetPostState, TweetPostState, setDispla
                 <div className={style['tweet-date']}>{formatDate(tweet.created_at)}</div>
               </div>
               <div> {tweet.content}</div>
-              {tweet.image_url !== null && (
+              {tweet.tweet_image != null && (
                 <div className={style['tweet-image']}>
-                  <img src={tweet.image_url} />
+                  <img src={tweet.tweet_image.url} />
                 </div>
               )}
               <div className={style['ticker-container']}>
