@@ -129,6 +129,7 @@ export class UserService {
         userId: userId,
       },
     });
+    await this.deleteProfileImagefromBucket(userId);
     await this.prisma.profileImage.create({
       data: {
         key: uploadResult.Key,
@@ -136,5 +137,24 @@ export class UserService {
         userId: userId,
       },
     });
+  }
+
+  async deleteProfileImagefromBucket(userId: number) {
+    const images = await this.prisma.profileImage.findMany({
+      where: {
+        userId: userId,
+      },
+    });
+    const s3 = new S3();
+    await Promise.all(
+      images.map(async (image) => {
+        await s3
+          .deleteObject({
+            Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
+            Key: image.key,
+          })
+          .promise();
+      }),
+    );
   }
 }

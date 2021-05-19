@@ -65,6 +65,7 @@ export class TweetService {
       },
     });
     if (tweet.userId === userId) {
+      await this.deleteTweetImagefromBucket(id);
       await this.prisma.tweetImage.deleteMany({
         where: {
           tweetId: id,
@@ -139,5 +140,24 @@ export class TweetService {
     });
 
     return newFile;
+  }
+
+  async deleteTweetImagefromBucket(tweetId: number) {
+    const images = await this.prisma.tweetImage.findMany({
+      where: {
+        tweetId: tweetId,
+      },
+    });
+    const s3 = new S3();
+    await Promise.all(
+      images.map(async (image) => {
+        await s3
+          .deleteObject({
+            Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
+            Key: image.key,
+          })
+          .promise();
+      }),
+    );
   }
 }
