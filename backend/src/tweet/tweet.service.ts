@@ -1,10 +1,12 @@
-import { Ticker, Tweet } from '.prisma/client';
 import {
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { S3 } from 'aws-sdk';
 import { PrismaService } from 'src/prisma.service';
+import { v4 as uuid } from 'uuid';
+
 import { CreateTweetDto } from './tweet.dto';
 
 @Injectable()
@@ -13,6 +15,7 @@ export class TweetService {
 
   async createTweet(tweetData: CreateTweetDto): Promise<void> {
     //find or create tickersArray
+    const { userId, content, image_data } = tweetData;
     const tickers: { id: number }[] = [];
     await Promise.all(
       tweetData.tickers.map(async (ticker) => {
@@ -29,17 +32,29 @@ export class TweetService {
       }),
     );
 
-    await this.prisma.tweet.create({
+    const tweet = await this.prisma.tweet.create({
       data: {
         user: {
           connect: {
-            id: tweetData.userId,
+            id: userId,
           },
         },
-        content: tweetData.content,
+        content: content,
         tickers: { connect: tickers },
       },
     });
+
+    if (Object.keys(image_data).length > 0) {
+      const tweet_image = image_data.tweet_image[0];
+
+      await this.uploadTweetImage(
+        tweet_image.buffer,
+        tweet_image.originalname,
+        tweet.id,
+      );
+    }
+
+    return;
   }
 
   async deleteTweet(id: number, userId: number): Promise<void> {
@@ -50,6 +65,11 @@ export class TweetService {
       },
     });
     if (tweet.userId === userId) {
+      await this.prisma.tweetImage.deleteMany({
+        where: {
+          tweetId: id,
+        },
+      });
       await this.prisma.tweet.delete({
         where: {
           id: id,
@@ -83,11 +103,41 @@ export class TweetService {
             },
           },
           tickers: true,
+          tweet_image: {
+            select: {
+              url: true,
+            },
+          },
         },
       });
       return tweets;
     } catch {
       new InternalServerErrorException();
     }
+  }
+
+  async uploadTweetImage(
+    dataBuffer: Buffer,
+    filename: string,
+    tweetId: number,
+  ) {
+    const s3 = new S3();
+    const uploadResult = await s3
+      .upload({
+        Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
+        Body: dataBuffer,
+        Key: `${uuid()}-${filename}`,
+      })
+      .promise();
+
+    const newFile = this.prisma.tweetImage.create({
+      data: {
+        key: uploadResult.Key,
+        url: uploadResult.Location,
+        tweetId: tweetId,
+      },
+    });
+
+    return newFile;
   }
 }

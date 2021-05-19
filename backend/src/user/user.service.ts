@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
-import { User } from '@prisma/client';
 import { S3 } from 'aws-sdk';
 import { v4 as uuid } from 'uuid';
+
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class UserService {
@@ -64,9 +64,10 @@ export class UserService {
   async updateProfile(
     userId: number,
     updateProfile: { name?: string; introduction?: string },
-    profileImage,
+    image_data,
   ): Promise<void> {
-    if (profileImage != null) {
+    if (Object.keys(image_data).length > 0) {
+      const profileImage = image_data.profile_image[0];
       await this.uploadProfileImage(
         profileImage.buffer,
         profileImage.originalname,
@@ -123,15 +124,17 @@ export class UserService {
         Key: `${uuid()}-${filename}`,
       })
       .promise();
-
-    const newFile = this.prisma.profileImage.create({
+    await this.prisma.profileImage.deleteMany({
+      where: {
+        userId: userId,
+      },
+    });
+    await this.prisma.profileImage.create({
       data: {
         key: uploadResult.Key,
         url: uploadResult.Location,
         userId: userId,
       },
     });
-
-    return newFile;
   }
 }
