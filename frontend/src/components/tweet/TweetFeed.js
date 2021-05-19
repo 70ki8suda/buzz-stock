@@ -77,8 +77,8 @@ const TweetFeed = ({ DisplayTweets, setTweetPostState, TweetPostState, setDispla
           <div key={i} id={tweet.id} className={style['tweet-box']}>
             <div className={style['profile-image-wrap']}>
               <Link href={`/user/${tweet.user.id}`}>
-                {tweet.user.profile_image_url != null ? (
-                  <img src={tweet.user.profile_image_url} />
+                {tweet.user.profile_image.url != null ? (
+                  <img src={tweet.user.profile_image.url} />
                 ) : (
                   <img src="/images/profile-default.png" />
                 )}

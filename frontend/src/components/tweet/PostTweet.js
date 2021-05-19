@@ -10,7 +10,7 @@ import postStyle from './PostTweet.module.scss';
 const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
   const { AuthUserProfile } = useContext(AuthUserData);
   const { LoggedInState } = useContext(LoggedInContext);
-  const profile_image_url = AuthUserProfile.profile_image_url;
+  const profile_image = AuthUserProfile.profile_image;
   //tweetデータ
   const [TweetPostData, setTweetPostData] = React.useState({});
   //ticker State
@@ -170,8 +170,8 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
   return (
     <div className={`${postStyle['post-tweet']} ${!LoggedInState && postStyle['not-loggedin']}`}>
       <div className={postStyle['profile-image-wrap']}>
-        {profile_image_url != null ? (
-          <img src={profile_image_url} />
+        {profile_image != null ? (
+          <img src={profile_image} />
         ) : (
           <img src="/images/profile-default.png" />
         )}

@@ -140,8 +140,8 @@ const Profile = ({ userID }) => {
     <div className={profileStyle['layout-top']}>
       <div className={profileStyle['wrap']}>
         <div className={profileStyle['image-wrap']}>
-          {ProfileDisplayData.profile_image_url != null ? (
-            <img src={ProfileDisplayData.profile_image_url} />
+          {ProfileDisplayData.profile_image != null ? (
+            <img src={ProfileDisplayData.profile_image} />
           ) : (
             <img src="/images/profile-default.png" />
           )}
