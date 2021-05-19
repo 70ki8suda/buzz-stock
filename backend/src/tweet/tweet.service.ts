@@ -75,6 +75,11 @@ export class TweetService {
               id: true,
               name: true,
               display_id: true,
+              profile_image: {
+                select: {
+                  url: true,
+                },
+              },
             },
           },
           tickers: true,

@@ -8,11 +8,15 @@ import {
   Post,
   Req,
   Res,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import {
+  FileFieldsInterceptor,
+  FileInterceptor,
+} from '@nestjs/platform-express';
 import { User } from '@prisma/client';
 
 import { GetUser } from 'src/auth/get-user.decorator';
@@ -20,6 +24,7 @@ import { GetUser } from 'src/auth/get-user.decorator';
 import { UserService } from './user.service';
 import { AuthService } from '../auth/auth.service';
 import { Request } from 'express';
+import { Express } from 'express';
 
 @Controller('user')
 export class UserController {
@@ -63,13 +68,15 @@ export class UserController {
   @UseInterceptors(
     FileFieldsInterceptor([{ name: 'name' }, { name: 'introduction' }]),
   )
+  @UseInterceptors(FileInterceptor('profile_image'))
   @UseGuards(AuthGuard())
   async updateProfile(
     @Body() updateProfile: { name?: string; introduction?: string },
     @GetUser() user: User,
+    @UploadedFile() profile_image: Express.Multer.File,
   ): Promise<void> {
     const userId = user.id;
-    return this.userService.updateProfile(updateProfile, userId);
+    return this.userService.updateProfile(userId, updateProfile, profile_image);
     //console.log(updateProfile);
   }
 

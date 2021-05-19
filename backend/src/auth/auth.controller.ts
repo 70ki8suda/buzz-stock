@@ -15,13 +15,17 @@ import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { GetUser } from './get-user.decorator';
 import { User } from '@prisma/client';
+import { UserService } from '../user/user.service';
 interface Message {
   message: string;
 }
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    readonly userService: UserService,
+  ) {}
 
   @Post('/signup')
   @UseInterceptors(
@@ -76,8 +80,10 @@ export class AuthController {
 
   @Get('/current_user')
   @UseGuards(AuthGuard())
-  current_user(@GetUser() user: User) {
-    return user;
+  async current_user(@GetUser() user: User) {
+    const userId = user.id;
+    const data = await this.userService.getUserById(userId, userId);
+    return data;
   }
 
   @Post('/logout')

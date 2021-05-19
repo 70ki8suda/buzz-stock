@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { User } from '@prisma/client';
+import { S3 } from 'aws-sdk';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class UserService {
@@ -37,6 +39,7 @@ export class UserService {
       include: {
         following: true,
         followedBy: true,
+        profile_image: true,
       },
     });
     delete user.password;
@@ -53,14 +56,24 @@ export class UserService {
       followers_num: followers_num,
       following_num: following_num,
       following: following,
+      profile_image: user.profile_image.url,
     };
     return returnData;
   }
 
   async updateProfile(
-    updateProfile: { name?: string; introduction?: string },
     userId: number,
+    updateProfile: { name?: string; introduction?: string },
+    profileImage,
   ): Promise<void> {
+    if (profileImage != null) {
+      await this.uploadProfileImage(
+        profileImage.buffer,
+        profileImage.originalname,
+        userId,
+      );
+    }
+
     await this.prisma.user.update({
       where: {
         id: userId,
@@ -95,5 +108,30 @@ export class UserService {
         },
       },
     });
+  }
+
+  async uploadProfileImage(
+    dataBuffer: Buffer,
+    filename: string,
+    userId: number,
+  ) {
+    const s3 = new S3();
+    const uploadResult = await s3
+      .upload({
+        Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
+        Body: dataBuffer,
+        Key: `${uuid()}-${filename}`,
+      })
+      .promise();
+
+    const newFile = this.prisma.profileImage.create({
+      data: {
+        key: uploadResult.Key,
+        url: uploadResult.Location,
+        userId: userId,
+      },
+    });
+
+    return newFile;
   }
 }
