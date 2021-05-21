@@ -73,4 +73,18 @@ export class TweetController {
     const tweets = await this.tweetService.getTweetsByUserId(userId);
     return tweets;
   }
+
+  @Get('/quote/:ticker')
+  async getTweetsByTicker(@Param('ticker') ticker: string) {
+    const tweets = await this.tweetService.getTweetsByTicker(ticker);
+    return tweets;
+  }
+
+  @Get('/following_users_feed')
+  @UseGuards(AuthGuard())
+  async getTweetsOfFollowingUsers(@GetUser() user: User) {
+    const userId: number = user.id;
+    const tweets = await this.tweetService.getTweetsOfFollowingUsers(userId);
+    return tweets;
+  }
 }

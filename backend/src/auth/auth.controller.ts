@@ -70,6 +70,7 @@ export class AuthController {
     const hour = 3600000;
     const expires = new Date(Date.now() + 14 * 24 * hour);
     const expiresNum = Date.parse(String(expires));
+
     response
       .cookie('jwt', jwt, {
         sameSite: 'none',

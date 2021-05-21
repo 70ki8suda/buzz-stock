@@ -118,6 +118,104 @@ export class TweetService {
     }
   }
 
+  async getTweetsByTicker(ticker: string) {
+    try {
+      const ticker_tweets = await this.prisma.ticker.findUnique({
+        where: {
+          name: ticker,
+        },
+        include: {
+          tweets: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  display_id: true,
+                  profile_image: {
+                    select: {
+                      url: true,
+                    },
+                  },
+                },
+              },
+              tickers: true,
+              favorites: true,
+              tweet_image: {
+                select: {
+                  url: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      let tweets = ticker_tweets.tweets;
+      tweets = tweets.sort(function (a, b) {
+        if (a.created_at < b.created_at) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
+      return tweets;
+    } catch {
+      new InternalServerErrorException();
+    }
+  }
+
+  async getTweetsOfFollowingUsers(userId: number) {
+    try {
+      const followingUsers = await this.prisma.user.findUnique({
+        where: {
+          id: userId,
+        },
+        select: {
+          following: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+      const followingUsersIDs = followingUsers.following.map(
+        (following) => following.id,
+      );
+      const tweets = await this.prisma.tweet.findMany({
+        where: {
+          userId: { in: followingUsersIDs },
+        },
+        orderBy: {
+          created_at: 'desc',
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              display_id: true,
+              profile_image: {
+                select: {
+                  url: true,
+                },
+              },
+            },
+          },
+          tickers: true,
+          favorites: true,
+          tweet_image: {
+            select: {
+              url: true,
+            },
+          },
+        },
+      });
+      return tweets;
+    } catch {
+      new InternalServerErrorException();
+    }
+  }
+
   async uploadTweetImage(
     dataBuffer: Buffer,
     filename: string,

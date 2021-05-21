@@ -24,7 +24,7 @@ const Feed = ({ userID }) => {
   const loggedin_userID = AuthUserProfile.id;
 
   const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
-  const get_tweets_path = baseRequestUrl + '/api/v1/following_users_feed';
+  const get_tweets_path = baseRequestUrl + '/tweet/following_users_feed';
   //表示するtweetのデータ
   const [DisplayTweets, setDisplayTweets] = React.useState([]);
   //Tweetをpost/delete時に状態更新する状態関数
@@ -51,7 +51,7 @@ const Feed = ({ userID }) => {
         .then((json) => {
           console.log('tweet loaded');
           console.log(json);
-          setDisplayTweets(json.data);
+          setDisplayTweets(json);
         });
     },
     [TweetPostState],

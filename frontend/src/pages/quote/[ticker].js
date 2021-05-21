@@ -23,7 +23,7 @@ const StockPage = ({ ticker, SummaryData, SummaryState }) => {
   const [TweetPostState, setTweetPostState] = React.useState({});
   //did mount 初期表示tweetデータ
   const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
-  const get_tweets_path = baseRequestUrl + '/api/v1/quote/tweets/' + ticker;
+  const get_tweets_path = baseRequestUrl + '/tweet/quote/' + ticker;
 
   React.useEffect(
     (TweetPostState) => {
@@ -37,8 +37,7 @@ const StockPage = ({ ticker, SummaryData, SummaryState }) => {
         })
         .then((json) => {
           console.log('tweet loaded');
-          console.log(json);
-          setDisplayTweets(json.data);
+          setDisplayTweets(json);
         });
     },
     [TweetPostState, get_tweets_path],
