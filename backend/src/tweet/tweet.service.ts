@@ -104,6 +104,7 @@ export class TweetService {
             },
           },
           tickers: true,
+          favorites: true,
           tweet_image: {
             select: {
               url: true,

@@ -19,12 +19,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private prisma: PrismaService) {
     super({
       jwtFromRequest: cookieExtractor,
-      secretOrKey: 'topSecret51',
+      secretOrKey: process.env.JWT_SECRET_KEY,
     });
   }
 
   async validate(payload: JwtPayload): Promise<User> {
     const { id } = payload;
+
     const user = await this.prisma.user.findUnique({
       where: {
         id: id,

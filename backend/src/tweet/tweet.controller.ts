@@ -42,7 +42,7 @@ export class TweetController {
     @GetUser() user: User,
     @UploadedFiles() tweet_image: Express.Multer.File,
   ) {
-    const userId = user.id;
+    const userId: number = user.id;
     let tickersArray = [];
     console.log(tweet);
     if (tweet.tickers != undefined) {
@@ -64,7 +64,7 @@ export class TweetController {
     @Param('id', ParseIntPipe) id: number,
     @GetUser() user: User,
   ): Promise<void> {
-    const userId = user.id;
+    const userId: number = user.id;
     return this.tweetService.deleteTweet(id, userId);
   }
 

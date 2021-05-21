@@ -102,4 +102,50 @@ export class AuthService {
       throw new UnauthorizedException('invalid credentials');
     }
   }
+
+  async getCurrentUser(userId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      include: {
+        following: true,
+        followedBy: true,
+        profile_image: true,
+      },
+    });
+    delete user.password;
+    delete user.salt;
+    const following_num = user.following.length;
+    const followers_num = user.followedBy.length;
+    const following = false;
+
+    let returnData;
+    if (user.profile_image === null) {
+      console.log('in null');
+      returnData = {
+        name: user.name,
+        id: user.id,
+        display_id: user.display_id,
+        email: user.email,
+        introduction: user.introduction,
+        followers_num: followers_num,
+        following_num: following_num,
+        following: following,
+      };
+    } else {
+      returnData = {
+        name: user.name,
+        id: user.id,
+        display_id: user.display_id,
+        email: user.email,
+        introduction: user.introduction,
+        followers_num: followers_num,
+        following_num: following_num,
+        following: following,
+        profile_image: user.profile_image.url,
+      };
+    }
+    return returnData;
+  }
 }

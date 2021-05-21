@@ -33,18 +33,27 @@ const TweetFeed = ({ DisplayTweets, setTweetPostState, TweetPostState, setDispla
         console.error('Error:', error);
       });
   }
-  const FavoriteHandler = (e, tweet_id, favorite, key) => {
+  let favoritedByUser = (tweet) => {
+    let favorite = tweet.favorites.filter(function (favorite, index) {
+      if (favorite.userId == loggedin_userID) return true;
+    });
+    if (favorite.length > 0) return true;
+  };
+  const FavoriteHandler = (e, tweet, i) => {
     if (LoggedInState) {
       //console.log(key.i);
       //favoriteを反転させる
       let tempTweetData = [...DisplayTweets];
-      tempTweetData[key.i].favorite = !DisplayTweets[key.i].favorite;
       //backendにリクエスト送信して、データベースの値変える
       const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
-      const api_path = baseRequestUrl + '/api/v1/favorites/' + tweet_id;
-      if (favorite) {
+      const api_path = baseRequestUrl + '/favorite/' + tweet.id;
+      const tweet_favorites = tweet.favorites;
+      if (favoritedByUser(tweet)) {
         //既にfavorite済みのとき
-        tempTweetData[key.i].fav_num--;
+        const new_favorites = tweet_favorites.filter(function (favorite, index) {
+          favorite.userId !== loggedin_userID;
+        });
+        tempTweetData[i].favorites = new_favorites;
         setDisplayTweets(tempTweetData);
 
         const requestOptions = {
@@ -57,7 +66,8 @@ const TweetFeed = ({ DisplayTweets, setTweetPostState, TweetPostState, setDispla
           .then((data) => console.log(data));
       } else {
         //未favoriteのとき
-        tempTweetData[key.i].fav_num++;
+        const new_favorites = [...tweet_favorites, { userId: loggedin_userID, tweetId: tweet.id }];
+        tempTweetData[i].favorites = new_favorites;
         setDisplayTweets(tempTweetData);
         const requestOptions = {
           method: 'POST',
@@ -77,7 +87,7 @@ const TweetFeed = ({ DisplayTweets, setTweetPostState, TweetPostState, setDispla
           <div key={i} id={tweet.id} className={style['tweet-box']}>
             <div className={style['profile-image-wrap']}>
               <Link href={`/user/${tweet.user.id}`}>
-                {tweet.user.profile_image.url != null ? (
+                {tweet.user.profile_image !== null ? (
                   <img src={tweet.user.profile_image.url} />
                 ) : (
                   <img src="/images/profile-default.png" />
@@ -109,13 +119,13 @@ const TweetFeed = ({ DisplayTweets, setTweetPostState, TweetPostState, setDispla
               <div className={style['fav-container']}>
                 <div className={style['fav-wrapper']}>
                   <FavStarSVG
-                    onClick={(e) => FavoriteHandler(e, tweet.id, tweet.favorite, { i })}
+                    onClick={(e) => FavoriteHandler(e, tweet, i)}
                     className={`${style['fav-star']} ${
-                      tweet.favorite && style['fav-star--favorited']
+                      favoritedByUser(tweet) && style['fav-star--favorited']
                     }`}
                   />
                 </div>
-                <span className={style['fav-num']}>{tweet.fav_num}</span>
+                <span className={style['fav-num']}>{tweet.favorites.length}</span>
               </div>
               {tweet.user.id == loggedin_userID && (
                 <button

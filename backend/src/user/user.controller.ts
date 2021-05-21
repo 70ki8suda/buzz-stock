@@ -53,7 +53,7 @@ export class UserController {
   //   @GetUser() user: User,
   //   @Param('id', ParseIntPipe) followId: number,
   // ) {
-  //   const userId = user.id;
+  //   const userId: number = user.id;
   //   return await this.userService.following_check(userId, followId);
   // }
 
@@ -71,7 +71,7 @@ export class UserController {
     @GetUser() user: User,
     @UploadedFiles() profile_image: Express.Multer.File,
   ): Promise<void> {
-    const userId = user.id;
+    const userId: number = user.id;
     return this.userService.updateProfile(userId, updateProfile, profile_image);
     //console.log(updateProfile);
   }
@@ -82,7 +82,7 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
     @GetUser() user: User,
   ) {
-    const userId = user.id;
+    const userId: number = user.id;
     const followRequestId = id;
     await this.userService.follow(userId, followRequestId);
   }
@@ -93,7 +93,7 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
     @GetUser() user: User,
   ) {
-    const userId = user.id;
+    const userId: number = user.id;
     const unfollowRequestId = id;
     await this.userService.unfollow(userId, unfollowRequestId);
   }

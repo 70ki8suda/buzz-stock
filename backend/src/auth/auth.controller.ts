@@ -72,7 +72,8 @@ export class AuthController {
     const expiresNum = Date.parse(String(expires));
     response
       .cookie('jwt', jwt, {
-        httpOnly: true,
+        sameSite: 'none',
+        secure: true,
         expires: expires,
       })
       .json({ expires: expiresNum, userId: userId });
@@ -81,8 +82,8 @@ export class AuthController {
   @Get('/current_user')
   @UseGuards(AuthGuard())
   async current_user(@GetUser() user: User) {
-    const userId = user.id;
-    const data = await this.userService.getUserById(userId, userId);
+    const userId: number = user.id;
+    const data = await this.authService.getCurrentUser(userId);
     return data;
   }
 

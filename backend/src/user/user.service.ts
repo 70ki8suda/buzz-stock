@@ -47,17 +47,32 @@ export class UserService {
     const following_num = user.following.length;
     const followers_num = user.followedBy.length;
     const following = await this.following_check(loggedinUserId, targetId);
-    const returnData = {
-      name: user.name,
-      id: user.id,
-      display_id: user.display_id,
-      email: user.email,
-      introduction: user.introduction,
-      followers_num: followers_num,
-      following_num: following_num,
-      following: following,
-      profile_image: user.profile_image.url,
-    };
+    let returnData;
+    if (user.profile_image === null) {
+      console.log('in null');
+      returnData = {
+        name: user.name,
+        id: user.id,
+        display_id: user.display_id,
+        email: user.email,
+        introduction: user.introduction,
+        followers_num: followers_num,
+        following_num: following_num,
+        following: following,
+      };
+    } else {
+      returnData = {
+        name: user.name,
+        id: user.id,
+        display_id: user.display_id,
+        email: user.email,
+        introduction: user.introduction,
+        followers_num: followers_num,
+        following_num: following_num,
+        following: following,
+        profile_image: user.profile_image.url,
+      };
+    }
     return returnData;
   }
 

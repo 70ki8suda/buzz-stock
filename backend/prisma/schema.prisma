@@ -14,7 +14,6 @@ model User {
   id    Int     @default(autoincrement()) @id
   email String  @unique
   name  String?
-
   display_id String @unique
   introduction String?
   password String
@@ -23,6 +22,7 @@ model User {
   tweets Tweet[]
   followedBy  User[]   @relation("UserRelation", references: [id])
   following   User[]   @relation("UserRelation", references: [id])
+  favorites Favorite[]
 }
 
 model ProfileImage {
@@ -41,7 +41,7 @@ model Tweet {
   tweet_image TweetImage?
   created_at DateTime @default(now())
   tickers Ticker[]
-  
+  favorites Favorite[]
 }
 
 model TweetImage {
@@ -58,3 +58,10 @@ model Ticker {
   tweets Tweet[]
 }
 
+model Favorite{
+  @@id([userId, tweetId])
+  user  User    @relation(fields: [userId], references: [id])
+  userId   Int
+  tweet  Tweet    @relation(fields: [tweetId], references: [id])
+  tweetId   Int
+}
