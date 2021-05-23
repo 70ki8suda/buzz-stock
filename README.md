@@ -11,7 +11,7 @@
 
 ### テーマを選んだ理由
 
-自身、趣味で株式取引を行っているが、現状数値の値動きを確認するサイト（証券サイト・yahoo ファイナンスなど）とそれらの投資家のリアクションを見る SNS（twitter など）が分離しており、それらを統合したプラットフォームをつくれば、より市場のダイナミクスを感じられるような情報空間が出来るのではないかと思った為。
+株式の値動きを確認するサイト（証券サイト・yahoo ファイナンスなど）とそれらの投資家のリアクションを見る SNS（twitter など）が現状、分離しており、それらを統合したプラットフォームをつくれば、より市場のダイナミクスを感じられるような情報空間が出来るのではないかと思った。
 
 ### ターゲットユーザ
 
@@ -24,7 +24,7 @@
 
 ## 設計書
 
-[詳細設計](https://docs.google.com/spreadsheets/d/1nVxSBZcZD90IaEu8aTSGJ7LG71RndOzKpVPTrfhpWCo/edit)
+[API 設計](https://docs.google.com/spreadsheets/d/1nVxSBZcZD90IaEu8aTSGJ7LG71RndOzKpVPTrfhpWCo/edit)
 <br>
 <br>
 サービス構成図
