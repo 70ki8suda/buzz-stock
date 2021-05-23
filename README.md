@@ -29,7 +29,7 @@
 <br>
 サービス構成図
 <br>
-![stock-graph](https://user-images.githubusercontent.com/24717695/119265119-8f0e8180-bc20-11eb-980f-bb0d00f75f07.jpg)
+![stock-graph](https://user-images.githubusercontent.com/24717695/119268484-347c2200-bc2e-11eb-93bf-741c8f756f01.jpg)
 
 ## チャレンジ要素一覧
 
