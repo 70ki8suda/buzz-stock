@@ -9,13 +9,15 @@ import {
   UploadedFiles,
   UseGuards,
   UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { GetUser } from 'src/auth/get-user.decorator';
 
-import { CreateTweetDto } from './tweet.dto';
+import { TweetInputDto } from './inputTweet.dto';
 import { TweetService } from './tweet.service';
 import { User } from '.prisma/client';
 
@@ -24,7 +26,6 @@ export class TweetController {
   constructor(private readonly tweetService: TweetService) {}
 
   @Post('/')
-  //@UseInterceptors(FileInterceptor('tweet_image'))
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'content' },
@@ -32,29 +33,17 @@ export class TweetController {
       { name: 'tweet_image' },
     ]),
   )
+  @UsePipes(ValidationPipe)
   @UseGuards(AuthGuard())
   async postTweet(
     @Body()
-    tweet: {
-      content: string;
-      tickers?: string;
-    },
+    tweet: TweetInputDto,
     @GetUser() user: User,
     @UploadedFiles() tweet_image: Express.Multer.File,
   ) {
     const userId: number = user.id;
-    let tickersArray = [];
-    console.log(tweet);
-    if (tweet.tickers != undefined) {
-      tickersArray = tweet.tickers.split(',');
-    }
-    const tweetData: CreateTweetDto = {
-      userId: userId,
-      content: tweet.content,
-      tickers: tickersArray,
-      image_data: tweet_image,
-    };
-    await this.tweetService.createTweet(tweetData);
+
+    await this.tweetService.createTweet(tweet, tweet_image, userId);
     return 'tweet posted';
   }
 

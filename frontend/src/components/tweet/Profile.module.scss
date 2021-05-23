@@ -12,6 +12,7 @@
   @media #{$bp-tab} {
     width: 90%;
     display: block;
+    margin-top: 4%;
   }
 }
 
@@ -46,6 +47,10 @@
   position: absolute;
   top: 0;
   right: 0;
+  @media #{$bp-tab} {
+    min-width: 40px;
+    font-size: 11px;
+  }
 }
 
 .image-wrap {

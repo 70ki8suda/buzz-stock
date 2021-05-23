@@ -12,12 +12,13 @@ const Navigation = () => {
   const router = useRouter();
   const { LoggedInState, setLoggedInState } = useContext(LoggedInContext);
 
-  const { AuthUserProfile } = useContext(AuthUserData);
+  const { AuthUserProfile, setAuthUserProfile } = useContext(AuthUserData);
   const { SpMenuState, setSpMenuState } = useContext(SpMenuContext);
   const loggedin_userID = AuthUserProfile.id;
 
   const logoutHandler = () => {
     auth.logout();
+    setAuthUserProfile({});
     setLoggedInState(auth.isAuthenticated());
     router.push('/');
   };

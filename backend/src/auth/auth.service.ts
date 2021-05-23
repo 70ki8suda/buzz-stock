@@ -10,18 +10,8 @@ import * as bcrypt from 'bcrypt';
 
 import { PrismaService } from '../prisma.service';
 import { JwtPayload } from './jwt-payload.interface';
-
-interface SingUpInput {
-  name: string;
-  email: string;
-  display_id: string;
-  password: string;
-}
-
-interface SignInInput {
-  email: string;
-  password: string;
-}
+import { signUpDto } from './signup.dto';
+import { logInDto } from './login.dto';
 
 @Injectable()
 export class AuthService {
@@ -39,7 +29,7 @@ export class AuthService {
     return data;
   }
 
-  async signUp(userInput: SingUpInput): Promise<void> {
+  async signUp(userInput: signUpDto): Promise<void> {
     const salt = await bcrypt.genSalt();
     const hashedData: Prisma.UserCreateInput = { ...userInput, salt };
 
@@ -48,6 +38,9 @@ export class AuthService {
       hashedData.salt,
     );
     try {
+      if (userInput.password === null) {
+        throw new UnauthorizedException('Password ');
+      }
       await this.prisma.user.create({
         data: { ...hashedData },
       });
@@ -55,7 +48,7 @@ export class AuthService {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         // The .code property can be accessed in a type-safe manner
         if (error.code === 'P2002') {
-          throw new ConflictException('Email or ID already exists');
+          throw new ConflictException('EmailかIDが既に使われています');
         } else {
           throw new InternalServerErrorException();
         }
@@ -64,12 +57,12 @@ export class AuthService {
   }
 
   async signIn(
-    userInput: SignInInput,
+    userInput: logInDto,
   ): Promise<{ accessToken: string; userId: number }> {
     const user = await this.validateUserPassword(userInput);
     const user_id = user.id;
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('パスワードが一致しません');
     }
     const payload: JwtPayload = { id: user_id };
     const accessToken = this.jwtService.sign(payload);
@@ -86,7 +79,7 @@ export class AuthService {
     return hash === hashedPassword;
   }
 
-  async validateUserPassword(userInput: SignInInput): Promise<User> {
+  async validateUserPassword(userInput: logInDto): Promise<User> {
     const { email, password } = userInput;
     const user = await this.prisma.user.findUnique({
       where: {
@@ -99,7 +92,9 @@ export class AuthService {
     ) {
       return user;
     } else {
-      throw new UnauthorizedException('invalid credentials');
+      throw new UnauthorizedException(
+        'メールアドレスとパスワードが一致しません',
+      );
     }
   }
 

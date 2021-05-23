@@ -8,10 +8,17 @@
 .fav-wrapper {
   width: 16px;
   margin-right: 8px;
+  @media #{$bp-tab} {
+    width: 12px;
+  }
 }
 .fav-num {
   color: $gray;
   font-size: 14px;
+  @media #{$bp-tab} {
+    font-size: 11px;
+    margin-top: 3px;
+  }
 }
 
 .fav-star {
@@ -33,6 +40,10 @@
   position: absolute;
   top: 0;
   right: 0;
+  @media #{$bp-tab} {
+    min-width: 40px;
+    font-size: 11px;
+  }
 }
 
 .tweet-image {
@@ -51,7 +62,10 @@
 .tweet-content {
   position: relative;
   width: 100%;
-  padding-top: 14px;
+  padding-top: 10px;
+  @media #{$bp-tab} {
+    padding-top: 0;
+  }
 }
 
 .tweet-box {

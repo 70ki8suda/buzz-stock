@@ -15,12 +15,46 @@ const Login = () => {
     email: '',
     password: '',
   });
+  const [messages, setMessages] = React.useState({
+    name: '',
+    display_id: '',
+    email: '',
+    password: '',
+  });
+  const [serverResponse, setServerResponse] = React.useState([]);
   const handleInputChange = (e) => {
     const target = e.target;
     const name = target.name;
+    const value = target.value;
     setData(() => {
-      return { ...data, [name]: target.value };
+      return { ...data, [name]: value };
     });
+    setMessages(() => {
+      return { ...messages, [name]: formValidate(name, value) };
+    });
+  };
+  const formValidate = (name, value) => {
+    switch (name) {
+      case 'email':
+        return emailValidation(value);
+      case 'password':
+        return passwordValidation(value);
+    }
+  };
+
+  const emailValidation = (email) => {
+    if (!email) return 'メールアドレスを入力してください';
+
+    const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (!regex.test(email)) return '正しい形式でメールアドレスを入力してください';
+
+    return '';
+  };
+
+  const passwordValidation = (password) => {
+    if (!password) return 'passwordを入力してください';
+    if (password.length < 4) return 'パスワードは4文字以上でお願いします';
+    return '';
   };
 
   async function onSubmitHandler(e) {
@@ -43,11 +77,24 @@ const Login = () => {
       console.error('Error:', error);
     });
     const result = await loginApi.json();
-    //console.log(result);
-    auth.login(result);
-    setLoggedInState(auth.isAuthenticated());
-    let userID = result.userId;
-    router.push(`/user/${userID}`);
+    console.log(result);
+    if (!result.error) {
+      auth.login(result);
+      setLoggedInState(auth.isAuthenticated());
+      let userID = result.userId;
+      router.push(`/user/${userID}`);
+    } else {
+      if (typeof result.message == 'string') {
+        setServerResponse([]);
+        setServerResponse([result.message]);
+      } else {
+        setServerResponse([]);
+        result.message.map((message) => {
+          setServerResponse([...serverResponse, message]);
+        });
+      }
+      console.log(data);
+    }
   }
 
   return (
@@ -57,10 +104,20 @@ const Login = () => {
       </Head>
       <div className={authStyle['auth-wrap']}>
         <h2 className={authStyle['auth-title']}>Log In</h2>
-        <div className={authStyle['auth-form']}>
-          <form className="register-form">
+        <div className={authStyle['server-response-container']}>
+          {serverResponse.map((message, index) => (
+            <p className={authStyle['server-response']} key={index}>
+              {message}
+            </p>
+          ))}
+        </div>
+        <div className={authStyle['form-container']}>
+          <form className={authStyle['form']}>
             <div className="form-item">
-              <label htmlFor="email">メールアドレス</label>
+              <label htmlFor="email">
+                メールアドレス
+                <span className={authStyle['validation-message']}>{messages.email}</span>
+              </label>
               <input
                 type="text"
                 required={true}
@@ -68,16 +125,21 @@ const Login = () => {
                 name="email"
                 value={data.email}
                 onChange={handleInputChange}
+                className={authStyle['text-input']}
               />
             </div>
             <div className="form-item">
-              <label htmlFor="password">パスワード</label>
+              <label htmlFor="password">
+                パスワード
+                <span className={authStyle['validation-message']}>{messages.password}</span>
+              </label>
               <input
                 type="password"
                 required={true}
                 placeholder="password"
                 name="password"
                 onChange={handleInputChange}
+                className={authStyle['text-input']}
               />
             </div>
             <button className={authStyle['auth-submit']} onClick={(e) => onSubmitHandler(e)}>

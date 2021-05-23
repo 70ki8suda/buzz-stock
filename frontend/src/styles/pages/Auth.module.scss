@@ -11,12 +11,45 @@
   margin-bottom: 1em;
 }
 
-.auth-form {
+.form-container {
   display: flex;
   justify-content: center;
+}
+.form {
+  padding: 0 10em;
 }
 
 .auth-submit {
   margin: 0 auto;
   @include btn;
+}
+
+.validation-message {
+  color: $red;
+  margin-left: 2em;
+  display: inline-block;
+  @media #{$bp-tab} {
+    display: block;
+    margin-left: 0;
+    margin-top: 0.4em;
+  }
+}
+input[type='text'],
+input[type='password'] {
+  &.text-input {
+    width: 380px;
+    @media #{$bp-tab} {
+      width: 280px;
+    }
+  }
+}
+
+.server-response {
+  color: $red;
+  font-size: 0.8em;
+  margin: 0 auto 1.5em;
+  width: 380px;
+  @media #{$bp-tab} {
+    width: 280px;
+  }
 }

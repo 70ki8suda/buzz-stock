@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+
 //components
 //utils
 import auth from '../../utils/auth';
@@ -19,12 +20,67 @@ const Signup = () => {
     email: '',
     password: '',
   });
+
+  const [messages, setMessages] = React.useState({
+    name: '',
+    display_id: '',
+    email: '',
+    password: '',
+  });
+
+  const [serverResponse, setServerResponse] = React.useState([]);
+
   const handleInputChange = (e) => {
     const target = e.target;
     const name = target.name;
+    const value = target.value;
     setData(() => {
-      return { ...data, [name]: target.value };
+      return { ...data, [name]: value };
     });
+    setMessages(() => {
+      return { ...messages, [name]: formValidate(name, value) };
+    });
+  };
+
+  const formValidate = (name, value) => {
+    switch (name) {
+      case 'name':
+        return nameValidation(value);
+      case 'display_id':
+        return idValidation(value);
+      case 'email':
+        return emailValidation(value);
+      case 'password':
+        return passwordValidation(value);
+    }
+  };
+  const nameValidation = (name) => {
+    if (!name) return 'nameを入力してください';
+    return '';
+  };
+
+  const idValidation = (id) => {
+    if (!id) return 'idを入力してください';
+    if (id.length > 10) return 'IDは10文字以下でお願いします';
+    const regex = /^[a-z_0-9]+$/i;
+    if (!regex.test(id)) return 'IDに使える文字は 英・数字・_ のみです';
+
+    return '';
+  };
+
+  const emailValidation = (email) => {
+    if (!email) return 'メールアドレスを入力してください';
+
+    const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (!regex.test(email)) return '正しい形式でメールアドレスを入力してください';
+
+    return '';
+  };
+
+  const passwordValidation = (password) => {
+    if (!password) return 'passwordを入力してください';
+    if (password.length < 4) return 'パスワードは4文字以上でお願いします';
+    return '';
   };
 
   // 3. handleSignUpメソッドの定義
@@ -52,7 +108,20 @@ const Signup = () => {
     await fetch(signup_api_path, requestOptions)
       .then((response) => response.json())
       .then((data) => {
-        siguUpSuccess = true;
+        if (!data.error) {
+          siguUpSuccess = true;
+        } else {
+          if (typeof data.message == 'string') {
+            setServerResponse([]);
+            setServerResponse([data.message]);
+          } else {
+            setServerResponse([]);
+            data.message.map((message) => {
+              setServerResponse([...serverResponse, message]);
+            });
+          }
+          console.log(serverResponse);
+        }
         console.log(data);
       })
       .catch((error) => {
@@ -91,21 +160,33 @@ const Signup = () => {
       </Head>
       <div className={authStyle['auth-wrap']}>
         <h2 className={authStyle['auth-title']}>Sign Up</h2>
-        <div className={authStyle['auth-form']}>
-          <form className="register-form">
+        <div className={authStyle['server-response-container']}>
+          {serverResponse.map((message, index) => (
+            <p className={authStyle['server-response']} key={index}>
+              {message}
+            </p>
+          ))}
+        </div>
+        <div className={authStyle['form-container']}>
+          <form className={authStyle['form']}>
             <div className="form-item">
-              <label htmlFor="name">名前</label>
+              <label htmlFor="name">
+                名前<span className={authStyle['validation-message']}>{messages.name}</span>
+              </label>
               <input
-                required={true}
                 type="text"
                 placeholder="name"
                 name="name"
                 value={data.name}
                 onChange={handleInputChange}
+                className={authStyle['text-input']}
               />
             </div>
             <div className="form-item">
-              <label htmlFor="name">ユーザーID</label>
+              <label htmlFor="name">
+                ユーザーID (英・数字・_ )
+                <span className={authStyle['validation-message']}>{messages.display_id}</span>
+              </label>
               <input
                 required={true}
                 type="text"
@@ -113,10 +194,14 @@ const Signup = () => {
                 name="display_id"
                 value={data.display_id}
                 onChange={handleInputChange}
+                className={authStyle['text-input']}
               />
             </div>
             <div className="form-item">
-              <label htmlFor="name">メールアドレス</label>
+              <label htmlFor="name">
+                メールアドレス
+                <span className={authStyle['validation-message']}>{messages.email}</span>
+              </label>
               <input
                 type="text"
                 required={true}
@@ -124,18 +209,24 @@ const Signup = () => {
                 name="email"
                 value={data.email}
                 onChange={handleInputChange}
+                className={authStyle['text-input']}
               />
             </div>
             <div className="form-item">
-              <label htmlFor="name">パスワード</label>
+              <label htmlFor="name">
+                パスワード
+                <span className={authStyle['validation-message']}>{messages.password}</span>
+              </label>
               <input
                 type="password"
                 required={true}
                 placeholder="password"
                 name="password"
                 onChange={handleInputChange}
+                className={authStyle['text-input']}
               />
             </div>
+
             <button className={authStyle['auth-submit']} onClick={(e) => handleSignUp(e)}>
               Sign Up
             </button>

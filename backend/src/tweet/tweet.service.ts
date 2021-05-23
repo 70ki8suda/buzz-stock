@@ -7,18 +7,26 @@ import { S3 } from 'aws-sdk';
 import { PrismaService } from 'src/prisma.service';
 import { v4 as uuid } from 'uuid';
 
-import { CreateTweetDto } from './tweet.dto';
+import { TweetInputDto } from './inputTweet.dto';
 
 @Injectable()
 export class TweetService {
   constructor(private prisma: PrismaService) {}
 
-  async createTweet(tweetData: CreateTweetDto): Promise<void> {
+  async createTweet(
+    tweetData: TweetInputDto,
+    tweet_image,
+    userId: number,
+  ): Promise<void> {
     //find or create tickersArray
-    const { userId, content, image_data } = tweetData;
-    const tickers: { id: number }[] = [];
+    const { content, tickers } = tweetData;
+    let tickersArray = [];
+    const tickersIdArray: { id: number }[] = [];
+    if (tickers != undefined) {
+      tickersArray = tickers.split(',');
+    }
     await Promise.all(
-      tweetData.tickers.map(async (ticker) => {
+      tickersArray.map(async (ticker) => {
         const upsertTicker = await this.prisma.ticker.upsert({
           where: {
             name: ticker,
@@ -28,7 +36,7 @@ export class TweetService {
             name: ticker,
           },
         });
-        tickers.push({ id: upsertTicker.id });
+        tickersIdArray.push({ id: upsertTicker.id });
       }),
     );
 
@@ -40,16 +48,16 @@ export class TweetService {
           },
         },
         content: content,
-        tickers: { connect: tickers },
+        tickers: { connect: tickersIdArray },
       },
     });
 
-    if (Object.keys(image_data).length > 0) {
-      const tweet_image = image_data.tweet_image[0];
+    if (Object.keys(tweet_image).length > 0) {
+      const tweet_image_data = tweet_image.tweet_image[0];
 
       await this.uploadTweetImage(
-        tweet_image.buffer,
-        tweet_image.originalname,
+        tweet_image_data.buffer,
+        tweet_image_data.originalname,
         tweet.id,
       );
     }
@@ -152,7 +160,7 @@ export class TweetService {
       });
       let tweets = ticker_tweets.tweets;
       tweets = tweets.sort(function (a, b) {
-        if (a.created_at < b.created_at) {
+        if (a.created_at > b.created_at) {
           return -1;
         } else {
           return 1;
@@ -181,7 +189,7 @@ export class TweetService {
       const followingUsersIDs = followingUsers.following.map(
         (following) => following.id,
       );
-      const tweets = await this.prisma.tweet.findMany({
+      let tweets = await this.prisma.tweet.findMany({
         where: {
           userId: { in: followingUsersIDs },
         },
@@ -209,6 +217,13 @@ export class TweetService {
             },
           },
         },
+      });
+      tweets = tweets.sort(function (a, b) {
+        if (a.created_at > b.created_at) {
+          return -1;
+        } else {
+          return 1;
+        }
       });
       return tweets;
     } catch {

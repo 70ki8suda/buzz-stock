@@ -7,6 +7,8 @@ import {
   Res,
   UseGuards,
   UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
@@ -16,6 +18,8 @@ import { Response } from 'express';
 import { GetUser } from './get-user.decorator';
 import { User } from '@prisma/client';
 import { UserService } from '../user/user.service';
+import { signUpDto } from './signup.dto';
+import { logInDto } from './login.dto';
 interface Message {
   message: string;
 }
@@ -36,14 +40,10 @@ export class AuthController {
       { name: 'password' },
     ]),
   )
+  @UsePipes(ValidationPipe)
   async signupUser(
     @Body()
-    userInput: {
-      name: string;
-      email: string;
-      display_id: string;
-      password: string;
-    },
+    userInput: signUpDto,
     @Res({ passthrough: true }) response: Response,
   ): Promise<void> {
     await this.authService.signUp(userInput);
@@ -56,12 +56,10 @@ export class AuthController {
   @UseInterceptors(
     FileFieldsInterceptor([{ name: 'email' }, { name: 'password' }]),
   )
+  @UsePipes(ValidationPipe)
   async signinUser(
     @Body()
-    userInput: {
-      email: string;
-      password: string;
-    },
+    userInput: logInDto,
     @Res({ passthrough: true }) response: Response,
   ): Promise<void> {
     const signinResult = await this.authService.signIn(userInput);
