@@ -84,14 +84,11 @@ const Login = () => {
       let userID = result.userId;
       router.push(`/user/${userID}`);
     } else {
+      setServerResponse([]);
       if (typeof result.message == 'string') {
-        setServerResponse([]);
         setServerResponse([result.message]);
       } else {
-        setServerResponse([]);
-        result.message.map((message) => {
-          setServerResponse([...serverResponse, message]);
-        });
+        setServerResponse(result.message);
       }
       console.log(data);
     }

@@ -1,7 +1,7 @@
 import { IsNotEmpty } from 'class-validator';
 export class logInDto {
   @IsNotEmpty({
-    message: 'Emailの入力は必須です',
+    message: 'メールアドレスの入力は必須です',
   })
   email: string;
 

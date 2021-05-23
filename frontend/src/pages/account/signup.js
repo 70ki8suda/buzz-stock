@@ -111,14 +111,11 @@ const Signup = () => {
         if (!data.error) {
           siguUpSuccess = true;
         } else {
+          setServerResponse([]);
           if (typeof data.message == 'string') {
-            setServerResponse([]);
             setServerResponse([data.message]);
           } else {
-            setServerResponse([]);
-            data.message.map((message) => {
-              setServerResponse([...serverResponse, message]);
-            });
+            setServerResponse(data.message);
           }
           console.log(serverResponse);
         }
