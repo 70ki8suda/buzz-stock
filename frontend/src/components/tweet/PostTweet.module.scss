@@ -12,6 +12,12 @@
   }
 }
 
+.validation-message {
+  color: $red;
+  font-size: 0.8em;
+  margin-top: 1em;
+}
+
 .post-tweet {
   border: 1px solid $gray;
   width: 70%;

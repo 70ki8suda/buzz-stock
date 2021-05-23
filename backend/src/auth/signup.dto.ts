@@ -26,8 +26,8 @@ export class signUpDto {
   @IsNotEmpty({
     message: 'IDの入力は必須です',
   })
-  @MaxLength(10, {
-    message: 'IDは10文字以下でお願いします',
+  @MaxLength(20, {
+    message: 'IDは20文字以下でお願いします',
   })
   @Matches(/^[a-z_0-9]+$/i, {
     message: 'IDに使える文字は 英・数字・_ のみです',

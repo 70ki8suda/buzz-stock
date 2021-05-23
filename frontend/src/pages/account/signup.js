@@ -61,7 +61,7 @@ const Signup = () => {
 
   const idValidation = (id) => {
     if (!id) return 'idを入力してください';
-    if (id.length > 10) return 'IDは10文字以下でお願いします';
+    if (id.length > 20) return 'IDは20文字以下でお願いします';
     const regex = /^[a-z_0-9]+$/i;
     if (!regex.test(id)) return 'IDに使える文字は 英・数字・_ のみです';
 

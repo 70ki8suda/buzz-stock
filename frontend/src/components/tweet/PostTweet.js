@@ -17,15 +17,42 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
   const [TickerOptions, setTickerOptions] = React.useState([]);
   //ticker data
   const [TickerData, setTickerData] = React.useState([defaultTicker]);
+  const [messages, setMessages] = React.useState({
+    tweet_text: '',
+    tweet_image: '',
+  });
+
   React.useEffect(() => {
     defaultTicker == undefined ? setTickerData([]) : setTickerData([defaultTicker]);
   }, [TweetPostState, defaultTicker]);
+
   const handlePostChange = (e) => {
     const target = e.target;
     const name = target.name;
+    const value = target.value;
     setTweetPostData(() => {
       return { ...TweetPostData, [name]: target.value };
     });
+
+    setMessages(() => {
+      console.log(messages);
+      return { ...messages, [name]: formValidate(name, value) };
+    });
+  };
+
+  const formValidate = (name, value) => {
+    switch (name) {
+      case 'tweet_text':
+        return tweetTextValidation(value);
+    }
+  };
+
+  const tweetTextValidation = (text) => {
+    console.log(text);
+    if (!text) return 'tweetを入力してください';
+    if (text.length > 240) return 'tweetは240文字以下でお願いします';
+
+    return '';
   };
 
   const handleTickerInput = async function (e) {
@@ -108,8 +135,11 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
     e.preventDefault();
     let size_in_megabytes = e.target.files[0].size / 1024 / 1024;
 
-    if (size_in_megabytes > 1) {
-      alert('Maximum file size is 1MB. Please choose a smaller file.');
+    if (size_in_megabytes > 5) {
+      setMessages({
+        ...messages,
+        tweet_image: 'ファイルの上限サイズは5MBです',
+      });
       setTweetPostData({ tweet_image: null, imageSelected: false });
       document.getElementById('tweet-image-input').value = '';
       return;
@@ -123,6 +153,7 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
     e.preventDefault();
     const { tweet_text, tweet_image } = TweetPostData;
     let tickers = TickerData.join(',');
+
     if (tickers.length === 0) {
       tickers = null;
     }
@@ -137,109 +168,126 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
     }
     const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
     const create_tweet_api_path = baseRequestUrl + '/tweet';
-
-    await fetch(create_tweet_api_path, {
-      method: 'POST',
-      mode: 'cors',
-      credentials: 'include',
-      body: formData,
-    })
-      .then((res) => {
-        console.log(res);
-        setTweetPostState(TweetPostState + 1);
+    if (tweet_text) {
+      await fetch(create_tweet_api_path, {
+        method: 'POST',
+        mode: 'cors',
+        credentials: 'include',
+        body: formData,
       })
-      .then(() => {
-        //input textarea空にする
-        setTweetPostData({
-          tweet_text: null,
-          image: null,
-          imageSelected: false,
-          tickers: null,
+        .then((res) => {
+          console.log(res);
+          setTweetPostState(TweetPostState + 1);
+        })
+        .then(() => {
+          //input textarea空にする
+          setTweetPostData({
+            tweet_text: null,
+            image: null,
+            imageSelected: false,
+            tickers: null,
+          });
+          const tweetInput = document.querySelectorAll('[data-input="tweet-input"]');
+
+          for (const input of tweetInput) {
+            input.value = '';
+          }
+          setMessages({
+            tweet_text: '',
+            tweet_image: '',
+          });
+        })
+
+        .catch((error) => {
+          console.error('Error:', error);
         });
-        const tweetInput = document.querySelectorAll('[data-input="tweet-input"]');
-
-        for (const input of tweetInput) {
-          input.value = '';
-        }
-      })
-
-      .catch((error) => {
-        console.error('Error:', error);
+    } else {
+      setMessages({
+        ...messages,
+        tweet_text: 'tweetを入力してください',
       });
+    }
   }
 
   return (
-    <div className={`${postStyle['post-tweet']} ${!LoggedInState && postStyle['not-loggedin']}`}>
-      <div className={postStyle['profile-image-wrap']}>
-        {profile_image != null ? (
-          <img src={profile_image} />
-        ) : (
-          <img src="/images/profile-default.png" />
-        )}
-      </div>
-      <form className={postStyle['post-tweet-form']}>
-        <div className={postStyle['input-wrap']}>
-          <textarea
-            className={postStyle['tweet-text-input']}
-            onChange={handlePostChange}
-            name="tweet_text"
-            cols="30"
-            rows="3"
-            data-input="tweet-input"
-          ></textarea>
-          <div className={`form-item ${postStyle['ticker-box']}`}>
-            <label htmlFor="tickers-input" className={postStyle['ticker-label']}>
-              Tickers
-            </label>
-            <input
-              autoComplete="off"
-              list="ticker-option-list"
-              type="text"
-              name="tickers"
-              id="tickers-input"
-              onChange={handleTickerInput}
-            />
-          </div>
-          <datalist id="ticker-option-list">
-            {TickerOptions.map((ticker, i) => (
-              <option key={i} data-ticker={ticker.ticker}>
-                {ticker.optionText}
-              </option>
-            ))}
-          </datalist>
-          <div className={postStyle['ticker-container']}>
-            {TickerData.length > 0 &&
-              TickerData.map((ticker, j) => (
-                <p key={j} className={postStyle['ticker']} onClick={handleTickerDelete}>
-                  #{ticker}
-                </p>
-              ))}
-          </div>
-          <div className={postStyle['push-interface']}>
-            <div className={`image-input-wrap ${postStyle['tweet-post-image']}`}>
-              <label
-                htmlFor="tweet-image-input"
-                className={`image-input-label ${postStyle['image-input-label']} ${
-                  TweetPostData.imageSelected ? 'active' : ''
-                }`}
-              ></label>
+    <>
+      <div className={`${postStyle['post-tweet']} ${!LoggedInState && postStyle['not-loggedin']}`}>
+        <div className={postStyle['profile-image-wrap']}>
+          {profile_image != null ? (
+            <img src={profile_image} />
+          ) : (
+            <img src="/images/profile-default.png" />
+          )}
+        </div>
+        <form className={postStyle['post-tweet-form']}>
+          <div className={postStyle['input-wrap']}>
+            <textarea
+              className={postStyle['tweet-text-input']}
+              onChange={handlePostChange}
+              name="tweet_text"
+              id="tweetText"
+              cols="30"
+              rows="3"
+              data-input="tweet-input"
+            ></textarea>
+            <div className={`form-item ${postStyle['ticker-box']}`}>
+              <label htmlFor="tickers-input" className={postStyle['ticker-label']}>
+                Tickers
+              </label>
               <input
-                type="file"
-                id="tweet-image-input"
-                name="tweet_image"
-                accept="image/png,image/jpeg"
-                onChange={setTweetImageFile}
-                data-input="tweet-input"
-                className="image-input"
+                autoComplete="off"
+                list="ticker-option-list"
+                type="text"
+                name="tickers"
+                id="tickers-input"
+                onChange={handleTickerInput}
               />
             </div>
-            <button className="submit-btn" onClick={(e) => PostTweet(e)}>
-              投稿
-            </button>
+            <datalist id="ticker-option-list">
+              {TickerOptions.map((ticker, i) => (
+                <option key={i} data-ticker={ticker.ticker}>
+                  {ticker.optionText}
+                </option>
+              ))}
+            </datalist>
+            <div className={postStyle['ticker-container']}>
+              {TickerData.length > 0 &&
+                TickerData.map((ticker, j) => (
+                  <p key={j} className={postStyle['ticker']} onClick={handleTickerDelete}>
+                    #{ticker}
+                  </p>
+                ))}
+            </div>
+            <div className={postStyle['push-interface']}>
+              <div className={`image-input-wrap ${postStyle['tweet-post-image']}`}>
+                <label
+                  htmlFor="tweet-image-input"
+                  className={`image-input-label ${postStyle['image-input-label']} ${
+                    TweetPostData.imageSelected ? 'active' : ''
+                  }`}
+                ></label>
+                <input
+                  type="file"
+                  id="tweet-image-input"
+                  name="tweet_image"
+                  accept="image/png,image/jpeg"
+                  onChange={setTweetImageFile}
+                  data-input="tweet-input"
+                  className="image-input"
+                />
+              </div>
+              <button className="submit-btn" onClick={(e) => PostTweet(e)}>
+                投稿
+              </button>
+            </div>
+            <div className={postStyle['validation-message-container']}>
+              <p className={postStyle['validation-message']}>{messages.tweet_text}</p>
+              <p className={postStyle['validation-message']}>{messages.tweet_image}</p>
+            </div>
           </div>
-        </div>
-      </form>
-    </div>
+        </form>
+      </div>
+    </>
   );
 };
 
