@@ -6,9 +6,10 @@
     height: 40 * 0.7vw;
   }
   @media #{$bp-sp} {
+    margin-top: 26px;
     height: 35 * 0.7vh;
     width: 108%;
     margin-left: -4%;
-    margin-bottom: -30px;
+    margin-bottom: -40px;
   }
 }

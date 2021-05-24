@@ -136,7 +136,7 @@ $border-edge-height-sp: 3px;
 
 @mixin border-edge3 {
   display: block;
-  width: 10em;
+  width: 6em;
   height: 5px;
   position: absolute;
   right: 30%;
@@ -178,7 +178,7 @@ $border-edge-height-sp: 3px;
 
 @mixin border-edge4 {
   display: block;
-  width: 8em;
+  width: 6em;
   height: 5px;
   position: absolute;
   left: 20%;

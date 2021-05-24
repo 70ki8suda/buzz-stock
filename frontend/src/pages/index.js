@@ -22,7 +22,7 @@ const Home = ({ ActiveChartData, ActiveSummaryData, GainerChartData, GainerSumma
           ! MOST ACTIVE !<span className={styles['ttl-ja']}>現在最出来高銘柄</span>
         </h1>
       </div>
-      <div className={styles['top-wrap']}>
+      <div className={styles['wrap']}>
         {Object.keys(ActiveChartData).map((key, i) => (
           <div className={styles['chart-container']} key={i}>
             <StockInfo
@@ -38,6 +38,7 @@ const Home = ({ ActiveChartData, ActiveSummaryData, GainerChartData, GainerSumma
           </div>
         ))}
       </div>
+      <div className={styles['section-border']}></div>
       <div className={styles['ttl-wrapper']}>
         <h1 className={styles['ttl']}>
           ! TOP GAINERS !<span className={styles['ttl-ja']}>現在最値上ガリ銘柄</span>

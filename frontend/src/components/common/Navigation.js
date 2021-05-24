@@ -105,9 +105,7 @@ const Navigation = () => {
       <h1 className={navStyle['page-title']}>
         <Link href="/">Buzz Stock .com</Link>
         <span className={navStyle['border-edge']}></span>
-        <span className={navStyle['border-edge2']}></span>
-        <span className={navStyle['border-edge3']}></span>
-        <span className={navStyle['border-edge4']}></span>
+
         <span className={navStyle['border-edge5']}></span>
       </h1>
       <nav className={navStyle['auth-nav']}>

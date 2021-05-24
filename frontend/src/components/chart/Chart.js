@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 
 import { format } from 'd3-format';
-import { timeFormat } from 'd3-time-format';
+import { timeFormat, timeParse } from 'd3-time-format';
 
 import { ChartCanvas, Chart } from 'react-stockcharts';
 import { BarSeries, CandlestickSeries } from 'react-stockcharts/lib/series';
@@ -14,21 +14,34 @@ import { last } from 'react-stockcharts/lib/utils';
 
 class CandleStickChart extends React.Component {
   render() {
-    const { type, data: initialData, width, height, ratio, ticker } = this.props;
+    const { type, data: initialData, width, height, ratio, ticker, dataRange } = this.props;
 
     const xScaleProvider = discontinuousTimeScaleProvider.inputDateAccessor((d) => d.date);
-    const { data, xScale, xAccessor, displayXAccessor } = xScaleProvider(initialData);
-
+    let { data, xScale, xAccessor, displayXAccessor } = xScaleProvider(initialData);
+    let formatDate = timeFormat('%m/%d');
+    //console.log('dataRange:' + dataRange);
+    if (dataRange == '1d') {
+      formatDate = timeFormat('%H:%M');
+    }
+    if (dataRange == '1y' || dataRange == '2y') {
+      formatDate = timeFormat('%Y年%m月');
+    }
     const start = xAccessor(last(data));
-    const end = xAccessor(data[Math.max(0, data.length - 150)]);
+    const end = xAccessor(0);
     const xExtents = [start, end];
+    let ticksNum = 6;
     const { gridProps } = this.props;
     let margin = { left: 40, right: 40, top: 10, bottom: 40 };
     let devise = 'pc';
     if (window.innerWidth < 600) {
       devise = 'sp';
       margin = { left: 40, right: 40, top: 10, bottom: 30 };
+      ticksNum = 3;
+      if (dataRange == '5d') {
+        ticksNum = 2;
+      }
     }
+
     const gridHeight = height - margin.top - margin.bottom;
     const gridWidth = width - margin.left - margin.right;
 
@@ -81,12 +94,16 @@ class CandleStickChart extends React.Component {
             yExtents={(d) => d.volume}
             origin={(w, h) => [0, h - height * 0.3]}
           >
-            {devise == 'pc' && (
-              <XAxis axisAt="bottom" orient="bottom" {...gridProps} {...xGrid} outerTickSize={10} />
-            )}
+            <XAxis
+              axisAt="bottom"
+              orient="bottom"
+              {...gridProps}
+              {...xGrid}
+              ticks={ticksNum}
+              tickFormat={(d) => formatDate(data[d].date)}
+            />
 
             <YAxis axisAt="left" orient="left" ticks={5} tickFormat={format('.2s')} />
-
             <BarSeries
               yAccessor={(d) => d.volume}
               fill={(d) => (d.close > d.open ? 'rgba(255, 34, 13, .5)' : 'rgba(18, 217, 243, .4)')}

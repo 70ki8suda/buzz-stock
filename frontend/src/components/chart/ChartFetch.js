@@ -25,19 +25,8 @@ const convertData = (data, Range) => {
   let volumes = quote.volume;
 
   const formatDateData = (_timestamp) => {
-    let formatDate;
-    let parseDate;
-    if (Range == RangeOptions[0] || RangeOptions[1]) {
-      formatDate = timeFormat('%a %d,%I %p %I:%M');
-      parseDate = timeParse('%a %d,%I %p %I:%M');
-    } else {
-      formatDate = timeFormat('%Y-%m-%d');
-      parseDate = timeParse('%Y-%m-%d');
-    }
-
     let toDate = new Date(_timestamp * 1000);
-
-    return parseDate(formatDate(toDate));
+    return toDate;
   };
   for (var i = 0; i < timestamps.length; i++) {
     let plot = new Object();
@@ -69,6 +58,18 @@ const spConvertData = (_convertData, _spRange) => {
     return arrayChunk(_convertData, 8);
   }
 };
+
+const pcConvertData = (_convertData, _pcRange) => {
+  if (_pcRange == '1m') {
+    return arrayChunk(_convertData, 8);
+  }
+  if (_pcRange == '1y') {
+    return arrayChunk(_convertData, 2);
+  }
+  if (_pcRange == '2y') {
+    return arrayChunk(_convertData, 4);
+  }
+};
 const getChartData = async (ticker, range, retryNum) => {
   //request Params
   const API_KEY = process.env.NEXT_PUBLIC_RAPIDAPI_KEY;
@@ -78,13 +79,23 @@ const getChartData = async (ticker, range, retryNum) => {
   let Tikcer = ticker;
   let Range = range;
   let Interval;
+  let pcRange;
   let spRange;
   if (getWindowWidth() > 600) {
     //pc
     if (Range == RangeOptions[0]) {
       Interval = IntervalOptions[2];
-    } else if (Range == RangeOptions[1] || Range == RangeOptions[2]) {
+    } else if (Range == RangeOptions[1]) {
       Interval = IntervalOptions[4];
+    } else if (Range == RangeOptions[2]) {
+      pcRange = '1m';
+      Interval = IntervalOptions[4];
+    } else if (Range == RangeOptions[5]) {
+      pcRange = '1y';
+      Interval = IntervalOptions[5];
+    } else if (Range == RangeOptions[6]) {
+      pcRange = '2y';
+      Interval = IntervalOptions[5];
     } else {
       Interval = IntervalOptions[5];
     }
@@ -126,11 +137,16 @@ const getChartData = async (ticker, range, retryNum) => {
     })
       .then((response) => response.json())
       .then((response) => {
-        if (spRange == undefined) {
+        if (spRange == undefined && pcRange == undefined) {
           return convertData(response, Range);
         } else {
           let data1 = convertData(response, Range);
-          let data2 = spConvertData(data1, spRange);
+          let data2;
+          if (spRange !== undefined) {
+            data2 = spConvertData(data1, spRange);
+          } else if (!pcRange !== undefined) {
+            data2 = pcConvertData(data1, pcRange);
+          }
           console.log(data2);
           let data3 = [];
           for (var i = 0; i < data2.length; i++) {
@@ -211,7 +227,7 @@ class ChartComponent extends React.Component {
       });
     }
     async function waitAndSet() {
-      await getChartData(ticker, range, 2).then((data) => {
+      await getChartData(ticker, range, 4).then((data) => {
         self.setState({
           data: data,
           dataState: 'complete',
@@ -276,6 +292,7 @@ class ChartComponent extends React.Component {
               height={height}
               width={width}
               ticker={ticker}
+              dataRange={this.state.dataRange}
             />
           )}
         </TypeChooser>
