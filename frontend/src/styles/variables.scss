@@ -126,6 +126,7 @@ $border-edge-height-sp: 3px;
     background: #000;
   }
   @media #{$bp-sp} {
+    display: none;
     height: $border-edge-height-sp;
     &:before,
     &:after {

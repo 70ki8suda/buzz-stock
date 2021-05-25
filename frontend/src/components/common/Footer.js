@@ -44,6 +44,16 @@ const Footer = () => {
             www.flaticon.com
           </a>
         </div>
+        <div>
+          Icons made by{' '}
+          <a href="https://roundicons.com/" title="Roundicons">
+            Roundicons
+          </a>{' '}
+          from{' '}
+          <a href="https://www.flaticon.com/" title="Flaticon">
+            www.flaticon.com
+          </a>
+        </div>{' '}
       </div>
       <p className={style['copy']}>
         &copy;

@@ -53,6 +53,7 @@ select {
   }
   @media #{$bp-sp} {
     width: auto;
+    box-shadow: none;
   }
 }
 

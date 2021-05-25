@@ -66,9 +66,19 @@ const StockPage = ({ ticker, SummaryData, SummaryState }) => {
     </>
   );
 };
-
-export async function getServerSideProps({ query }) {
-  const { ticker } = query;
+export async function getStaticPaths() {
+  return {
+    paths: [{ params: { ticker: 'AAPL' } }],
+    fallback: 'blocking',
+  };
+}
+export async function getStaticProps({ params, query }) {
+  let ticker;
+  if (params.ticker) {
+    ticker = params.ticker;
+  } else {
+    ticker = query.ticker;
+  }
   Summary_Request = `https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-summary?symbol=${ticker}`;
   // const rawSummaryData = await fetch(Summary_Request, {
   //   method: 'GET',
@@ -92,7 +102,7 @@ export async function getServerSideProps({ query }) {
   const SummaryData = await fetcher(Summary_Request);
   const SummaryState = 'complete';
   //console.log(SummaryData);
-  return { props: { ticker, SummaryData, SummaryState } };
+  return { props: { ticker, SummaryData, SummaryState }, revalidate: 30 };
 }
 
 export default StockPage;

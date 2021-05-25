@@ -3,6 +3,7 @@ $nav-height: 60px;
 $nav-height-sp: 40px;
 
 .page-title {
+  position: relative;
   font-family: 'rifton-norm';
   text-align: left;
   background: #000;
@@ -36,13 +37,14 @@ $nav-height-sp: 40px;
   }
 
   @media #{$bp-sp} {
+    text-align: center;
     font-size: 14px;
     height: $nav-height-sp;
     line-height: $nav-height-sp;
   }
 }
 
-.search-ticker {
+.search-ticker-pc {
   margin-right: 1em;
 
   .search-ticker-input {
@@ -63,6 +65,7 @@ $nav-height-sp: 40px;
       background-position: left 5% center, left top;
     }
     @media #{$bp-sp} {
+      display: none;
       width: 100px;
     }
   }
@@ -204,4 +207,86 @@ $nav-height-sp: 40px;
     margin-bottom: 0.8em;
     font-size: 3.4vw;
   }
+}
+
+.sp-search-trigger {
+  @media #{$bp-sp} {
+    background: url('/images/search-white.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 19px;
+    height: 19px;
+    position: absolute;
+    left: 4%;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+.sp-search-window {
+  display: none;
+  @media #{$bp-sp} {
+    display: block;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100vh;
+    overflow-y: scroll;
+    transform: translateX(100%);
+    transition: 0.2s;
+    background: #dddddd;
+    &.sp-search-window-active {
+      transform: translateX(0);
+    }
+  }
+  .search-ticker-input {
+    height: 30px;
+    margin-left: 30px;
+  }
+}
+
+.search-window-top {
+  background: #fff;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  padding: 0 4%;
+  margin-bottom: 14px;
+  .search-window-back {
+    background: url('/images/right-arrow.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 19px;
+    height: 19px;
+    transform: rotate(180deg);
+  }
+}
+
+.sp-ticker-option-item {
+  background: #fff;
+  margin-bottom: 8px;
+  padding: 0.8em;
+  display: block;
+}
+
+.sp-ticker-option-name {
+  display: block;
+  color: #666;
+  font-size: 0.9em;
+  margin-bottom: 0.5em;
+}
+
+.sp-ticker-option-symbol {
+  font-weight: bold;
+}
+
+.sp-ticker-option-exchange {
+  color: #666;
+  font-size: 0.9em;
+  display: inline-block;
+  margin-left: 1em;
 }

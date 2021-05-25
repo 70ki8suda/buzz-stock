@@ -11,4 +11,7 @@
   @media #{$bp-tab} {
     width: 90%;
   }
+  @media #{$bp-sp} {
+    margin: 30px auto;
+  }
 }
