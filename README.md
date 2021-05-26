@@ -2,7 +2,7 @@
 
 ## サイト概要
 
-[URL](https://buzz-stock.vercel.app/)<br>
+[サイト](https://buzz-stock.com/)<br>
 株で繋がる SNS
 株式チャートの確認・銘柄に関するユーザーのつぶやきを見ることができる情報ハブ
 
