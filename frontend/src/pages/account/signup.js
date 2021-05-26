@@ -100,7 +100,11 @@ const Signup = () => {
     const requestOptions = {
       method: 'POST',
       mode: 'cors',
+      withCredentials: true,
       credentials: 'include',
+      headers: {
+        Authorization: auth.bearerToken(),
+      },
       body: formData,
     };
 

@@ -11,8 +11,15 @@ const Authentication = {
     return new Date().getTime() < Cookies.get('expires');
   },
   // ログイン業務
-  login({ expires }) {
+  login({ expires, jwt }) {
     Cookies.set('expires', expires);
+    Cookies.set('jwt', jwt);
+  },
+
+  //BearerToken
+  bearerToken() {
+    const jwt = Cookies.get('jwt');
+    return 'Bearer ' + jwt;
   },
 
   // ログアウト業務

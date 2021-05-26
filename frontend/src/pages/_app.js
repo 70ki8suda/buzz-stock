@@ -15,6 +15,7 @@ export const SpMenuContext = React.createContext();
 import '../styles/globals.scss';
 //constant
 const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
+
 //window幅取得関数
 
 const App = (props) => {
@@ -38,7 +39,11 @@ const App = (props) => {
       fetch(user_data_path, {
         method: 'GET',
         mode: 'cors',
+        withCredentials: true,
         credentials: 'include',
+        headers: {
+          Authorization: auth.bearerToken(),
+        },
       })
         .then((res) => {
           return res.json();

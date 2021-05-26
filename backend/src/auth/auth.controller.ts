@@ -70,12 +70,12 @@ export class AuthController {
     const expiresNum = Date.parse(String(expires));
 
     response
-      .cookie('jwt', jwt, {
-        sameSite: 'none',
-        secure: true,
-        expires: expires,
-      })
-      .json({ expires: expiresNum, userId: userId });
+      // .cookie('jwt', jwt, {
+      //   sameSite: 'none',
+      //   secure: true,
+      //   expires: expires,
+      // })
+      .json({ expires: expiresNum, userId: userId, jwt: jwt });
   }
 
   @Get('/current_user')

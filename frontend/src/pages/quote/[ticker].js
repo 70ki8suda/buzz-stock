@@ -7,15 +7,22 @@ import TweetFeed from '../../components/tweet/TweetFeed';
 import PostTweet from '../../components/tweet/PostTweet';
 //style
 import pageStyle from '../../styles/pages/Ticker.module.scss';
+//utils
+import auth from '../../utils/auth';
 const API_KEY = process.env.NEXT_PUBLIC_RAPIDAPI_KEY;
 const API_HOST = process.env.NEXT_PUBLIC_RAPIDAPI_HOST;
 let Summary_Request;
 let fetcher;
 
-const StockPage = ({ ticker, SummaryData, SummaryState }) => {
+const StockPage = ({ ticker, FetchedSummaryData, FetchedSummaryState }) => {
   //表示するSummaryのデータ
-  Summary_Request = `https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-summary?symbol=${ticker}`;
-  SummaryData = useSWR(ticker ? Summary_Request : null, fetcher, { initialData: SummaryData }).data;
+  Summary_Request = `https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-summary?symbol=${ticker}&region=US`;
+  FetchedSummaryData = useSWR(Summary_Request, fetcher, {
+    initialData: FetchedSummaryData,
+    revalidateOnMount: true,
+  }).data;
+  const [SummaryData, setSummaryData] = React.useState(FetchedSummaryData);
+  const [SummaryState, setSummaryState] = React.useState(FetchedSummaryState);
 
   //表示するtweetのデータ
   const [DisplayTweets, setDisplayTweets] = React.useState([]);
@@ -23,25 +30,48 @@ const StockPage = ({ ticker, SummaryData, SummaryState }) => {
   const [TweetPostState, setTweetPostState] = React.useState({});
   //did mount 初期表示tweetデータ
   const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
-  const get_tweets_path = baseRequestUrl + '/tweet/quote/' + ticker;
 
-  React.useEffect(
-    (TweetPostState) => {
-      fetch(get_tweets_path, {
-        method: 'GET',
-        mode: 'cors',
-        credentials: 'include',
+  React.useEffect(() => {
+    let get_tweets_path = baseRequestUrl + '/tweet/quote/' + ticker;
+    fetch(get_tweets_path, {
+      method: 'GET',
+      mode: 'cors',
+      withCredentials: true,
+      credentials: 'include',
+      headers: {
+        Authorization: auth.bearerToken(),
+      },
+    })
+      .then((res) => {
+        return res.json();
       })
-        .then((res) => {
-          return res.json();
+      .then((json) => {
+        console.log('tweet loaded');
+        setDisplayTweets(json);
+      });
+  }, [ticker, TweetPostState]);
+
+  React.useEffect(() => {
+    async function getSummary() {
+      if ('defaultKeyStatistics' in FetchedSummaryData == false) {
+        setSummaryState('unload');
+        await fetch(Summary_Request, {
+          method: 'GET',
+          mode: 'cors',
+          headers: {
+            'x-rapidapi-key': API_KEY,
+            'x-rapidapi-host': API_HOST,
+          },
         })
-        .then((json) => {
-          console.log('tweet loaded');
-          setDisplayTweets(json);
-        });
-    },
-    [TweetPostState, get_tweets_path],
-  );
+          .then((response) => response.json())
+          .then((result) => {
+            setSummaryData(result);
+            setSummaryState('complete');
+          });
+      }
+    }
+    getSummary();
+  }, [ticker]);
   return (
     <>
       <Head>
@@ -80,13 +110,6 @@ export async function getStaticProps({ params, query }) {
     ticker = query.ticker;
   }
   Summary_Request = `https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-summary?symbol=${ticker}`;
-  // const rawSummaryData = await fetch(Summary_Request, {
-  //   method: 'GET',
-  //   headers: {
-  //     'x-rapidapi-key': API_KEY,
-  //     'x-rapidapi-host': API_HOST,
-  //   },
-  // });
 
   fetcher = async (url) => {
     const rawSummaryData = await fetch(url, {
@@ -99,10 +122,15 @@ export async function getStaticProps({ params, query }) {
     return rawSummaryData.json();
   };
 
-  const SummaryData = await fetcher(Summary_Request);
-  const SummaryState = 'complete';
-  //console.log(SummaryData);
-  return { props: { ticker, SummaryData, SummaryState }, revalidate: 30 };
+  const FetchedSummaryData = await fetcher(Summary_Request);
+  let FetchedSummaryState;
+  if ('defaultKeyStatistics' in FetchedSummaryData == false) {
+    FetchedSummaryState = 'unload';
+  } else {
+    FetchedSummaryState = 'complete';
+  }
+
+  return { props: { ticker, FetchedSummaryData, FetchedSummaryState }, revalidate: 30 };
 }
 
 export default StockPage;

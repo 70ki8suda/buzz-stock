@@ -204,8 +204,11 @@ $nav-height-sp: 40px;
   margin-top: 50px;
   padding-left: 20%;
   .auth-nav-item {
-    margin-bottom: 0.8em;
+    margin-bottom: 1.2em;
     font-size: 3.4vw;
+    @media #{$bp-sp} {
+      font-size: 4.4vw;
+    }
   }
 }
 
@@ -227,6 +230,7 @@ $nav-height-sp: 40px;
   display: none;
   @media #{$bp-sp} {
     display: block;
+    opacity: 0;
     position: fixed;
     z-index: 1000;
     top: 0;
@@ -236,10 +240,13 @@ $nav-height-sp: 40px;
     width: 100%;
     height: 100vh;
     overflow-y: scroll;
-    transform: translateX(100%);
+    transform: translateX(-100%);
     transition: 0.2s;
     background: #dddddd;
+    pointer-events: none;
     &.sp-search-window-active {
+      opacity: 1;
+      pointer-events: auto;
       transform: translateX(0);
     }
   }

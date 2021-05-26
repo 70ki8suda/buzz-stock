@@ -3,9 +3,10 @@ import React, { useState, useEffect, useContext } from 'react';
 import { AuthUserData } from '../../pages/_app';
 import { LoggedInContext } from '../../pages/_app';
 //env
-const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
 //style
 import postStyle from './PostTweet.module.scss';
+//module
+import auth from '../../utils/auth';
 
 const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
   const { AuthUserProfile } = useContext(AuthUserData);
@@ -174,6 +175,9 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
         mode: 'cors',
         credentials: 'include',
         body: formData,
+        headers: {
+          Authorization: auth.bearerToken(),
+        },
       })
         .then((res) => {
           console.log(res);

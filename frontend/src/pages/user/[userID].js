@@ -32,7 +32,11 @@ const UserPage = ({ userID }) => {
     fetch(get_tweets_path, {
       method: 'GET',
       mode: 'cors',
+      withCredentials: true,
       credentials: 'include',
+      headers: {
+        Authorization: auth.bearerToken(),
+      },
     })
       .then((res) => {
         return res.json();

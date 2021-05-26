@@ -6,6 +6,7 @@ import postStyle from './PostTweet.module.scss';
 //context data
 import { AuthUserData } from '../../pages/_app';
 import Router from 'next/router';
+import auth from '../../utils/auth';
 const Profile = ({ userID }) => {
   //profileデータ
   const [ProfileDisplayData, setProfileDisplayData] = React.useState({});
@@ -25,6 +26,10 @@ const Profile = ({ userID }) => {
         method: 'GET',
         mode: 'cors',
         credentials: 'include',
+        withCredentials: true,
+        headers: {
+          Authorization: auth.bearerToken(),
+        },
       })
         .then((res) => {
           return res.json();
@@ -86,8 +91,12 @@ const Profile = ({ userID }) => {
     await fetch(api_path, {
       method: 'PATCH',
       mode: 'cors',
+      withCredentials: true,
       credentials: 'include',
       body: formData,
+      headers: {
+        Authorization: auth.bearerToken(),
+      },
     })
       .then((res) => {
         setProfileUpdateState(ProfileUpdateState + 1);
@@ -113,7 +122,11 @@ const Profile = ({ userID }) => {
     fetch(api_path, {
       method: 'PATCH',
       mode: 'cors',
+      withCredentials: true,
       credentials: 'include',
+      headers: {
+        Authorization: auth.bearerToken(),
+      },
     });
     setProfileDisplayData({
       ...ProfileDisplayData,
@@ -129,7 +142,11 @@ const Profile = ({ userID }) => {
     fetch(api_path, {
       method: 'PATCH',
       mode: 'cors',
+      withCredentials: true,
       credentials: 'include',
+      headers: {
+        Authorization: auth.bearerToken(),
+      },
     });
     setProfileDisplayData({
       ...ProfileUpdateData,

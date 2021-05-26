@@ -10,6 +10,8 @@ import formatDate from '../../utils/format_date';
 //style
 import style from './TweetFeed.module.scss';
 import FavStarSVG from '../../../public/images/star.svg';
+//utils
+import auth from '../../utils/auth';
 const TweetFeed = ({ DisplayTweets, setTweetPostState, TweetPostState, setDisplayTweets }) => {
   const { AuthUserProfile } = useContext(AuthUserData);
   const loggedin_userID = AuthUserProfile.id;
@@ -24,7 +26,11 @@ const TweetFeed = ({ DisplayTweets, setTweetPostState, TweetPostState, setDispla
     await fetch(api_path, {
       method: 'DELETE',
       mode: 'cors',
+      withCredentials: true,
       credentials: 'include',
+      headers: {
+        Authorization: auth.bearerToken(),
+      },
     })
       .then((res) => {
         setTweetPostState(TweetPostState + 1);
@@ -59,7 +65,11 @@ const TweetFeed = ({ DisplayTweets, setTweetPostState, TweetPostState, setDispla
         const requestOptions = {
           method: 'DELETE',
           mode: 'cors',
+          withCredentials: true,
           credentials: 'include',
+          headers: {
+            Authorization: auth.bearerToken(),
+          },
         };
         fetch(api_path, requestOptions)
           .then((response) => response.json())
@@ -72,7 +82,11 @@ const TweetFeed = ({ DisplayTweets, setTweetPostState, TweetPostState, setDispla
         const requestOptions = {
           method: 'POST',
           mode: 'cors',
+          withCredentials: true,
           credentials: 'include',
+          headers: {
+            Authorization: auth.bearerToken(),
+          },
         };
         fetch(api_path, requestOptions)
           .then((response) => response.json())

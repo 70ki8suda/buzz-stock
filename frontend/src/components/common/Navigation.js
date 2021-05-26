@@ -237,13 +237,13 @@ const Navigation = () => {
           <ul className={navStyle['auth-nav-list-sp']}>
             {LoggedInState ? (
               <>
-                <li className={navStyle['auth-nav-item']}>
+                <li className={navStyle['auth-nav-item']} onClick={SpMenuHandler}>
                   <Link href={`/user/${loggedin_userID}`}>Profile</Link>
                 </li>
-                <li className={navStyle['auth-nav-item']}>
+                <li className={navStyle['auth-nav-item']} onClick={SpMenuHandler}>
                   <Link href="/user/feed">Feed</Link>
                 </li>
-                <li className={navStyle['auth-nav-item']}>
+                <li className={navStyle['auth-nav-item']} onClick={SpMenuHandler}>
                   <span className="auth-nav-logout" onClick={logoutHandler}>
                     Log Out
                   </span>

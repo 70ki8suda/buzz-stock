@@ -199,7 +199,7 @@ const getChartData = async (ticker, range, retryNum) => {
         return data;
       });
   } catch (err) {
-    await new Promise((r) => setTimeout(r, 3000));
+    await new Promise((r) => setTimeout(r, 1000));
     if (retryNum === 0) {
       throw 'load error';
     }
