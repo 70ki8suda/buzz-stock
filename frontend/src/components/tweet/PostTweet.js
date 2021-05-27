@@ -97,8 +97,14 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
           if (data.quotes != undefined) {
             if (data.quotes.length > 0) {
               data.quotes.map((quote) => {
-                let optionText = quote.symbol + '  ' + quote.shortname + '  ' + quote.exchange;
-                tempTickers.push({ optionText: optionText, ticker: quote.symbol });
+                let optionExchange = quote.exchange;
+                let optionName = quote.shortname;
+
+                tempTickers.push({
+                  optionName: optionName,
+                  optionExchange: optionExchange,
+                  ticker: quote.symbol,
+                });
               });
               setTickerOptions(tempTickers);
             }
@@ -143,12 +149,26 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
       });
       setTweetPostData({ tweet_image: null, imageSelected: false });
       document.getElementById('tweet-image-input').value = '';
+      document.getElementById('tweet-image-input-sp').value = '';
       return;
     }
 
     setTweetPostData({ ...TweetPostData, tweet_image: e.target.files[0], imageSelected: true });
   };
 
+  //sp tweet ui
+  let tweetTextSp;
+  const [SpTweetWindow, setSpTweetWindow] = React.useState(false);
+  const spTweetTrigger = () => {
+    setSpTweetWindow(!SpTweetWindow);
+    if (!SpTweetWindow) {
+      tweetTextSp.focus();
+    }
+  };
+
+  const spAddTicker = function (ticker) {
+    setTickerData([...TickerData, ticker]);
+  };
   //post tweet request
   async function PostTweet(e) {
     e.preventDefault();
@@ -205,6 +225,7 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
         .catch((error) => {
           console.error('Error:', error);
         });
+      setSpTweetWindow(false);
     } else {
       setMessages({
         ...messages,
@@ -215,7 +236,11 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
 
   return (
     <>
-      <div className={`${postStyle['post-tweet']} ${!LoggedInState && postStyle['not-loggedin']}`}>
+      <div
+        className={`${postStyle['post-tweet']} ${postStyle['pc-ui']} ${
+          !LoggedInState && postStyle['not-loggedin']
+        }`}
+      >
         <div className={postStyle['profile-image-wrap']}>
           {profile_image != null ? (
             <img src={profile_image} />
@@ -250,7 +275,7 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
             <datalist id="ticker-option-list">
               {TickerOptions.map((ticker, i) => (
                 <option key={i} data-ticker={ticker.ticker}>
-                  {ticker.optionText}
+                  {ticker.ticker} {ticker.optionExchange} {ticker.optionName}
                 </option>
               ))}
             </datalist>
@@ -290,6 +315,108 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
             </div>
           </div>
         </form>
+      </div>
+      <div className={postStyle['sp-post-trigger']} onClick={spTweetTrigger}>
+        Post
+      </div>
+      <div
+        className={`${postStyle['sp-ui-window']}  ${
+          SpTweetWindow && postStyle['sp-ui-window-active']
+        }`}
+      >
+        <div className={postStyle['sp-ui-top']}>
+          <div className={postStyle['sp-ui-cancel']} onClick={spTweetTrigger}>
+            Cancel
+          </div>
+          <div className={postStyle['sp-ui-post']} onClick={(e) => PostTweet(e)}>
+            投稿
+          </div>
+        </div>
+        <div className={postStyle['sp-tweet-input-container']}>
+          <div className={postStyle['profile-image-wrap']}>
+            {profile_image != null ? (
+              <img src={profile_image} />
+            ) : (
+              <img src="/images/profile-default.png" />
+            )}
+          </div>
+          <textarea
+            className={postStyle['tweet-text-input']}
+            onChange={handlePostChange}
+            name="tweet_text"
+            id="tweetTextSp"
+            cols="30"
+            rows="3"
+            data-input="tweet-input"
+            ref={(input) => {
+              tweetTextSp = input;
+            }}
+          ></textarea>
+        </div>
+        <div className={postStyle['ticker-container']}>
+          {TickerData.length > 0 &&
+            TickerData.map((ticker, j) => (
+              <p key={j} className={postStyle['ticker']} onClick={handleTickerDelete}>
+                #{ticker}
+              </p>
+            ))}
+        </div>
+        <div className={postStyle['validation-message-container']}>
+          <p className={postStyle['validation-message']}>{messages.tweet_text}</p>
+          <p className={postStyle['validation-message']}>{messages.tweet_image}</p>
+        </div>
+        <div className={postStyle['sp-ticker-image-container']}>
+          <div className={`form-item ${postStyle['ticker-box']}`}>
+            <label htmlFor="tickers-input" className={postStyle['ticker-label']}>
+              Tickers
+            </label>
+            <input
+              className={postStyle['ticker-input']}
+              autoComplete="off"
+              type="text"
+              name="tickers"
+              id="tickers-input-sp"
+              data-input="tweet-input"
+              onChange={handleTickerInput}
+            />
+          </div>
+          <div className={`image-input-wrap ${postStyle['tweet-post-image']}`}>
+            <label
+              htmlFor="tweet-image-input-sp"
+              className={`image-input-label ${postStyle['image-input-label']} ${
+                TweetPostData.imageSelected ? 'active' : ''
+              }`}
+            ></label>
+            <input
+              type="file"
+              id="tweet-image-input-sp"
+              name="tweet_image"
+              accept="image/png,image/jpeg"
+              onChange={setTweetImageFile}
+              data-input="tweet-input"
+              className="image-input"
+            />
+          </div>
+        </div>
+
+        <div className={postStyle['ticker-options-container']}>
+          {TickerOptions.length > 0 &&
+            TickerOptions.map((tickerOption, index) => (
+              <div
+                className={postStyle['sp-ticker-option-item']}
+                onClick={() => spAddTicker(tickerOption.ticker)}
+                key={index}
+              >
+                <span className={postStyle['sp-ticker-option-name']}>
+                  {tickerOption.optionName}
+                </span>
+                <span className={postStyle['sp-ticker-option-symbol']}>{tickerOption.ticker}</span>
+                <span className={postStyle['sp-ticker-option-exchange']}>
+                  {tickerOption.optionExchange}
+                </span>
+              </div>
+            ))}
+        </div>
       </div>
     </>
   );

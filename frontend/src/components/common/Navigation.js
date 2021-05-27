@@ -39,7 +39,11 @@ const Navigation = () => {
   };
   //ticker State
   const [TickerOptions, setTickerOptions] = React.useState([]);
-  const SPhandleSearchTickerInput = async function (e) {
+  const SPtickerOptionClick = function (ticker) {
+    //router.push(`/quote/${ticker}`);
+    console.log(ticker);
+  };
+  const handleSearchTickerInput = async function (e) {
     //連続でautocomplete検索起動するのを防ぐフラグ
     let handleTickerInputFlag = true;
     //timer関数
@@ -98,64 +102,6 @@ const Navigation = () => {
           console.error(err);
         });
     }
-  };
-  const SPtickerOptionClick = function (ticker) {
-    //router.push(`/quote/${ticker}`);
-    console.log(ticker);
-  };
-  const handleSearchTickerInput = async function (e) {
-    //連続でautocomplete検索起動するのを防ぐフラグ
-    let handleTickerInputFlag = true;
-    //timer関数
-    const timer = function () {
-      setTimeout(function () {
-        handleTickerInputFlag = true;
-      }, 200);
-    };
-    const target = e.target;
-    let searchQuery = target.value;
-    const API_KEY = process.env.NEXT_PUBLIC_RAPIDAPI_KEY;
-    const API_HOST = process.env.NEXT_PUBLIC_RAPIDAPI_HOST;
-    if (handleTickerInputFlag) {
-      //timer 一回リセット,フラグ->false,再起動
-      clearTimeout(timer);
-      handleTickerInputFlag = false;
-      timer();
-      //autocomplete search処理
-
-      //autocomplete option 初期化
-      setTickerOptions([]);
-      //関数内利用
-      let tempTickers = [];
-      //autocomplete fetch
-      fetch(
-        `https://apidojo-yahoo-finance-v1.p.rapidapi.com/auto-complete?q=${searchQuery}&region=US`,
-        {
-          method: 'GET',
-          headers: {
-            'x-rapidapi-key': API_KEY,
-            'x-rapidapi-host': API_HOST,
-          },
-        },
-      )
-        .then((response) => {
-          return response.json();
-        })
-        .then((data) => {
-          if (data.quotes != undefined) {
-            if (data.quotes.length > 0) {
-              data.quotes.map((quote) => {
-                let optionText = quote.symbol + '  ' + quote.shortname + '  ' + quote.exchange;
-                tempTickers.push({ optionText: optionText, ticker: quote.symbol });
-              });
-              setTickerOptions(tempTickers);
-            }
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
     //autocomplete選択時処理
     let selectedOption;
     let autocompleteSelected = (inputValue) => {
@@ -195,7 +141,7 @@ const Navigation = () => {
         <datalist id="search-ticker-option-list">
           {TickerOptions.map((ticker, i) => (
             <option key={i} data-ticker={ticker.ticker}>
-              {ticker.optionText}
+              {ticker.ticker} {ticker.optionExchange} {ticker.optionName}
             </option>
           ))}
         </datalist>
@@ -251,10 +197,10 @@ const Navigation = () => {
               </>
             ) : (
               <>
-                <li className={navStyle['auth-nav-item']}>
+                <li className={navStyle['auth-nav-item']} onClick={SpMenuHandler}>
                   <Link href="/account/login">Log In</Link>
                 </li>
-                <li className={navStyle['auth-nav-item']}>
+                <li className={navStyle['auth-nav-item']} onClick={SpMenuHandler}>
                   <Link href="/account/signup">Sign Up</Link>
                 </li>
               </>
@@ -278,7 +224,7 @@ const Navigation = () => {
               searchTickersSp = input;
             }}
             className={navStyle['search-ticker-input']}
-            onChange={SPhandleSearchTickerInput}
+            onChange={handleSearchTickerInput}
             placeholder="銘柄検索"
           />
         </div>

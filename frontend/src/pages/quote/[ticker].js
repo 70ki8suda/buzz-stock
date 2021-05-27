@@ -52,6 +52,9 @@ const StockPage = ({ ticker, FetchedSummaryData, FetchedSummaryState }) => {
   }, [ticker, TweetPostState]);
 
   React.useEffect(() => {
+    //ticker→ticker 遷移時のデータ更新
+    setSummaryData(FetchedSummaryData);
+    //ISRでfetchできていなかったときここでデータセット
     async function getSummary() {
       if ('defaultKeyStatistics' in FetchedSummaryData == false) {
         setSummaryState('unload');
@@ -66,12 +69,13 @@ const StockPage = ({ ticker, FetchedSummaryData, FetchedSummaryState }) => {
           .then((response) => response.json())
           .then((result) => {
             setSummaryData(result);
+
             setSummaryState('complete');
           });
       }
     }
     getSummary();
-  }, [ticker]);
+  }, [ticker, Summary_Request]);
   return (
     <>
       <Head>
@@ -119,6 +123,7 @@ export async function getStaticProps({ params, query }) {
         'x-rapidapi-host': API_HOST,
       },
     });
+
     return rawSummaryData.json();
   };
 

@@ -115,3 +115,133 @@
     background-repeat: no-repeat;
   }
 }
+
+.pc-ui {
+  @media #{$bp-sp} {
+    display: none;
+  }
+}
+
+.sp-post-trigger {
+  position: fixed;
+  z-index: 10;
+  bottom: 4px;
+  right: 14px;
+  font-size: 12px;
+  width: 60px;
+  background: $blue;
+  padding: 1em 0;
+  border-radius: 6px;
+  color: #fff;
+  text-align: center;
+}
+
+.sp-ui-window {
+  display: none;
+  @media #{$bp-sp} {
+    display: block;
+    opacity: 0;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100vh;
+    overflow-y: scroll;
+    transform: translateX(100%);
+    transition: 0.2s;
+    background: #fff;
+    pointer-events: none;
+    &.sp-ui-window-active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0);
+    }
+  }
+  .ticker-container {
+    padding: 0 14px;
+  }
+  .ticker-input {
+    height: 24px;
+    width: 80px;
+  }
+  .validation-message-container {
+    padding: 0 14px;
+  }
+}
+.sp-ui-top {
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+.sp-ui-cancel {
+  color: white;
+  background: $red;
+  width: 100px;
+  text-align: center;
+  border-radius: 4px;
+  padding: 0.4em 0;
+  font-size: 14px;
+}
+.sp-ui-post {
+  color: white;
+  background: $blue;
+  width: 100px;
+  text-align: center;
+  border-radius: 4px;
+  padding: 0.4em 0;
+  font-size: 14px;
+}
+.sp-tweet-input-container {
+  display: flex;
+  padding: 10px 14px;
+  .tweet-text-input {
+    border: none;
+  }
+}
+
+.sp-ticker-image-container {
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  .tweet-post-image {
+    margin-left: 20px;
+  }
+  .image-input-label {
+    width: 42px;
+    height: 42px;
+    margin-bottom: 0;
+  }
+}
+
+.sp-ticker-option-item {
+  background: #fff;
+  margin-bottom: 8px;
+  padding: 0.8em;
+  display: block;
+}
+
+.sp-ticker-option-name {
+  display: block;
+  color: #666;
+  font-size: 0.9em;
+  margin-bottom: 0.5em;
+}
+
+.sp-ticker-option-symbol {
+  font-weight: bold;
+}
+
+.sp-ticker-option-exchange {
+  color: #666;
+  font-size: 0.9em;
+  display: inline-block;
+  margin-left: 1em;
+}
+
+.ticker-options-container {
+  overflow-y: scroll;
+  max-height: 50vh;
+}

@@ -114,7 +114,7 @@ const TweetFeed = ({ DisplayTweets, setTweetPostState, TweetPostState, setDispla
                 <div className={style['display-id']}> @{tweet.user.display_id}</div>
                 <div className={style['tweet-date']}>{formatDate(tweet.created_at)}</div>
               </div>
-              <div> {tweet.content}</div>
+              <div className={style['tweet-text']}> {tweet.content}</div>
               {tweet.tweet_image != null && (
                 <div className={style['tweet-image']}>
                   <img src={tweet.tweet_image.url} />
