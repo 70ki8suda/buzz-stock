@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import useSWR from 'swr';
 import Head from 'next/head';
 //components
@@ -8,11 +9,19 @@ import PostTweet from '../../components/tweet/PostTweet';
 //style
 import pageStyle from '../../styles/pages/Ticker.module.scss';
 //utils
-import auth from '../../utils/auth';
+//service
+import { getTickerTweet, getInitialTickerTweet } from '../../service/tweet/tickerTweet.service';
+import { getSummary } from '../../service/summary/summary.serivce';
+
+import { GetStaticProps } from 'next';
+import { ParsedUrlQuery } from 'node:querystring';
+
 const API_KEY = process.env.NEXT_PUBLIC_RAPIDAPI_KEY;
 const API_HOST = process.env.NEXT_PUBLIC_RAPIDAPI_HOST;
-let Summary_Request;
-let fetcher;
+let Summary_Request: string;
+
+type Fetcher = { (ticker: string): Promise<[]> };
+let fetcher: Fetcher;
 
 const StockPage = ({ ticker, FetchedSummaryData, FetchedSummaryState }) => {
   //表示するSummaryのデータ
@@ -28,53 +37,47 @@ const StockPage = ({ ticker, FetchedSummaryData, FetchedSummaryState }) => {
   const [DisplayTweets, setDisplayTweets] = React.useState([]);
   //Tweetをpost/delete時に状態更新する状態関数
   const [TweetPostState, setTweetPostState] = React.useState({});
+  //tweetのfetch query
+  const [tweetLoadState, setTweetLoadState] = useState('loading');
+  const [fetchQuery, setFetchQuery] = useState({ ticker: ticker, skip: 0, take: 10 });
+  const [hasMoreTweet, setHasMoreTweet] = useState(true);
   //did mount 初期表示tweetデータ
-  const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
 
-  React.useEffect(() => {
-    let get_tweets_path = baseRequestUrl + '/tweet/quote/' + ticker;
-    fetch(get_tweets_path, {
-      method: 'GET',
-      mode: 'cors',
-      withCredentials: true,
-      credentials: 'include',
-      headers: {
-        Authorization: auth.bearerToken(),
-      },
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .then((json) => {
-        console.log('tweet loaded');
-        setDisplayTweets(json);
-      });
+  const fetchTweet = async () => {
+    setTweetLoadState('loading');
+    const tweetData = await getTickerTweet(fetchQuery);
+    setDisplayTweets([...DisplayTweets, ...tweetData]);
+    setTweetLoadState('complete');
+    setHasMoreTweet(tweetData.length > 0);
+  };
+
+  useEffect(() => {
+    //ticker→tickerページ遷移時にリフレッシュ
+    const freshQuery = { ticker: ticker, skip: 0, take: 10 };
+    setFetchQuery(freshQuery);
+    setTweetLoadState('loading');
+    async function fetchInitialTweet() {
+      const tweetData = await getInitialTickerTweet(freshQuery);
+      setDisplayTweets([...tweetData]);
+      setTweetLoadState('complete');
+      setHasMoreTweet(tweetData.length > 0);
+    }
+    fetchInitialTweet();
   }, [ticker, TweetPostState]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     //ticker→ticker 遷移時のデータ更新
     setSummaryData(FetchedSummaryData);
     //ISRでfetchできていなかったときここでデータセット
-    async function getSummary() {
+    async function getSummaryOnClient() {
       if ('defaultKeyStatistics' in FetchedSummaryData == false) {
         setSummaryState('unload');
-        await fetch(Summary_Request, {
-          method: 'GET',
-          mode: 'cors',
-          headers: {
-            'x-rapidapi-key': API_KEY,
-            'x-rapidapi-host': API_HOST,
-          },
-        })
-          .then((response) => response.json())
-          .then((result) => {
-            setSummaryData(result);
-
-            setSummaryState('complete');
-          });
+        const summaryData = await getSummary(Summary_Request);
+        setSummaryData(summaryData);
+        setSummaryState('complete');
       }
     }
-    getSummary();
+    getSummaryOnClient();
   }, [ticker, Summary_Request]);
   return (
     <>
@@ -93,29 +96,45 @@ const StockPage = ({ ticker, FetchedSummaryData, FetchedSummaryState }) => {
         defaultTicker={ticker}
       ></PostTweet>
       <TweetFeed
+        tweetLoadState={tweetLoadState}
+        setTweetLoadState={setTweetLoadState}
         DisplayTweets={DisplayTweets}
-        setTweetPostState={setTweetPostState}
         setDisplayTweets={setDisplayTweets}
+        TweetPostState={TweetPostState}
+        setTweetPostState={setTweetPostState}
+        fetchTweet={fetchTweet}
+        fetchQuery={fetchQuery}
+        setFetchQuery={setFetchQuery}
+        hasMoreTweet={hasMoreTweet}
+        setHasMoreTweet={setHasMoreTweet}
       ></TweetFeed>
     </>
   );
 };
+
 export async function getStaticPaths() {
   return {
     paths: [{ params: { ticker: 'AAPL' } }],
     fallback: 'blocking',
   };
 }
-export async function getStaticProps({ params, query }) {
-  let ticker;
-  if (params.ticker) {
-    ticker = params.ticker;
-  } else {
-    ticker = query.ticker;
-  }
+
+interface Props {
+  ticker: string;
+  FetchedSummaryData: [];
+  FetchedSummaryState: string;
+}
+
+interface Params extends ParsedUrlQuery {
+  ticker: string;
+}
+
+export const getStaticProps: GetStaticProps<Props, Params> = async ({ params }) => {
+  const ticker: string = params!.ticker;
+
   Summary_Request = `https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-summary?symbol=${ticker}`;
 
-  fetcher = async (url) => {
+  fetcher = async (url: string) => {
     const rawSummaryData = await fetch(url, {
       method: 'GET',
       headers: {
@@ -136,6 +155,6 @@ export async function getStaticProps({ params, query }) {
   }
 
   return { props: { ticker, FetchedSummaryData, FetchedSummaryState }, revalidate: 30 };
-}
+};
 
 export default StockPage;

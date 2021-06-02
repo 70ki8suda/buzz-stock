@@ -11,4 +11,7 @@ module.exports = {
     };
     return config;
   },
+  images: {
+    domains: ['buzz-stock-nest.s3.ap-northeast-3.amazonaws.com'],
+  },
 };

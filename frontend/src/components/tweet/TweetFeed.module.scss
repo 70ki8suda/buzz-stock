@@ -56,7 +56,15 @@
 }
 
 .tweet-container {
+  position: relative;
   margin: 4% auto;
+  .loading-tweet {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
 }
 
 .tweet-content {

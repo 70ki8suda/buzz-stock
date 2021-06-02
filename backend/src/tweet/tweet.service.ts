@@ -13,11 +13,7 @@ import { TweetInputDto } from './inputTweet.dto';
 export class TweetService {
   constructor(private prisma: PrismaService) {}
 
-  async createTweet(
-    tweetData: TweetInputDto,
-    tweet_image,
-    userId: number,
-  ): Promise<void> {
+  async createTweet(tweetData: TweetInputDto, tweet_image, userId: number) {
     //find or create tickersArray
     const { content, tickers } = tweetData;
     let tickersArray = [];
@@ -62,7 +58,7 @@ export class TweetService {
       );
     }
 
-    return;
+    return tweet;
   }
 
   async deleteTweet(id: number, userId: number): Promise<void> {
@@ -89,9 +85,11 @@ export class TweetService {
     }
   }
 
-  async getTweetsByUserId(userId: number) {
+  async getTweetsByUserId(userId: number, skip: number, take: number) {
     try {
       const tweets = await this.prisma.tweet.findMany({
+        skip: skip,
+        take: take,
         where: {
           userId: userId,
         },
@@ -126,7 +124,7 @@ export class TweetService {
     }
   }
 
-  async getTweetsByTicker(ticker: string) {
+  async getTweetsByTicker(ticker: string, skip: number, take: number) {
     try {
       const ticker_tweets = await this.prisma.ticker.findUnique({
         where: {
@@ -134,6 +132,11 @@ export class TweetService {
         },
         include: {
           tweets: {
+            skip: skip,
+            take: take,
+            orderBy: {
+              created_at: 'desc',
+            },
             include: {
               user: {
                 select: {
@@ -158,21 +161,15 @@ export class TweetService {
           },
         },
       });
-      let tweets = ticker_tweets.tweets;
-      tweets = tweets.sort(function (a, b) {
-        if (a.created_at > b.created_at) {
-          return -1;
-        } else {
-          return 1;
-        }
-      });
+      const tweets = ticker_tweets.tweets;
+
       return tweets;
     } catch {
       new InternalServerErrorException();
     }
   }
 
-  async getTweetsOfFollowingUsers(userId: number) {
+  async getTweetsOfFollowingUsers(userId: number, skip: number, take: number) {
     try {
       const followingUsers = await this.prisma.user.findUnique({
         where: {
@@ -190,6 +187,8 @@ export class TweetService {
         (following) => following.id,
       );
       let tweets = await this.prisma.tweet.findMany({
+        skip: skip,
+        take: take,
         where: {
           userId: { in: followingUsersIDs },
         },

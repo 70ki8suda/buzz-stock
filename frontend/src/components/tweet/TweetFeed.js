@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef, useCallback } from 'react';
 import Link from 'next/link';
 //context data
 import { AuthUserData } from '../../pages/_app';
@@ -12,10 +12,39 @@ import style from './TweetFeed.module.scss';
 import FavStarSVG from '../../../public/images/star.svg';
 //utils
 import auth from '../../utils/auth';
-const TweetFeed = ({ DisplayTweets, setTweetPostState, TweetPostState, setDisplayTweets }) => {
+const TweetFeed = ({
+  tweetLoadState,
+  setTweetLoadState,
+  DisplayTweets,
+  setTweetPostState,
+  TweetPostState,
+  setDisplayTweets,
+  fetchTweet,
+  fetchQuery,
+  setFetchQuery,
+  hasMoreTweet,
+  setHasMoreTweet,
+}) => {
   const { AuthUserProfile } = useContext(AuthUserData);
   const loggedin_userID = AuthUserProfile.id;
   const { LoggedInState } = useContext(LoggedInContext);
+
+  const observer = useRef();
+  const lastTweetElement = useCallback(
+    (node) => {
+      if (tweetLoadState == 'loading') return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMoreTweet) {
+          console.log('Load More Tweet');
+          fetchQuery.skip = fetchQuery.skip + 10;
+          fetchTweet();
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [tweetLoadState, hasMoreTweet],
+  );
 
   async function onTweetDeleteHandler(e, tweet_id) {
     e.preventDefault();
@@ -32,7 +61,8 @@ const TweetFeed = ({ DisplayTweets, setTweetPostState, TweetPostState, setDispla
         Authorization: auth.bearerToken(),
       },
     })
-      .then((res) => {
+      .then(() => {
+        setDisplayTweets(DisplayTweets.filter((tweet) => tweet.id !== tweet_id));
         setTweetPostState(TweetPostState + 1);
       })
       .catch((error) => {
@@ -96,9 +126,15 @@ const TweetFeed = ({ DisplayTweets, setTweetPostState, TweetPostState, setDispla
   };
   return (
     <div className={style['tweet-container']}>
+      {tweetLoadState === 'loading' && <div className={style['loading-tweet']}></div>}
       {DisplayTweets && DisplayTweets.length > 0 ? (
         DisplayTweets.map((tweet, i) => (
-          <div key={i} id={tweet.id} className={style['tweet-box']}>
+          <div
+            key={i}
+            id={tweet.id}
+            className={style['tweet-box']}
+            {...(i + 1 === DisplayTweets.length && { ref: lastTweetElement })}
+          >
             <div className={style['profile-image-wrap']}>
               <Link href={`/user/${tweet.user.id}`}>
                 {tweet.user.profile_image !== null ? (

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-
+import Image from 'next/image';
 const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
 import profileStyle from './Profile.module.scss';
 import postStyle from './PostTweet.module.scss';
@@ -160,9 +160,9 @@ const Profile = ({ userID }) => {
       <div className={profileStyle['wrap']}>
         <div className={profileStyle['image-wrap']}>
           {ProfileDisplayData.profile_image != null ? (
-            <img src={ProfileDisplayData.profile_image} />
+            <img src={ProfileDisplayData.profile_image} layout="fill" />
           ) : (
-            <img src="/images/profile-default.png" />
+            <img src="/images/profile-default.png" layout="fill" />
           )}
         </div>
         <div className="info">

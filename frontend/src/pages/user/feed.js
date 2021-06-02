@@ -29,6 +29,34 @@ const Feed = ({ userID }) => {
   const [DisplayTweets, setDisplayTweets] = React.useState([]);
   //Tweetをpost/delete時に状態更新する状態関数
   const [TweetPostState, setTweetPostState] = React.useState({});
+  //tweetのfetch query
+  const [tweetLoadState, setTweetLoadState] = useState('loading');
+  const [fetchQuery, setFetchQuery] = useState({ userId: userID, skip: 0, take: 10 });
+  const [hasMoreTweet, setHasMoreTweet] = useState(true);
+
+  const fetchTweet = async () => {
+    const queryParams = { skip: fetchQuery.skip, take: fetchQuery.take };
+    const query = new URLSearchParams(queryParams);
+    const requestUrl = baseRequestUrl + '/tweet/following_users_feed' + '?' + query;
+    setTweetLoadState('loading');
+    await fetch(requestUrl, {
+      method: 'GET',
+      mode: 'cors',
+      withCredentials: true,
+      credentials: 'include',
+      headers: {
+        Authorization: auth.bearerToken(),
+      },
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((json) => {
+        setDisplayTweets([...DisplayTweets, ...json]);
+        setTweetLoadState('complete');
+        setHasMoreTweet(json.length > 0);
+      });
+  };
 
   //未ログインならログインページへリダイレクト
   React.useEffect(() => {
@@ -38,28 +66,10 @@ const Feed = ({ userID }) => {
   });
 
   //did mount 初期表示tweetデータ
-  React.useEffect(
-    (TweetPostState) => {
-      fetch(get_tweets_path, {
-        method: 'GET',
-        mode: 'cors',
-        withCredentials: true,
-        credentials: 'include',
-        headers: {
-          Authorization: auth.bearerToken(),
-        },
-      })
-        .then((res) => {
-          return res.json();
-        })
-        .then((json) => {
-          console.log('tweet loaded');
-          console.log(json);
-          setDisplayTweets(json);
-        });
-    },
-    [TweetPostState],
-  );
+  React.useEffect(() => {
+    setDisplayTweets([]);
+    fetchTweet();
+  }, [TweetPostState, userID]);
 
   return (
     <>
@@ -72,9 +82,17 @@ const Feed = ({ userID }) => {
           <h1 className={style['db-ttl']}>Feed</h1>
           <PostTweet setTweetPostState={setTweetPostState}></PostTweet>
           <TweetFeed
+            tweetLoadState={tweetLoadState}
+            setTweetLoadState={setTweetLoadState}
             DisplayTweets={DisplayTweets}
             setDisplayTweets={setDisplayTweets}
+            TweetPostState={TweetPostState}
             setTweetPostState={setTweetPostState}
+            fetchTweet={fetchTweet}
+            fetchQuery={fetchQuery}
+            setFetchQuery={setFetchQuery}
+            hasMoreTweet={hasMoreTweet}
+            setHasMore={setHasMoreTweet}
           ></TweetFeed>
         </>
       )}

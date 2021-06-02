@@ -84,9 +84,15 @@ const App = (props) => {
         <AuthUserData.Provider value={{ AuthUserProfile, setAuthUserProfile }}>
           <SpMenuContext.Provider value={{ SpMenuState, setSpMenuState }}>
             <Head>
+              <meta charset="utf-8" />
               <link rel="preload" href="/fonts/rifton-norm.ttf" as="font" crossOrigin="" />
               <link rel="preload" href="/fonts/nulshock-bd.ttf" as="font" crossOrigin="" />
               <meta name="viewport" content="width=device-width, user-scalable=no" />
+              <title>BUZZ STOCK .COM</title>
+              <meta
+                name="description"
+                content="株式のチャートの確認・ファンダメンタル情報の確認ならBuzz Stock.comへ"
+              />
             </Head>
             <div className="page-container">
               <div className={`page-wrapper ${SpMenuState && 'sp-menu-trigger-active'}`}>

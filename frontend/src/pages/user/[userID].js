@@ -14,22 +14,28 @@ import { AuthUserData } from '../_app';
 import { LoggedInContext } from '../../pages/_app';
 
 const UserPage = ({ userID }) => {
-  const router = useRouter();
   const { LoggedInState } = useContext(LoggedInContext);
 
   const { AuthUserProfile } = useContext(AuthUserData);
   const loggedin_userID = AuthUserProfile.id;
 
   const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
-  const get_tweets_path = baseRequestUrl + '/tweet/user/' + userID;
-  //表示するtweetのデータ
-  const [DisplayTweets, setDisplayTweets] = React.useState([]);
-  //Tweetをpost/delete時に状態更新する状態関数
-  const [TweetPostState, setTweetPostState] = React.useState(0);
 
-  //did mount 初期表示tweetデータ
-  React.useEffect(() => {
-    fetch(get_tweets_path, {
+  //表示するtweetのデータ
+  const [DisplayTweets, setDisplayTweets] = useState([]);
+  //Tweetをpost/delete時に状態更新する状態関数
+  const [TweetPostState, setTweetPostState] = useState(0);
+  //tweetのfetch query
+  const [tweetLoadState, setTweetLoadState] = useState('loading');
+  const [fetchQuery, setFetchQuery] = useState({ userId: userID, skip: 0, take: 10 });
+  const [hasMoreTweet, setHasMoreTweet] = useState(true);
+
+  const fetchTweet = async () => {
+    const queryParams = { skip: fetchQuery.skip, take: fetchQuery.take };
+    const query = new URLSearchParams(queryParams);
+    const requestUrl = baseRequestUrl + '/tweet/user/' + fetchQuery.userId + '?' + query;
+    setTweetLoadState('loading');
+    await fetch(requestUrl, {
       method: 'GET',
       mode: 'cors',
       withCredentials: true,
@@ -42,9 +48,40 @@ const UserPage = ({ userID }) => {
         return res.json();
       })
       .then((json) => {
-        console.log('tweet loaded');
-        console.log(json);
-        setDisplayTweets(json);
+        setDisplayTweets([...DisplayTweets, ...json]);
+        setTweetLoadState('complete');
+        setHasMoreTweet(json.length > 0);
+      });
+  };
+
+  //did mount 初期表示tweetデータ
+  //user→user切り替え時にリフレッシュ
+  React.useEffect(() => {
+    const freshQuery = { skip: 0, take: 10 };
+    setFetchQuery({ userId: userID, skip: 0, take: 10 });
+
+    fetchTweet();
+
+    const queryParams = { skip: freshQuery.skip, take: freshQuery.take };
+    const query = new URLSearchParams(queryParams);
+    const requestUrl = baseRequestUrl + '/tweet/user/' + fetchQuery.userId + '?' + query;
+    setTweetLoadState('loading');
+    fetch(requestUrl, {
+      method: 'GET',
+      mode: 'cors',
+      withCredentials: true,
+      credentials: 'include',
+      headers: {
+        Authorization: auth.bearerToken(),
+      },
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((json) => {
+        setDisplayTweets([...json]);
+        setTweetLoadState('complete');
+        setHasMoreTweet(json.length > 0);
       });
   }, [TweetPostState, userID]);
 
@@ -61,10 +98,17 @@ const UserPage = ({ userID }) => {
         ></PostTweet>
       )}
       <TweetFeed
+        tweetLoadState={tweetLoadState}
+        setTweetLoadState={setTweetLoadState}
         DisplayTweets={DisplayTweets}
         setDisplayTweets={setDisplayTweets}
         TweetPostState={TweetPostState}
         setTweetPostState={setTweetPostState}
+        fetchTweet={fetchTweet}
+        fetchQuery={fetchQuery}
+        setFetchQuery={setFetchQuery}
+        hasMoreTweet={hasMoreTweet}
+        setHasMore={setHasMoreTweet}
       ></TweetFeed>
     </>
   );

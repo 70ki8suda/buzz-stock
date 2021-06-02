@@ -36,7 +36,7 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
     });
 
     setMessages(() => {
-      console.log(messages);
+      //console.log(messages);
       return { ...messages, [name]: formValidate(name, value) };
     });
   };
@@ -49,7 +49,7 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
   };
 
   const tweetTextValidation = (text) => {
-    console.log(text);
+    //console.log(text);
     if (!text) return 'tweetを入力してください';
     if (text.length > 240) return 'tweetは240文字以下でお願いします';
 
@@ -127,7 +127,9 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
       return false;
     };
     if (autocompleteSelected(target.value)) {
-      setTickerData([...TickerData, selectedOption]);
+      if (!TickerData.includes(selectedOption)) {
+        setTickerData([...TickerData, selectedOption]);
+      }
       target.value = '';
     }
   };
@@ -167,7 +169,9 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
   };
 
   const spAddTicker = function (ticker) {
-    setTickerData([...TickerData, ticker]);
+    if (!TickerData.includes(ticker)) {
+      setTickerData([...TickerData, ticker]);
+    }
   };
   //post tweet request
   async function PostTweet(e) {
@@ -200,11 +204,10 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
         },
       })
         .then((res) => {
-          console.log(res);
-          setTweetPostState(TweetPostState + 1);
+          return res.json();
         })
-        .then(() => {
-          //input textarea空にする
+        .then((res) => {
+          //console.log(res);
           setTweetPostData({
             tweet_text: null,
             image: null,
@@ -220,6 +223,7 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
             tweet_text: '',
             tweet_image: '',
           });
+          setTweetPostState(TweetPostState + 1);
         })
 
         .catch((error) => {
@@ -316,9 +320,11 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
           </div>
         </form>
       </div>
-      <div className={postStyle['sp-post-trigger']} onClick={spTweetTrigger}>
-        Post
-      </div>
+      {LoggedInState && (
+        <div className={postStyle['sp-post-trigger']} onClick={spTweetTrigger}>
+          Post
+        </div>
+      )}
       <div
         className={`${postStyle['sp-ui-window']}  ${
           SpTweetWindow && postStyle['sp-ui-window-active']

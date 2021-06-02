@@ -123,17 +123,21 @@
 }
 
 .sp-post-trigger {
-  position: fixed;
-  z-index: 10;
-  bottom: 4px;
-  right: 14px;
-  font-size: 12px;
-  width: 60px;
-  background: $blue;
-  padding: 1em 0;
-  border-radius: 6px;
-  color: #fff;
-  text-align: center;
+  display: none;
+  @media #{$bp-sp} {
+    display: block;
+    position: fixed;
+    z-index: 10;
+    bottom: 4px;
+    right: 14px;
+    font-size: 12px;
+    width: 60px;
+    background: $blue;
+    padding: 1em 0;
+    border-radius: 6px;
+    color: #fff;
+    text-align: center;
+  }
 }
 
 .sp-ui-window {
