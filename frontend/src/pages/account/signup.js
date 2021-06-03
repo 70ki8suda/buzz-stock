@@ -9,10 +9,10 @@ import auth from '../../utils/auth';
 import authStyle from '../../styles/pages/Auth.module.scss';
 //context
 import { LoggedInContext } from '../_app';
-import { AuthUserData } from '../_app';
+import { AuthUserContext } from '../_app';
 const Signup = () => {
   const { setLoggedInState } = useContext(LoggedInContext);
-  const { AuthUserProfile } = useContext(AuthUserData);
+  const { authUserData } = useContext(AuthUserContext);
   const router = useRouter();
   const [data, setData] = React.useState({
     name: '',
@@ -148,7 +148,7 @@ const Signup = () => {
       auth.login(result);
 
       setLoggedInState(auth.isAuthenticated());
-      //console.log(AuthUserProfile);
+      //console.log(authUserData);
       let userID = result.userId;
       router.push(`/user/${userID}`);
     }

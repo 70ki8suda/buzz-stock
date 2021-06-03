@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import useSWR from 'swr';
 import Head from 'next/head';
 //components
@@ -23,7 +22,12 @@ let Summary_Request: string;
 type Fetcher = { (ticker: string): Promise<[]> };
 let fetcher: Fetcher;
 
-const StockPage = ({ ticker, FetchedSummaryData, FetchedSummaryState }) => {
+interface Props {
+  ticker: string;
+  FetchedSummaryData: [] | undefined;
+  FetchedSummaryState: string;
+}
+const StockPage: React.VFC<Props> = ({ ticker, FetchedSummaryData, FetchedSummaryState }) => {
   //表示するSummaryのデータ
   Summary_Request = `https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-summary?symbol=${ticker}&region=US`;
   FetchedSummaryData = useSWR(Summary_Request, fetcher, {
@@ -34,9 +38,9 @@ const StockPage = ({ ticker, FetchedSummaryData, FetchedSummaryState }) => {
   const [SummaryState, setSummaryState] = React.useState(FetchedSummaryState);
 
   //表示するtweetのデータ
-  const [DisplayTweets, setDisplayTweets] = React.useState([]);
+  const [DisplayTweets, setDisplayTweets] = useState<any[]>([]);
   //Tweetをpost/delete時に状態更新する状態関数
-  const [TweetPostState, setTweetPostState] = React.useState({});
+  const [TweetPostState, setTweetPostState] = useState({});
   //tweetのfetch query
   const [tweetLoadState, setTweetLoadState] = useState('loading');
   const [fetchQuery, setFetchQuery] = useState({ ticker: ticker, skip: 0, take: 10 });
@@ -70,7 +74,10 @@ const StockPage = ({ ticker, FetchedSummaryData, FetchedSummaryState }) => {
     setSummaryData(FetchedSummaryData);
     //ISRでfetchできていなかったときここでデータセット
     async function getSummaryOnClient() {
-      if ('defaultKeyStatistics' in FetchedSummaryData == false) {
+      if (
+        FetchedSummaryData == undefined ||
+        'defaultKeyStatistics' in FetchedSummaryData == false
+      ) {
         setSummaryState('unload');
         const summaryData = await getSummary(Summary_Request);
         setSummaryData(summaryData);
@@ -117,12 +124,6 @@ export async function getStaticPaths() {
     paths: [{ params: { ticker: 'AAPL' } }],
     fallback: 'blocking',
   };
-}
-
-interface Props {
-  ticker: string;
-  FetchedSummaryData: [];
-  FetchedSummaryState: string;
 }
 
 interface Params extends ParsedUrlQuery {

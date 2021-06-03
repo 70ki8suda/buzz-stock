@@ -10,14 +10,14 @@ import TweetFeed from '../../components/tweet/TweetFeed';
 import auth from '../../utils/auth';
 
 //context data
-import { AuthUserData } from '../_app';
+import { AuthUserContext } from '../_app';
 import { LoggedInContext } from '../../pages/_app';
 
 const UserPage = ({ userID }) => {
-  const { LoggedInState } = useContext(LoggedInContext);
+  const { loggedInState } = useContext(LoggedInContext);
 
-  const { AuthUserProfile } = useContext(AuthUserData);
-  const loggedin_userID = AuthUserProfile.id;
+  const { authUserData } = useContext(AuthUserContext);
+  const loggedin_userID = authUserData.id;
 
   const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
 
@@ -91,7 +91,7 @@ const UserPage = ({ userID }) => {
         <title>User Page</title>
       </Head>
       <Profile userID={userID}></Profile>
-      {LoggedInState && loggedin_userID == userID && (
+      {loggedInState && loggedin_userID == userID && (
         <PostTweet
           TweetPostState={TweetPostState}
           setTweetPostState={setTweetPostState}

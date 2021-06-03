@@ -4,7 +4,7 @@ const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
 import profileStyle from './Profile.module.scss';
 import postStyle from './PostTweet.module.scss';
 //context data
-import { AuthUserData } from '../../pages/_app';
+import { AuthUserContext } from '../../pages/_app';
 import Router from 'next/router';
 import auth from '../../utils/auth';
 const Profile = ({ userID }) => {
@@ -16,8 +16,8 @@ const Profile = ({ userID }) => {
   const [EditToggleState, setEditToggleState] = React.useState(false);
 
   const user_data_path = baseRequestUrl + '/user/' + userID;
-  const { AuthUserProfile } = useContext(AuthUserData);
-  const loggedin_userID = AuthUserProfile.id;
+  const { authUserData } = useContext(AuthUserContext);
+  const loggedin_userID = authUserData.id;
 
   //did mount 初期表示profileデータ
   React.useEffect(

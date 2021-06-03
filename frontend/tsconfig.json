@@ -19,10 +19,10 @@
     }
   },
   "include": [
+    "src/pages/_app.tsx",
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "src/pages/_app.js",
     "src/service/tweet/getTickerTweet.js"
   ],
   "exclude": ["node_modules"]

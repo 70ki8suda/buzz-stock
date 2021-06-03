@@ -186,14 +186,14 @@ export class TweetService {
       const followingUsersIDs = followingUsers.following.map(
         (following) => following.id,
       );
-      let tweets = await this.prisma.tweet.findMany({
+      const tweets = await this.prisma.tweet.findMany({
         skip: skip,
         take: take,
-        where: {
-          userId: { in: followingUsersIDs },
-        },
         orderBy: {
           created_at: 'desc',
+        },
+        where: {
+          userId: { in: followingUsersIDs },
         },
         include: {
           user: {
@@ -217,13 +217,7 @@ export class TweetService {
           },
         },
       });
-      tweets = tweets.sort(function (a, b) {
-        if (a.created_at > b.created_at) {
-          return -1;
-        } else {
-          return 1;
-        }
-      });
+
       return tweets;
     } catch {
       new InternalServerErrorException();

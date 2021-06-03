@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 //context data
-import { AuthUserData } from '../../pages/_app';
+import { AuthUserContext } from '../../pages/_app';
 import { LoggedInContext } from '../../pages/_app';
 //env
 //style
@@ -9,9 +9,9 @@ import postStyle from './PostTweet.module.scss';
 import auth from '../../utils/auth';
 
 const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
-  const { AuthUserProfile } = useContext(AuthUserData);
-  const { LoggedInState } = useContext(LoggedInContext);
-  const profile_image = AuthUserProfile.profile_image;
+  const { authUserData } = useContext(AuthUserContext);
+  const { loggedInState } = useContext(LoggedInContext);
+  const profile_image = authUserData.profile_image;
   //tweetデータ
   const [TweetPostData, setTweetPostData] = React.useState({});
   //ticker State
@@ -242,7 +242,7 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
     <>
       <div
         className={`${postStyle['post-tweet']} ${postStyle['pc-ui']} ${
-          !LoggedInState && postStyle['not-loggedin']
+          !loggedInState && postStyle['not-loggedin']
         }`}
       >
         <div className={postStyle['profile-image-wrap']}>
@@ -320,7 +320,7 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
           </div>
         </form>
       </div>
-      {LoggedInState && (
+      {loggedInState && (
         <div className={postStyle['sp-post-trigger']} onClick={spTweetTrigger}>
           Post
         </div>

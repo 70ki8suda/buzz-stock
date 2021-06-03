@@ -4,24 +4,24 @@ import { useRouter } from 'next/router';
 import auth from '../../utils/auth';
 //context
 import { LoggedInContext } from '../../pages/_app';
-import { AuthUserData } from '../../pages/_app';
+import { AuthUserContext } from '../../pages/_app';
 import { SpMenuContext } from '../../pages/_app';
 //style
 import navStyle from './Navigation.module.scss';
 const Navigation = () => {
   const router = useRouter();
-  const { LoggedInState, setLoggedInState } = useContext(LoggedInContext);
+  const { loggedInState, setLoggedInState } = useContext(LoggedInContext);
 
-  const { AuthUserProfile, setAuthUserProfile } = useContext(AuthUserData);
+  const { authUserData, setAuthUserData } = useContext(AuthUserContext);
   const { SpMenuState, setSpMenuState } = useContext(SpMenuContext);
   //ref
   let searchTickersSp;
   const [SpSearchWindow, setSpSearchWindow] = useState(false);
-  const loggedin_userID = AuthUserProfile.id;
+  const loggedin_userID = authUserData.id;
 
   const logoutHandler = () => {
     auth.logout();
-    setAuthUserProfile({});
+    setAuthUserData({});
     setLoggedInState(auth.isAuthenticated());
     router.push('/');
   };
@@ -146,7 +146,7 @@ const Navigation = () => {
           ))}
         </datalist>
         <ul className={navStyle['auth-nav-list-pc']}>
-          {LoggedInState ? (
+          {loggedInState ? (
             <>
               <li className={navStyle['auth-nav-item']}>
                 <Link href={`/user/${loggedin_userID}`}>Profile</Link>
@@ -181,7 +181,7 @@ const Navigation = () => {
         </div>
         <div className={`${navStyle['sp-menu']} ${SpMenuState && navStyle['sp-menu-active']}`}>
           <ul className={navStyle['auth-nav-list-sp']}>
-            {LoggedInState ? (
+            {loggedInState ? (
               <>
                 <li className={navStyle['auth-nav-item']} onClick={SpMenuHandler}>
                   <Link href={`/user/${loggedin_userID}`}>Profile</Link>

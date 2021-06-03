@@ -10,7 +10,7 @@ import TweetFeed from '../../components/tweet/TweetFeed';
 import auth from '../../utils/auth';
 
 //context data
-import { AuthUserData } from '../../pages/_app';
+import { AuthUserContext } from '../../pages/_app';
 import { LoggedInContext } from '../../pages/_app';
 
 //styles
@@ -18,10 +18,10 @@ import style from '../../styles/pages/Feed.module.scss';
 
 const Feed = ({ userID }) => {
   const router = useRouter();
-  const { LoggedInState } = useContext(LoggedInContext);
+  const { loggedInState } = useContext(LoggedInContext);
 
-  const { AuthUserProfile } = useContext(AuthUserData);
-  const loggedin_userID = AuthUserProfile.id;
+  const { authUserData } = useContext(AuthUserContext);
+  const loggedin_userID = authUserData.id;
 
   const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
   const get_tweets_path = baseRequestUrl + '/tweet/following_users_feed';
@@ -60,7 +60,7 @@ const Feed = ({ userID }) => {
 
   //未ログインならログインページへリダイレクト
   React.useEffect(() => {
-    if (!LoggedInState) {
+    if (!loggedInState) {
       router.replace('/account/login');
     }
   });
@@ -77,7 +77,7 @@ const Feed = ({ userID }) => {
         <title>Feed</title>
       </Head>
 
-      {LoggedInState && (
+      {loggedInState && (
         <>
           <h1 className={style['db-ttl']}>Feed</h1>
           <PostTweet setTweetPostState={setTweetPostState}></PostTweet>

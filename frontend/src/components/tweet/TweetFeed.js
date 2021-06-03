@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useRef, useCallback } from 'react';
 import Link from 'next/link';
 //context data
-import { AuthUserData } from '../../pages/_app';
+import { AuthUserContext } from '../../pages/_app';
 import { LoggedInContext } from '../../pages/_app';
 //components
 
@@ -25,9 +25,9 @@ const TweetFeed = ({
   hasMoreTweet,
   setHasMoreTweet,
 }) => {
-  const { AuthUserProfile } = useContext(AuthUserData);
-  const loggedin_userID = AuthUserProfile.id;
-  const { LoggedInState } = useContext(LoggedInContext);
+  const { authUserData } = useContext(AuthUserContext);
+  const loggedin_userID = authUserData.id;
+  const { loggedInState } = useContext(LoggedInContext);
 
   const observer = useRef();
   const lastTweetElement = useCallback(
@@ -76,7 +76,7 @@ const TweetFeed = ({
     if (favorite.length > 0) return true;
   };
   const FavoriteHandler = (e, tweet, i) => {
-    if (LoggedInState) {
+    if (loggedInState) {
       //console.log(key.i);
       //favoriteを反転させる
       let tempTweetData = [...DisplayTweets];
