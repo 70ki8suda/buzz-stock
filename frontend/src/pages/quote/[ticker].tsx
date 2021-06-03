@@ -13,7 +13,7 @@ import { getTickerTweet, getInitialTickerTweet } from '../../service/tweet/ticke
 import { getSummary } from '../../service/summary/summary.serivce';
 
 import { GetStaticProps } from 'next';
-import { ParsedUrlQuery } from 'node:querystring';
+import { ParsedUrlQuery } from 'querystring';
 
 const API_KEY = process.env.NEXT_PUBLIC_RAPIDAPI_KEY;
 const API_HOST = process.env.NEXT_PUBLIC_RAPIDAPI_HOST;

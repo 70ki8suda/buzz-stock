@@ -32,7 +32,7 @@
 <br>
 ![stock-graph](https://user-images.githubusercontent.com/24717695/119268484-347c2200-bc2e-11eb-93bf-741c8f756f01.jpg)
 
-## チャレンジ要素一覧
+## 機能一覧
 
 [機能一覧](https://docs.google.com/spreadsheets/d/1CKBFeNrOqsrLOffS6QvcRCTWcm7kYWbaGxoShlwGPnY/edit#gid=0)
 
