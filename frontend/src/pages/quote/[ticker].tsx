@@ -12,13 +12,13 @@ import pageStyle from '../../styles/pages/Ticker.module.scss';
 import { getTickerTweet, getInitialTickerTweet } from '../../service/tweet/tickerTweet.service';
 import { getSummary } from '../../service/summary/summary.serivce';
 
-import { GetStaticProps } from 'next';
+import { GetStaticPaths, GetStaticProps } from 'next';
 import { ParsedUrlQuery } from 'querystring';
 
 const API_KEY = process.env.NEXT_PUBLIC_RAPIDAPI_KEY;
 const API_HOST = process.env.NEXT_PUBLIC_RAPIDAPI_HOST;
 let Summary_Request: string;
-
+// eslint-disable-next-line no-unused-vars
 type Fetcher = { (ticker: string): Promise<[]> };
 let fetcher: Fetcher;
 
@@ -85,7 +85,7 @@ const StockPage: React.VFC<Props> = ({ ticker, FetchedSummaryData, FetchedSummar
       }
     }
     getSummaryOnClient();
-  }, [ticker, Summary_Request]);
+  }, [ticker, FetchedSummaryData]);
   return (
     <>
       <Head>
@@ -119,12 +119,12 @@ const StockPage: React.VFC<Props> = ({ ticker, FetchedSummaryData, FetchedSummar
   );
 };
 
-export async function getStaticPaths() {
+export const getStaticPaths: GetStaticPaths = async () => {
   return {
     paths: [{ params: { ticker: 'AAPL' } }],
     fallback: 'blocking',
   };
-}
+};
 
 interface Params extends ParsedUrlQuery {
   ticker: string;

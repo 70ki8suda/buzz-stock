@@ -10,7 +10,6 @@ import TweetFeed from '../../components/tweet/TweetFeed';
 import auth from '../../utils/auth';
 
 //context data
-import { AuthUserContext } from '../../pages/_app';
 import { LoggedInContext } from '../../pages/_app';
 
 //styles
@@ -20,11 +19,6 @@ const Feed = ({ userID }) => {
   const router = useRouter();
   const { loggedInState } = useContext(LoggedInContext);
 
-  const { authUserData } = useContext(AuthUserContext);
-  const loggedin_userID = authUserData.id;
-
-  const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
-  const get_tweets_path = baseRequestUrl + '/tweet/following_users_feed';
   //表示するtweetのデータ
   const [DisplayTweets, setDisplayTweets] = React.useState([]);
   //Tweetをpost/delete時に状態更新する状態関数
@@ -37,6 +31,7 @@ const Feed = ({ userID }) => {
   const fetchTweet = async () => {
     const queryParams = { skip: fetchQuery.skip, take: fetchQuery.take };
     const query = new URLSearchParams(queryParams);
+    const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
     const requestUrl = baseRequestUrl + '/tweet/following_users_feed' + '?' + query;
     setTweetLoadState('loading');
     await fetch(requestUrl, {
@@ -59,16 +54,17 @@ const Feed = ({ userID }) => {
   };
 
   //未ログインならログインページへリダイレクト
-  React.useEffect(() => {
+  useEffect(() => {
     if (!loggedInState) {
       router.replace('/account/login');
     }
   });
 
   //did mount 初期表示tweetデータ
-  React.useEffect(() => {
+  useEffect(() => {
     setDisplayTweets([]);
     fetchTweet();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [TweetPostState, userID]);
 
   return (

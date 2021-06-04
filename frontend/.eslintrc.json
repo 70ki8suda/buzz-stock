@@ -27,7 +27,7 @@
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended",
+
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
     "prettier"
@@ -35,7 +35,8 @@
   "rules": {
     "react/prop-types": "off",
     "prettier/prettier": "error",
-    "react/react-in-jsx-scope": "off"
+    "react/react-in-jsx-scope": "off",
+    "no-explicit-any": "off"
   },
   "overrides": [
     {
