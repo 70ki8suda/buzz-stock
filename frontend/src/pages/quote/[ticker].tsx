@@ -14,6 +14,7 @@ import { getSummary } from '../../service/summary/summary.serivce';
 
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { ParsedUrlQuery } from 'querystring';
+import { FetchQueryType } from 'src/type/FetchQueryType';
 
 const API_KEY = process.env.NEXT_PUBLIC_RAPIDAPI_KEY;
 const API_HOST = process.env.NEXT_PUBLIC_RAPIDAPI_HOST;
@@ -40,14 +41,18 @@ const StockPage: React.VFC<Props> = ({ ticker, FetchedSummaryData, FetchedSummar
   //表示するtweetのデータ
   const [DisplayTweets, setDisplayTweets] = useState<any[]>([]);
   //Tweetをpost/delete時に状態更新する状態関数
-  const [TweetPostState, setTweetPostState] = useState({});
+  const [TweetPostState, setTweetPostState] = useState<number>(0);
   //tweetのfetch query
   const [tweetLoadState, setTweetLoadState] = useState('loading');
-  const [fetchQuery, setFetchQuery] = useState({ ticker: ticker, skip: 0, take: 10 });
+  const [fetchQuery, setFetchQuery] = useState<FetchQueryType>({
+    ticker: ticker,
+    skip: 0,
+    take: 10,
+  });
   const [hasMoreTweet, setHasMoreTweet] = useState(true);
   //did mount 初期表示tweetデータ
 
-  const fetchTweet = async () => {
+  const fetchTweet = async (): Promise<void> => {
     setTweetLoadState('loading');
     const tweetData = await getTickerTweet(fetchQuery);
     setDisplayTweets([...DisplayTweets, ...tweetData]);
@@ -104,16 +109,13 @@ const StockPage: React.VFC<Props> = ({ ticker, FetchedSummaryData, FetchedSummar
       ></PostTweet>
       <TweetFeed
         tweetLoadState={tweetLoadState}
-        setTweetLoadState={setTweetLoadState}
         DisplayTweets={DisplayTweets}
         setDisplayTweets={setDisplayTweets}
         TweetPostState={TweetPostState}
         setTweetPostState={setTweetPostState}
         fetchTweet={fetchTweet}
         fetchQuery={fetchQuery}
-        setFetchQuery={setFetchQuery}
         hasMoreTweet={hasMoreTweet}
-        setHasMoreTweet={setHasMoreTweet}
       ></TweetFeed>
     </>
   );

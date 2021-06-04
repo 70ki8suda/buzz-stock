@@ -37,7 +37,6 @@ const Feed = ({ userID }) => {
     await fetch(requestUrl, {
       method: 'GET',
       mode: 'cors',
-      withCredentials: true,
       credentials: 'include',
       headers: {
         Authorization: auth.bearerToken(),

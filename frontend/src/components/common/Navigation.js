@@ -39,10 +39,7 @@ const Navigation = () => {
   };
   //ticker State
   const [TickerOptions, setTickerOptions] = React.useState([]);
-  const SPtickerOptionClick = function (ticker) {
-    //router.push(`/quote/${ticker}`);
-    console.log(ticker);
-  };
+
   const handleSearchTickerInput = async function (e) {
     //連続でautocomplete検索起動するのを防ぐフラグ
     let handleTickerInputFlag = true;

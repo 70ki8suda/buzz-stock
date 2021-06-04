@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from 'react';
-import Image from 'next/image';
 const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
 import profileStyle from './Profile.module.scss';
 import postStyle from './PostTweet.module.scss';
@@ -26,7 +25,6 @@ const Profile = ({ userID }) => {
         method: 'GET',
         mode: 'cors',
         credentials: 'include',
-        withCredentials: true,
         headers: {
           Authorization: auth.bearerToken(),
         },
@@ -91,7 +89,6 @@ const Profile = ({ userID }) => {
     await fetch(api_path, {
       method: 'PATCH',
       mode: 'cors',
-      withCredentials: true,
       credentials: 'include',
       body: formData,
       headers: {
@@ -122,7 +119,6 @@ const Profile = ({ userID }) => {
     fetch(api_path, {
       method: 'PATCH',
       mode: 'cors',
-      withCredentials: true,
       credentials: 'include',
       headers: {
         Authorization: auth.bearerToken(),
@@ -142,7 +138,6 @@ const Profile = ({ userID }) => {
     fetch(api_path, {
       method: 'PATCH',
       mode: 'cors',
-      withCredentials: true,
       credentials: 'include',
       headers: {
         Authorization: auth.bearerToken(),

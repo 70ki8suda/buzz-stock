@@ -38,7 +38,6 @@ const UserPage = ({ userID }) => {
     await fetch(requestUrl, {
       method: 'GET',
       mode: 'cors',
-      withCredentials: true,
       credentials: 'include',
       headers: {
         Authorization: auth.bearerToken(),
@@ -69,7 +68,6 @@ const UserPage = ({ userID }) => {
     fetch(requestUrl, {
       method: 'GET',
       mode: 'cors',
-      withCredentials: true,
       credentials: 'include',
       headers: {
         Authorization: auth.bearerToken(),

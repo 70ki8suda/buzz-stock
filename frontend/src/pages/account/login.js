@@ -71,7 +71,6 @@ const Login = () => {
     const loginApi = await fetch(api_path, {
       method: 'POST',
       mode: 'cors',
-      withCredentials: true,
       credentials: 'include',
       headers: {
         Authorization: auth.bearerToken(),

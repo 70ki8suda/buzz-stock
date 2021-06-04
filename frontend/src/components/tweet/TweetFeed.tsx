@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef, useCallback } from 'react';
+import React, { useContext, useRef, useCallback } from 'react';
 import Link from 'next/link';
 //context data
 import { AuthUserContext } from '../../pages/_app';
@@ -12,28 +12,28 @@ import style from './TweetFeed.module.scss';
 import FavStarSVG from '../../../public/images/star.svg';
 //utils
 import auth from '../../utils/auth';
+import { TweetFeedProps } from 'src/type/TweetFeedProps';
+import { TickerType } from 'src/type/Ticker.type';
+import { TweetType } from 'src/type/Tweet.type';
 const TweetFeed = ({
   tweetLoadState,
-  setTweetLoadState,
   DisplayTweets,
-  setTweetPostState,
-  TweetPostState,
   setDisplayTweets,
+  TweetPostState,
+  setTweetPostState,
   fetchTweet,
   fetchQuery,
-  setFetchQuery,
   hasMoreTweet,
-  setHasMoreTweet,
-}) => {
+}: TweetFeedProps) => {
   const { authUserData } = useContext(AuthUserContext);
   const loggedin_userID = authUserData.id;
   const { loggedInState } = useContext(LoggedInContext);
 
-  const observer = useRef();
+  const observer = useRef<IntersectionObserver>();
   const lastTweetElement = useCallback(
     (node) => {
       if (tweetLoadState == 'loading') return;
-      if (observer.current) observer.current.disconnect();
+      if (observer.current) observer.current!.disconnect();
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMoreTweet) {
           console.log('Load More Tweet');
@@ -43,19 +43,18 @@ const TweetFeed = ({
       });
       if (node) observer.current.observe(node);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [tweetLoadState, hasMoreTweet],
   );
 
-  async function onTweetDeleteHandler(e, tweet_id) {
+  async function onTweetDeleteHandler(e: React.MouseEvent<HTMLButtonElement>, tweet_id: number) {
     e.preventDefault();
     const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
     const api_path = baseRequestUrl + '/tweet/' + tweet_id;
-    console.log(api_path);
 
     await fetch(api_path, {
       method: 'DELETE',
       mode: 'cors',
-      withCredentials: true,
       credentials: 'include',
       headers: {
         Authorization: auth.bearerToken(),
@@ -69,39 +68,37 @@ const TweetFeed = ({
         console.error('Error:', error);
       });
   }
-  let favoritedByUser = (tweet) => {
-    let favorite = tweet.favorites.filter(function (favorite, index) {
+  const favoritedByUser = (tweet: TweetType): boolean | void => {
+    const favorite = tweet.favorites.filter(function (favorite) {
       if (favorite.userId == loggedin_userID) return true;
     });
     if (favorite.length > 0) return true;
   };
-  const FavoriteHandler = (e, tweet, i) => {
+  const FavoriteHandler = (e: React.MouseEvent<HTMLInputElement>, tweet: TweetType, i: number) => {
     if (loggedInState) {
-      //console.log(key.i);
+      e.preventDefault();
       //favoriteを反転させる
-      let tempTweetData = [...DisplayTweets];
+      const tempTweetData = [...DisplayTweets];
       //backendにリクエスト送信して、データベースの値変える
       const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
       const api_path = baseRequestUrl + '/favorite/' + tweet.id;
       const tweet_favorites = tweet.favorites;
       if (favoritedByUser(tweet)) {
         //既にfavorite済みのとき
-        const new_favorites = tweet_favorites.filter(function (favorite, index) {
+        const new_favorites = tweet_favorites.filter(function (favorite) {
           favorite.userId !== loggedin_userID;
         });
         tempTweetData[i].favorites = new_favorites;
         setDisplayTweets(tempTweetData);
 
-        const requestOptions = {
+        fetch(api_path, {
           method: 'DELETE',
           mode: 'cors',
-          withCredentials: true,
           credentials: 'include',
           headers: {
             Authorization: auth.bearerToken(),
           },
-        };
-        fetch(api_path, requestOptions)
+        })
           .then((response) => response.json())
           .then((data) => console.log(data));
       } else {
@@ -109,16 +106,14 @@ const TweetFeed = ({
         const new_favorites = [...tweet_favorites, { userId: loggedin_userID, tweetId: tweet.id }];
         tempTweetData[i].favorites = new_favorites;
         setDisplayTweets(tempTweetData);
-        const requestOptions = {
+        fetch(api_path, {
           method: 'POST',
           mode: 'cors',
-          withCredentials: true,
           credentials: 'include',
           headers: {
             Authorization: auth.bearerToken(),
           },
-        };
-        fetch(api_path, requestOptions)
+        })
           .then((response) => response.json())
           .then((data) => console.log(data));
       }
@@ -159,7 +154,7 @@ const TweetFeed = ({
               <div className={style['ticker-container']}>
                 {tweet.tickers !== undefined &&
                   tweet.tickers.length > 0 &&
-                  tweet.tickers.map((ticker, j) => (
+                  tweet.tickers.map((ticker: TickerType, j: number) => (
                     <Link href={`/quote/${ticker.name}`} key={j}>
                       <span className={style['ticker']}>#{ticker.name}</span>
                     </Link>
@@ -169,7 +164,9 @@ const TweetFeed = ({
               <div className={style['fav-container']}>
                 <div className={style['fav-wrapper']}>
                   <FavStarSVG
-                    onClick={(e) => FavoriteHandler(e, tweet, i)}
+                    onClick={(e: React.MouseEvent<HTMLInputElement>) =>
+                      FavoriteHandler(e, tweet, i)
+                    }
                     className={`${style['fav-star']} ${
                       favoritedByUser(tweet) && style['fav-star--favorited']
                     }`}
@@ -180,7 +177,9 @@ const TweetFeed = ({
               {tweet.user.id == loggedin_userID && (
                 <button
                   className={style['delete-btn']}
-                  onClick={(e) => onTweetDeleteHandler(e, tweet.id)}
+                  onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+                    onTweetDeleteHandler(e, tweet.id)
+                  }
                 >
                   削除
                 </button>
