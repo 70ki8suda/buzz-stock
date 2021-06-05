@@ -5,15 +5,15 @@ import auth from '../../utils/auth';
 //context
 import { LoggedInContext } from '../../pages/_app';
 import { AuthUserContext } from '../../pages/_app';
-import { SpMenuContext } from '../../pages/_app';
+
 //style
 import navStyle from './Navigation.module.scss';
-const Navigation = () => {
+const Navigation = ({ spMenuState, setSpMenuState }) => {
   const router = useRouter();
   const { loggedInState, setLoggedInState } = useContext(LoggedInContext);
 
   const { authUserData, setAuthUserData } = useContext(AuthUserContext);
-  const { SpMenuState, setSpMenuState } = useContext(SpMenuContext);
+
   //ref
   let searchTickersSp;
   const [SpSearchWindow, setSpSearchWindow] = useState(false);
@@ -35,7 +35,7 @@ const Navigation = () => {
 
   //sp-menu state
   const SpMenuHandler = () => {
-    setSpMenuState(!SpMenuState);
+    setSpMenuState(!spMenuState);
   };
   //ticker State
   const [TickerOptions, setTickerOptions] = React.useState([]);
@@ -171,12 +171,12 @@ const Navigation = () => {
         <div
           onClick={SpMenuHandler}
           className={`${navStyle['sp-menu-trigger']} ${
-            SpMenuState && navStyle['sp-menu-trigger-active']
+            spMenuState && navStyle['sp-menu-trigger-active']
           }`}
         >
           <div className={navStyle['sp-menu-trigger-border']}></div>
         </div>
-        <div className={`${navStyle['sp-menu']} ${SpMenuState && navStyle['sp-menu-active']}`}>
+        <div className={`${navStyle['sp-menu']} ${spMenuState && navStyle['sp-menu-active']}`}>
           <ul className={navStyle['auth-nav-list-sp']}>
             {loggedInState ? (
               <>

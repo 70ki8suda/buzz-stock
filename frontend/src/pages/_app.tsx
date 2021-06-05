@@ -15,7 +15,7 @@ import '../styles/globals.scss';
 import { UserDataType } from '../type/UserDataType';
 import { LoggedInContextType } from '../type/LoggedInContextType';
 import { AuthUserContextType } from '../type/AuthUserContextType';
-import { SpMenuContextType } from '../type/SpMenuContextType';
+
 import { getAuthUserData } from 'src/service/auth/auth.service';
 
 //AuthUserData 初期値
@@ -47,13 +47,6 @@ export const AuthUserContext = createContext<AuthUserContextType>({
   },
 });
 
-export const SpMenuContext = createContext<SpMenuContextType>({
-  spMenuState: false,
-  setSpMenuState: () => {
-    return;
-  },
-});
-
 //window幅取得関数
 
 const App = ({ Component, pageProps }: AppProps) => {
@@ -62,7 +55,7 @@ const App = ({ Component, pageProps }: AppProps) => {
   //ログイン状態
   const [loggedInState, setLoggedInState] = useState(false);
   //スマホメニュー状態
-  const [spMenuState, setSpMenuState] = React.useState(false);
+  const [spMenuState, setSpMenuState] = useState(false);
   //ログイン済みの場合contextにプロフィールデータを入れる
   const [authUserData, setAuthUserData] = useState<UserDataType>({
     ...initialAuthUserData,
@@ -103,25 +96,23 @@ const App = ({ Component, pageProps }: AppProps) => {
       )}
       <LoggedInContext.Provider value={{ loggedInState, setLoggedInState }}>
         <AuthUserContext.Provider value={{ authUserData, setAuthUserData }}>
-          <SpMenuContext.Provider value={{ spMenuState, setSpMenuState }}>
-            <Head>
-              <meta name="viewport" content="width=device-width, user-scalable=no" />
-              <title>BUZZ STOCK .COM</title>
-              <meta
-                name="description"
-                content="株式のチャートの確認・ファンダメンタル情報の確認ならBuzz Stock.comへ"
-              />
-              <link rel="preload" href="/fonts/rifton-norm.ttf" as="font" crossOrigin="" />
-              <link rel="preload" href="/fonts/nulshock-bd.ttf" as="font" crossOrigin="" />
-            </Head>
-            <div className="page-container">
-              <div className={`page-wrapper ${spMenuState && 'sp-menu-trigger-active'}`}>
-                <Navigation />
-                <Component {...pageProps} />
-                <Footer />
-              </div>
+          <Head>
+            <meta name="viewport" content="width=device-width, user-scalable=no" />
+            <title>BUZZ STOCK .COM</title>
+            <meta
+              name="description"
+              content="株式のチャートの確認・ファンダメンタル情報の確認ならBuzz Stock.comへ"
+            />
+            <link rel="preload" href="/fonts/rifton-norm.ttf" as="font" crossOrigin="" />
+            <link rel="preload" href="/fonts/nulshock-bd.ttf" as="font" crossOrigin="" />
+          </Head>
+          <div className="page-container">
+            <div className={`page-wrapper ${spMenuState && 'sp-menu-trigger-active'}`}>
+              <Navigation spMenuState={spMenuState} setSpMenuState={setSpMenuState} />
+              <Component {...pageProps} />
+              <Footer />
             </div>
-          </SpMenuContext.Provider>
+          </div>
         </AuthUserContext.Provider>
       </LoggedInContext.Provider>
     </>
