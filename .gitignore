@@ -75,3 +75,4 @@
 /backend/!.vscode/tasks.json
 /backend/!.vscode/launch.json
 /backend/!.vscode/extensions.json
+node_modules

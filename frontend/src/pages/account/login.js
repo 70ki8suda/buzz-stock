@@ -84,8 +84,8 @@ const Login = () => {
     if (!result.error) {
       auth.login(result);
       setLoggedInState(auth.isAuthenticated());
-      let userID = result.userId;
-      router.push(`/user/${userID}`);
+      let userId = result.userId;
+      router.push(`/user/${userId}`);
     } else {
       setServerResponse([]);
       if (typeof result.message == 'string') {

@@ -15,7 +15,7 @@ import { LoggedInContext } from '../../pages/_app';
 //styles
 import style from '../../styles/pages/Feed.module.scss';
 
-const Feed = ({ userID }) => {
+const Feed = ({ userId }) => {
   const router = useRouter();
   const { loggedInState } = useContext(LoggedInContext);
 
@@ -25,7 +25,7 @@ const Feed = ({ userID }) => {
   const [TweetPostState, setTweetPostState] = React.useState({});
   //tweetのfetch query
   const [tweetLoadState, setTweetLoadState] = useState('loading');
-  const [fetchQuery, setFetchQuery] = useState({ userId: userID, skip: 0, take: 10 });
+  const [fetchQuery, setFetchQuery] = useState({ userId: userId, skip: 0, take: 10 });
   const [hasMoreTweet, setHasMoreTweet] = useState(true);
 
   const fetchTweet = async () => {
@@ -64,7 +64,7 @@ const Feed = ({ userID }) => {
     setDisplayTweets([]);
     fetchTweet();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [TweetPostState, userID]);
+  }, [TweetPostState, userId]);
 
   return (
     <>

@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 
 //components
-import Profile from '../../components/tweet/Profile';
+import Profile from '../../components/profile/Profile';
 import PostTweet from '../../components/tweet/PostTweet';
 import TweetFeed from '../../components/tweet/TweetFeed';
 //utils
@@ -13,7 +13,7 @@ import auth from '../../utils/auth';
 import { AuthUserContext } from '../_app';
 import { LoggedInContext } from '../../pages/_app';
 
-const UserPage = ({ userID }) => {
+const UserPage = ({ userId }) => {
   const { loggedInState } = useContext(LoggedInContext);
 
   const { authUserData } = useContext(AuthUserContext);
@@ -27,7 +27,7 @@ const UserPage = ({ userID }) => {
   const [TweetPostState, setTweetPostState] = useState(0);
   //tweetのfetch query
   const [tweetLoadState, setTweetLoadState] = useState('loading');
-  const [fetchQuery, setFetchQuery] = useState({ userId: userID, skip: 0, take: 10 });
+  const [fetchQuery, setFetchQuery] = useState({ userId: userId, skip: 0, take: 10 });
   const [hasMoreTweet, setHasMoreTweet] = useState(true);
 
   const fetchTweet = async () => {
@@ -57,7 +57,7 @@ const UserPage = ({ userID }) => {
   //user→user切り替え時にリフレッシュ
   React.useEffect(() => {
     const freshQuery = { skip: 0, take: 10 };
-    setFetchQuery({ userId: userID, skip: 0, take: 10 });
+    setFetchQuery({ userId: userId, skip: 0, take: 10 });
 
     fetchTweet();
 
@@ -81,15 +81,15 @@ const UserPage = ({ userID }) => {
         setTweetLoadState('complete');
         setHasMoreTweet(json.length > 0);
       });
-  }, [TweetPostState, userID]);
+  }, [TweetPostState, userId]);
 
   return (
     <>
       <Head>
         <title>User Page</title>
       </Head>
-      <Profile userID={userID}></Profile>
-      {loggedInState && loggedin_userID == userID && (
+      <Profile userId={userId}></Profile>
+      {loggedInState && loggedin_userID == userId && (
         <PostTweet
           TweetPostState={TweetPostState}
           setTweetPostState={setTweetPostState}
@@ -112,8 +112,8 @@ const UserPage = ({ userID }) => {
   );
 };
 export async function getServerSideProps({ query }) {
-  const { userID } = query;
-  return { props: { userID } };
+  const { userId } = query;
+  return { props: { userId } };
 }
 
 export default UserPage;

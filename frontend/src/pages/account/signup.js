@@ -148,8 +148,8 @@ const Signup = () => {
 
       setLoggedInState(auth.isAuthenticated());
       //console.log(authUserData);
-      let userID = result.userId;
-      router.push(`/user/${userID}`);
+      let userId = result.userId;
+      router.push(`/user/${userId}`);
     }
   }
 
