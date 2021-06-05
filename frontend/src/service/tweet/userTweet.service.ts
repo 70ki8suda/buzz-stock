@@ -2,10 +2,10 @@ import { FetchQueryType } from 'src/type/FetchQueryType';
 import auth from '../../utils/auth';
 const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
 
-const getTickerTweet = async (fetchQuery: FetchQueryType) => {
+const getUserTweet = async (fetchQuery: FetchQueryType) => {
   const queryParams = { skip: String(fetchQuery.skip), take: String(fetchQuery.take) };
   const query = new URLSearchParams(queryParams);
-  const requestUrl = baseRequestUrl + '/tweet/quote/' + fetchQuery.ticker + '?' + query;
+  const requestUrl = baseRequestUrl + '/tweet/user/' + fetchQuery.userId + '?' + query;
   //console.log(requestUrl);
   const tweetData = await fetch(requestUrl, {
     method: 'GET',
@@ -20,11 +20,11 @@ const getTickerTweet = async (fetchQuery: FetchQueryType) => {
   return tweetData;
 };
 
-//ticker→tickerページ遷移時にリフレッシュ
-const getInitialTickerTweet = async (freshQuery: FetchQueryType) => {
+//user→userページ遷移時にリフレッシュ
+const getInitialUserTweet = async (freshQuery: FetchQueryType) => {
   const queryParams = { skip: String(freshQuery.skip), take: String(freshQuery.take) };
   const query = new URLSearchParams(queryParams);
-  const requestUrl = baseRequestUrl + '/tweet/quote/' + freshQuery.ticker + '?' + query;
+  const requestUrl = baseRequestUrl + '/tweet/user/' + freshQuery.userId + '?' + query;
   const tweetData = await fetch(requestUrl, {
     method: 'GET',
     mode: 'cors',
@@ -38,4 +38,4 @@ const getInitialTickerTweet = async (freshQuery: FetchQueryType) => {
   return tweetData;
 };
 
-export { getTickerTweet, getInitialTickerTweet };
+export { getUserTweet, getInitialUserTweet };

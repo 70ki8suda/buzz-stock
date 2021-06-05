@@ -1,7 +1,7 @@
 const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
 import auth from '../../utils/auth.js';
 
-const getProfileData = async (userId: number): Promise<any> => {
+const getProfileData = async (userId: string): Promise<any> => {
   const url = baseRequestUrl + '/user/' + userId;
   const profileData = await fetch(url, {
     method: 'GET',

@@ -11,7 +11,7 @@ import { InitialProfileUpdateData, ProfileUpdateDataType } from 'src/type/Profil
 //service
 import { getProfileData, updateProfileRequest } from 'src/service/profile/profile.service';
 import { followUserRequest, unfollowUserRequest } from 'src/service/follow/follow.service';
-const Profile = ({ userId }: { userId: number }) => {
+const Profile = ({ userId }: { userId: string }) => {
   //profileデータ
   const [profileDisplayData, setProfileDisplayData] = useState<ProfileDisplayDataType>(
     InitialProfileDisplayData,
@@ -28,7 +28,7 @@ const Profile = ({ userId }: { userId: number }) => {
 
   //did mount 初期表示profileデータ
   useEffect(() => {
-    const fetchProfileData = async (userId: number): Promise<void> => {
+    const fetchProfileData = async (userId: string): Promise<void> => {
       const profileData = await getProfileData(userId);
       setProfileDisplayData(profileData);
     };
@@ -129,12 +129,12 @@ const Profile = ({ userId }: { userId: number }) => {
             </span>
           </div>
         </div>
-        {loggedin_userId == userId && !editToggleState && (
+        {loggedin_userId === parseInt(userId) && !editToggleState && (
           <button className={`submit-btn ${style['edit-profile']}`} onClick={() => editToggle()}>
             編集
           </button>
         )}
-        {loggedin_userId == userId && editToggleState && (
+        {loggedin_userId === parseInt(userId) && editToggleState && (
           <button
             className={`submit-btn ${style['edit-profile']} ${style['edit-profile-active']}`}
             onClick={() => editToggle()}
@@ -143,7 +143,7 @@ const Profile = ({ userId }: { userId: number }) => {
           </button>
         )}
       </div>
-      {loggedin_userId == userId && editToggleState && (
+      {loggedin_userId === parseInt(userId) && editToggleState && (
         <form className={style['update-form']}>
           <div className="form-item">
             <label htmlFor="name">名前</label>
@@ -191,7 +191,7 @@ const Profile = ({ userId }: { userId: number }) => {
         </form>
       )}
 
-      {loggedin_userId != userId && !profileDisplayData.following && (
+      {loggedin_userId !== parseInt(userId) && !profileDisplayData.following && (
         <button
           className={style['follow-btn']}
           onClick={(e: React.MouseEvent<HTMLButtonElement>) => followUser(e)}
@@ -199,7 +199,7 @@ const Profile = ({ userId }: { userId: number }) => {
           FOLLOW
         </button>
       )}
-      {loggedin_userId != userId && profileDisplayData.following && (
+      {loggedin_userId !== parseInt(userId) && profileDisplayData.following && (
         <button
           className={style['unfollow-btn']}
           onClick={(e: React.MouseEvent<HTMLButtonElement>) => unfollowUser(e)}

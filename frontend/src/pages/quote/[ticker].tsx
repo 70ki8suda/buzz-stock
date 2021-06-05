@@ -23,11 +23,11 @@ let Summary_Request: string;
 type Fetcher = { (ticker: string): Promise<[]> };
 let fetcher: Fetcher;
 
-interface Props {
+type Props = {
   ticker: string;
   FetchedSummaryData: [] | undefined;
   FetchedSummaryState: string;
-}
+};
 const StockPage: React.VFC<Props> = ({ ticker, FetchedSummaryData, FetchedSummaryState }) => {
   //表示するSummaryのデータ
   Summary_Request = `https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-summary?symbol=${ticker}&region=US`;
@@ -60,6 +60,7 @@ const StockPage: React.VFC<Props> = ({ ticker, FetchedSummaryData, FetchedSummar
     setHasMoreTweet(tweetData.length > 0);
   };
 
+  //tweetセット
   useEffect(() => {
     //ticker→tickerページ遷移時にリフレッシュ
     const freshQuery = { ticker: ticker, skip: 0, take: 10 };
@@ -74,6 +75,7 @@ const StockPage: React.VFC<Props> = ({ ticker, FetchedSummaryData, FetchedSummar
     fetchInitialTweet();
   }, [ticker, TweetPostState]);
 
+  //summaryDataセット
   useEffect(() => {
     //ticker→ticker 遷移時のデータ更新
     setSummaryData(FetchedSummaryData);
