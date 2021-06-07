@@ -308,9 +308,9 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }: Props) 
         }`}
       >
         <div className={postStyle['sp-ui-top']}>
-          <div className={postStyle['sp-ui-cancel']} onClick={spTweetTrigger}>
+          <button className={postStyle['sp-ui-cancel']} onClick={spTweetTrigger}>
             Cancel
-          </div>
+          </button>
           <button className={postStyle['sp-ui-post']} onClick={(e) => PostTweet(e)}>
             投稿
           </button>
