@@ -60,7 +60,7 @@
 .tweet-text-input {
   width: 100%;
   font-size: 18px;
-
+  height: 6em;
   @media #{$bp-tab} {
     font-size: 15px;
   }
@@ -248,4 +248,37 @@
 .ticker-options-container {
   overflow-y: scroll;
   max-height: 50vh;
+}
+
+.ticker-input-wrap {
+  position: relative;
+}
+
+.ticker-options-container {
+  position: absolute;
+  z-index: 100;
+  background: rgba(255, 255, 255, 1);
+}
+.ticker-option-item {
+  padding: 1em;
+  cursor: pointer;
+}
+
+.ticker-option-name {
+  display: inline-block;
+  margin-right: 0.6em;
+  color: #666;
+  font-size: 0.9em;
+  margin-bottom: 0.5em;
+}
+
+.ticker-option-symbol {
+  font-weight: bold;
+}
+
+.ticker-option-exchange {
+  color: #666;
+  font-size: 0.9em;
+  display: inline-block;
+  margin-left: 1em;
 }

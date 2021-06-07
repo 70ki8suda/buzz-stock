@@ -1,33 +1,46 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 //context data
 import { AuthUserContext } from '../../pages/_app';
 import { LoggedInContext } from '../../pages/_app';
-//env
 //style
 import postStyle from './PostTweet.module.scss';
-//module
-import auth from '../../utils/auth';
+//utils
+import TweetValidator from '../../utils/tweetValidator';
+//type
+import { TempTickersType } from 'src/type/tempTickers.type';
+import { initialTweetPostState, TweetPostType } from 'src/type/TweetPost.type';
+import { fetchAutoCompleteData } from 'src/service/autoComplete/autoComplete.service';
+import { PostTweetAction } from 'src/service/tweet/postTweet.service';
 
-const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
+type Props = {
+  TweetPostState: number;
+  setTweetPostState: React.Dispatch<React.SetStateAction<number>>;
+  defaultTicker: string | undefined;
+};
+
+const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }: Props) => {
+  //context
   const { authUserData } = useContext(AuthUserContext);
   const { loggedInState } = useContext(LoggedInContext);
   const profile_image = authUserData.profile_image;
   //tweetデータ
-  const [TweetPostData, setTweetPostData] = React.useState({});
+  const [TweetPostData, setTweetPostData] = useState<TweetPostType>(initialTweetPostState);
   //ticker State
-  const [TickerOptions, setTickerOptions] = React.useState([]);
+  const [tickerInput, setTickerInput] = useState<string>('');
+  const [TickerOptions, setTickerOptions] = useState<TempTickersType[]>([]);
   //ticker data
-  const [TickerData, setTickerData] = React.useState([defaultTicker]);
-  const [messages, setMessages] = React.useState({
+  const [TickerData, setTickerData] = useState([defaultTicker]);
+  const [messages, setMessages] = useState({
     tweet_text: '',
     tweet_image: '',
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
+    //デフォルトのTickerセット
     defaultTicker == undefined ? setTickerData([]) : setTickerData([defaultTicker]);
   }, [TweetPostState, defaultTicker]);
 
-  const handlePostChange = (e) => {
+  const handlePostChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
     const target = e.target;
     const name = target.name;
     const value = target.value;
@@ -37,68 +50,38 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
 
     setMessages(() => {
       //console.log(messages);
-      return { ...messages, [name]: formValidate(name, value) };
+      return { ...messages, [name]: TweetValidator.validate(name, value) };
     });
   };
 
-  const formValidate = (name, value) => {
-    switch (name) {
-      case 'tweet_text':
-        return tweetTextValidation(value);
-    }
-  };
+  //ticker autocomplete検索
+  const tickerRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    //連続でautocomplete検索するのを防ぐ
+    setTimeout(() => {
+      if (tickerInput === '') {
+        setTickerOptions([]);
+      }
+      if (
+        tickerInput === tickerRef.current?.value &&
+        tickerInput !== undefined &&
+        tickerInput !== ''
+      ) {
+        const searchQuery = tickerInput;
 
-  const tweetTextValidation = (text) => {
-    //console.log(text);
-    if (!text) return 'tweetを入力してください';
-    if (text.length > 240) return 'tweetは240文字以下でお願いします';
-
-    return '';
-  };
-
-  const handleTickerInput = async function (e) {
-    //連続でautocomplete検索起動するのを防ぐフラグ
-    let handleTickerInputFlag = true;
-    //timer関数
-    const timer = function () {
-      setTimeout(function () {
-        handleTickerInputFlag = true;
-      }, 200);
-    };
-    const target = e.target;
-    let searchQuery = target.value;
-    const API_KEY = process.env.NEXT_PUBLIC_RAPIDAPI_KEY;
-    const API_HOST = process.env.NEXT_PUBLIC_RAPIDAPI_HOST;
-    if (handleTickerInputFlag) {
-      //timer 一回リセット,フラグ->false,再起動
-      clearTimeout(timer);
-      handleTickerInputFlag = false;
-      timer();
-      //autocomplete search処理
-      //autocomplete option 初期化
-      setTickerOptions([]);
-      //関数内利用
-      let tempTickers = [];
-      //autocomplete fetch
-      fetch(
-        `https://apidojo-yahoo-finance-v1.p.rapidapi.com/auto-complete?q=${searchQuery}&region=US`,
-        {
-          method: 'GET',
-          headers: {
-            'x-rapidapi-key': API_KEY,
-            'x-rapidapi-host': API_HOST,
-          },
-        },
-      )
-        .then((response) => {
-          return response.json();
-        })
-        .then((data) => {
-          if (data.quotes != undefined) {
-            if (data.quotes.length > 0) {
-              data.quotes.map((quote) => {
-                let optionExchange = quote.exchange;
-                let optionName = quote.shortname;
+        //autocomplete search処理
+        //autocomplete option 初期化
+        setTickerOptions([]);
+        //関数内利用
+        const tempTickers: any[] = [];
+        //autocomplete fetch
+        const fetchAutoComplete = async (searchQuery: string) => {
+          const tickerOptions = await fetchAutoCompleteData(searchQuery);
+          if (tickerOptions && tickerOptions.quotes !== undefined) {
+            if (tickerOptions.quotes.length > 0) {
+              tickerOptions.quotes.map((quote: any) => {
+                const optionExchange = quote.exchange;
+                const optionName = quote.shortname;
 
                 tempTickers.push({
                   optionName: optionName,
@@ -109,127 +92,98 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
               setTickerOptions(tempTickers);
             }
           }
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
-    //autocomplete選択時処理
-    let selectedOption;
-    let autocompleteSelected = (inputValue) => {
-      let optionsData = document.getElementById('ticker-option-list');
-      for (let i = 0; i < optionsData.options.length; i++) {
-        if (inputValue == optionsData.options[i].value) {
-          selectedOption = optionsData.options[i].getAttribute('data-ticker');
-          return true;
-        }
+        };
+        fetchAutoComplete(searchQuery);
       }
-      return false;
-    };
-    if (autocompleteSelected(target.value)) {
-      if (!TickerData.includes(selectedOption)) {
-        setTickerData([...TickerData, selectedOption]);
-      }
-      target.value = '';
+    }, 300);
+  }, [tickerInput, TickerData]);
+
+  const addTicker = function (ticker: string) {
+    if (!TickerData.includes(ticker)) {
+      setTickerData([...TickerData, ticker]);
+      setTickerInput('');
     }
   };
-  const handleTickerDelete = (e) => {
-    const target = e.target;
+
+  const deleteTicker = (e: React.MouseEvent<HTMLParagraphElement>) => {
+    const target = e.currentTarget;
     //* 1文字目の#を削除
-    const deleteValue = target.textContent.slice(1);
+    const setValue = target.dataset.ticker;
 
-    setTickerData(TickerData.filter((t) => t !== deleteValue));
+    setTickerData(TickerData.filter((t) => t !== setValue));
   };
-  const setTweetImageFile = (e) => {
-    e.preventDefault();
-    let size_in_megabytes = e.target.files[0].size / 1024 / 1024;
 
-    if (size_in_megabytes > 5) {
-      setMessages({
-        ...messages,
-        tweet_image: 'ファイルの上限サイズは5MBです',
-      });
-      setTweetPostData({ tweet_image: null, imageSelected: false });
-      document.getElementById('tweet-image-input').value = '';
-      document.getElementById('tweet-image-input-sp').value = '';
-      return;
+  const setTweetImageFile = (targetImage: any) => {
+    const image = targetImage;
+    if (image !== null) {
+      const size_in_megabytes = image.size / 1024 / 1024;
+
+      if (size_in_megabytes > 5) {
+        setMessages({
+          ...messages,
+          tweet_image: 'ファイルの上限サイズは5MBです',
+        });
+        setTweetPostData({ ...TweetPostData, tweet_image: null, imageSelected: false });
+        (document.getElementById('tweet-image-input')! as HTMLInputElement).value = '';
+        (document.getElementById('tweet-image-input-sp')! as HTMLInputElement).value = '';
+        return;
+      }
+
+      setTweetPostData({ ...TweetPostData, tweet_image: image, imageSelected: true });
     }
-
-    setTweetPostData({ ...TweetPostData, tweet_image: e.target.files[0], imageSelected: true });
   };
 
   //sp tweet ui
-  let tweetTextSp;
+
   const [SpTweetWindow, setSpTweetWindow] = React.useState(false);
+  const tweetTextSp = useRef<HTMLTextAreaElement>(null);
   const spTweetTrigger = () => {
     setSpTweetWindow(!SpTweetWindow);
     if (!SpTweetWindow) {
-      tweetTextSp.focus();
+      tweetTextSp.current?.focus();
     }
   };
 
-  const spAddTicker = function (ticker) {
-    if (!TickerData.includes(ticker)) {
-      setTickerData([...TickerData, ticker]);
-    }
-  };
   //post tweet request
-  async function PostTweet(e) {
+  async function PostTweet(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
     const { tweet_text, tweet_image } = TweetPostData;
     let tickers = TickerData.join(',');
 
     if (tickers.length === 0) {
-      tickers = null;
+      tickers = '';
     }
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append('content', tweet_text);
 
-    if (tickers !== null) {
+    if (tickers.length !== 0) {
       formData.append('tickers', tickers);
     }
     if (tweet_image !== undefined) {
       formData.append('tweet_image', tweet_image);
     }
-    const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
-    const create_tweet_api_path = baseRequestUrl + '/tweet';
+
     if (tweet_text) {
-      await fetch(create_tweet_api_path, {
-        method: 'POST',
-        mode: 'cors',
-        credentials: 'include',
-        body: formData,
-        headers: {
-          Authorization: auth.bearerToken(),
-        },
-      })
-        .then((res) => {
-          return res.json();
-        })
-        .then((res) => {
-          //console.log(res);
-          setTweetPostData({
-            tweet_text: null,
-            image: null,
-            imageSelected: false,
-            tickers: null,
-          });
-          const tweetInput = document.querySelectorAll('[data-input="tweet-input"]');
-
-          for (const input of tweetInput) {
-            input.value = '';
-          }
-          setMessages({
-            tweet_text: '',
-            tweet_image: '',
-          });
-          setTweetPostState(TweetPostState + 1);
-        })
-
-        .catch((error) => {
-          console.error('Error:', error);
+      const postTweet = async (formData: FormData) => {
+        await PostTweetAction(formData);
+        setTweetPostData({
+          tweet_text: '',
+          tweet_image: null,
+          imageSelected: false,
         });
-      setSpTweetWindow(false);
+        setTickerData([defaultTicker]);
+        const tweetInput = document.querySelectorAll('[data-input="tweet-input"]');
+        for (const input of tweetInput as any) {
+          input.value = '';
+        }
+        setMessages({
+          tweet_text: '',
+          tweet_image: '',
+        });
+        setTweetPostState(TweetPostState + 1);
+        setSpTweetWindow(false);
+      };
+      postTweet(formData);
     } else {
       setMessages({
         ...messages,
@@ -259,34 +213,55 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
               onChange={handlePostChange}
               name="tweet_text"
               id="tweetText"
-              cols="30"
-              rows="3"
               data-input="tweet-input"
             ></textarea>
             <div className={`form-item ${postStyle['ticker-box']}`}>
               <label htmlFor="tickers-input" className={postStyle['ticker-label']}>
                 Tickers
               </label>
-              <input
-                autoComplete="off"
-                list="ticker-option-list"
-                type="text"
-                name="tickers"
-                id="tickers-input"
-                onChange={handleTickerInput}
-              />
+              <div className="ticker-input-wrap">
+                <input
+                  autoComplete="off"
+                  list="ticker-option-list"
+                  type="text"
+                  name="tickers"
+                  id="tickers-input"
+                  onChange={(e) => setTickerInput(e.target.value)}
+                  ref={tickerRef}
+                  value={tickerInput}
+                />
+                <div className={postStyle['ticker-options-container']}>
+                  {TickerOptions.length > 0 &&
+                    TickerOptions.map((tickerOption, index) => (
+                      <div
+                        className={postStyle['ticker-option-item']}
+                        onClick={() => addTicker(tickerOption.ticker)}
+                        key={index}
+                      >
+                        <span className={postStyle['ticker-option-name']}>
+                          {tickerOption.optionName}
+                        </span>
+                        <span className={postStyle['ticker-option-symbol']}>
+                          {tickerOption.ticker}
+                        </span>
+                        <span className={postStyle['ticker-option-exchange']}>
+                          {tickerOption.optionExchange}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              </div>
             </div>
-            <datalist id="ticker-option-list">
-              {TickerOptions.map((ticker, i) => (
-                <option key={i} data-ticker={ticker.ticker}>
-                  {ticker.ticker} {ticker.optionExchange} {ticker.optionName}
-                </option>
-              ))}
-            </datalist>
+
             <div className={postStyle['ticker-container']}>
               {TickerData.length > 0 &&
                 TickerData.map((ticker, j) => (
-                  <p key={j} className={postStyle['ticker']} onClick={handleTickerDelete}>
+                  <p
+                    key={j}
+                    data-ticker={ticker}
+                    className={postStyle['ticker']}
+                    onClick={deleteTicker}
+                  >
                     #{ticker}
                   </p>
                 ))}
@@ -304,7 +279,9 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
                   id="tweet-image-input"
                   name="tweet_image"
                   accept="image/png,image/jpeg"
-                  onChange={setTweetImageFile}
+                  onChange={(e) =>
+                    setTweetImageFile(e.target.files !== null ? e.target.files[0] : null)
+                  }
                   data-input="tweet-input"
                   className="image-input"
                 />
@@ -334,9 +311,9 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
           <div className={postStyle['sp-ui-cancel']} onClick={spTweetTrigger}>
             Cancel
           </div>
-          <div className={postStyle['sp-ui-post']} onClick={(e) => PostTweet(e)}>
+          <button className={postStyle['sp-ui-post']} onClick={(e) => PostTweet(e)}>
             投稿
-          </div>
+          </button>
         </div>
         <div className={postStyle['sp-tweet-input-container']}>
           <div className={postStyle['profile-image-wrap']}>
@@ -351,18 +328,14 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
             onChange={handlePostChange}
             name="tweet_text"
             id="tweetTextSp"
-            cols="30"
-            rows="3"
             data-input="tweet-input"
-            ref={(input) => {
-              tweetTextSp = input;
-            }}
+            ref={tweetTextSp}
           ></textarea>
         </div>
         <div className={postStyle['ticker-container']}>
           {TickerData.length > 0 &&
             TickerData.map((ticker, j) => (
-              <p key={j} className={postStyle['ticker']} onClick={handleTickerDelete}>
+              <p key={j} className={postStyle['ticker']} onClick={deleteTicker}>
                 #{ticker}
               </p>
             ))}
@@ -383,7 +356,9 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
               name="tickers"
               id="tickers-input-sp"
               data-input="tweet-input"
-              onChange={handleTickerInput}
+              onChange={(e) => setTickerInput(e.target.value)}
+              ref={tickerRef}
+              value={tickerInput}
             />
           </div>
           <div className={`image-input-wrap ${postStyle['tweet-post-image']}`}>
@@ -410,7 +385,7 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }) => {
             TickerOptions.map((tickerOption, index) => (
               <div
                 className={postStyle['sp-ticker-option-item']}
-                onClick={() => spAddTicker(tickerOption.ticker)}
+                onClick={() => addTicker(tickerOption.ticker)}
                 key={index}
               >
                 <span className={postStyle['sp-ticker-option-name']}>
