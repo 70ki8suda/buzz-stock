@@ -11,10 +11,11 @@ import formatDate from '../../utils/format_date';
 import style from './TweetFeed.module.scss';
 import FavStarSVG from '../../../public/images/star.svg';
 //utils
-import auth from '../../utils/auth';
 import { TweetFeedProps } from 'src/type/TweetFeedProps';
 import { TickerType } from 'src/type/Ticker.type';
 import { TweetType } from 'src/type/Tweet.type';
+import { deleteTweetRequest } from 'src/service/tweet/deleteTweet.service';
+import { favoriteTweetAction, unfavoriteTweetAction } from 'src/service/tweet/favorite.service';
 const TweetFeed = ({
   tweetLoadState,
   DisplayTweets,
@@ -30,6 +31,8 @@ const TweetFeed = ({
   const { loggedInState } = useContext(LoggedInContext);
 
   const observer = useRef<IntersectionObserver>();
+
+  //最下部のtweetまでスクロールしたらfetch,無限スクロール
   const lastTweetElement = useCallback(
     (node) => {
       if (tweetLoadState == 'loading') return;
@@ -49,24 +52,13 @@ const TweetFeed = ({
 
   async function onTweetDeleteHandler(e: React.MouseEvent<HTMLButtonElement>, tweet_id: number) {
     e.preventDefault();
-    const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
-    const api_path = baseRequestUrl + '/tweet/' + tweet_id;
 
-    await fetch(api_path, {
-      method: 'DELETE',
-      mode: 'cors',
-      credentials: 'include',
-      headers: {
-        Authorization: auth.bearerToken(),
-      },
-    })
-      .then(() => {
-        setDisplayTweets(DisplayTweets.filter((tweet) => tweet.id !== tweet_id));
-        setTweetPostState(TweetPostState + 1);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
+    const deleteTweetAction = async (tweet_id: number) => {
+      await deleteTweetRequest(tweet_id);
+      setDisplayTweets(DisplayTweets.filter((tweet) => tweet.id !== tweet_id));
+      setTweetPostState(TweetPostState + 1);
+    };
+    deleteTweetAction(tweet_id);
   }
   const favoritedByUser = (tweet: TweetType): boolean | void => {
     const favorite = tweet.favorites.filter(function (favorite) {
@@ -77,45 +69,24 @@ const TweetFeed = ({
   const FavoriteHandler = (e: React.MouseEvent<HTMLInputElement>, tweet: TweetType, i: number) => {
     if (loggedInState) {
       e.preventDefault();
-      //favoriteを反転させる
+
       const tempTweetData = [...DisplayTweets];
-      //backendにリクエスト送信して、データベースの値変える
-      const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
-      const api_path = baseRequestUrl + '/favorite/' + tweet.id;
       const tweet_favorites = tweet.favorites;
+
       if (favoritedByUser(tweet)) {
-        //既にfavorite済みのとき
+        //既にfavorite済みのとき:DELETE
         const new_favorites = tweet_favorites.filter(function (favorite) {
           favorite.userId !== loggedin_userID;
         });
         tempTweetData[i].favorites = new_favorites;
         setDisplayTweets(tempTweetData);
-
-        fetch(api_path, {
-          method: 'DELETE',
-          mode: 'cors',
-          credentials: 'include',
-          headers: {
-            Authorization: auth.bearerToken(),
-          },
-        })
-          .then((response) => response.json())
-          .then((data) => console.log(data));
+        unfavoriteTweetAction(tweet.id);
       } else {
-        //未favoriteのとき
+        //未favoriteのとき:POST
         const new_favorites = [...tweet_favorites, { userId: loggedin_userID, tweetId: tweet.id }];
         tempTweetData[i].favorites = new_favorites;
         setDisplayTweets(tempTweetData);
-        fetch(api_path, {
-          method: 'POST',
-          mode: 'cors',
-          credentials: 'include',
-          headers: {
-            Authorization: auth.bearerToken(),
-          },
-        })
-          .then((response) => response.json())
-          .then((data) => console.log(data));
+        favoriteTweetAction(tweet.id);
       }
     }
   };
