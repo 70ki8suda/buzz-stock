@@ -230,7 +230,9 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }: Props) 
                   ref={tickerRef}
                   value={tickerInput}
                 />
-                <div className={postStyle['ticker-options-container']}>
+                <div
+                  className={`${postStyle['ticker-options-container']} ${postStyle['ticker-options-container--pc']}`}
+                >
                   {TickerOptions.length > 0 &&
                     TickerOptions.map((tickerOption, index) => (
                       <div
