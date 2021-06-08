@@ -355,7 +355,6 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }: Props) 
               type="text"
               name="tickers"
               id="tickers-input-sp"
-              data-input="tweet-input"
               onChange={(e) => setTickerInput(e.target.value)}
               ref={tickerRef}
               value={tickerInput}

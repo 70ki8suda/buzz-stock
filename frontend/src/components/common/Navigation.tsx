@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import auth from '../../utils/auth';
@@ -8,20 +8,31 @@ import { AuthUserContext } from '../../pages/_app';
 
 //style
 import navStyle from './Navigation.module.scss';
-const Navigation = ({ spMenuState, setSpMenuState }) => {
+import { fetchAutoCompleteData } from 'src/service/autoComplete/autoComplete.service';
+import { TempTickersType } from 'src/type/tempTickers.type';
+import { InitialUserData } from 'src/type/UserDataType';
+
+type NavigationProps = {
+  spMenuState: boolean;
+  // eslint-disable-next-line no-unused-vars
+  setSpMenuState: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const Navigation = ({ spMenuState, setSpMenuState }: NavigationProps) => {
   const router = useRouter();
   const { loggedInState, setLoggedInState } = useContext(LoggedInContext);
 
   const { authUserData, setAuthUserData } = useContext(AuthUserContext);
-
-  //ref
-  let searchTickersSp;
-  const [SpSearchWindow, setSpSearchWindow] = useState(false);
   const loggedin_userID = authUserData.id;
+  const [tickerInput, setTickerInput] = useState<string>('');
+  const [TickerOptions, setTickerOptions] = useState<TempTickersType[]>([]);
+  const [SpSearchWindow, setSpSearchWindow] = useState(false);
+  //ref
+  const tickerRef = useRef<HTMLInputElement>(null);
 
   const logoutHandler = () => {
     auth.logout();
-    setAuthUserData({});
+    setAuthUserData(InitialUserData);
     setLoggedInState(auth.isAuthenticated());
     router.push('/');
   };
@@ -29,7 +40,7 @@ const Navigation = ({ spMenuState, setSpMenuState }) => {
   const spSearchTrigger = () => {
     setSpSearchWindow(!SpSearchWindow);
     if (!SpSearchWindow) {
-      searchTickersSp.focus();
+      tickerRef.current?.focus();
     }
   };
 
@@ -37,53 +48,40 @@ const Navigation = ({ spMenuState, setSpMenuState }) => {
   const SpMenuHandler = () => {
     setSpMenuState(!spMenuState);
   };
-  //ticker State
-  const [TickerOptions, setTickerOptions] = React.useState([]);
+  //clear ticker
+  const clearTickerInput = () => {
+    setTickerOptions([]);
+    setTickerInput('');
+  };
 
-  const handleSearchTickerInput = async function (e) {
-    //連続でautocomplete検索起動するのを防ぐフラグ
-    let handleTickerInputFlag = true;
-    //timer関数
-    const timer = function () {
-      setTimeout(function () {
-        handleTickerInputFlag = true;
-      }, 200);
-    };
-    const target = e.target;
-    let searchQuery = target.value;
-    const API_KEY = process.env.NEXT_PUBLIC_RAPIDAPI_KEY;
-    const API_HOST = process.env.NEXT_PUBLIC_RAPIDAPI_HOST;
-    if (handleTickerInputFlag) {
-      //timer 一回リセット,フラグ->false,再起動
-      clearTimeout(timer);
-      handleTickerInputFlag = false;
-      timer();
-      //autocomplete search処理
+  //ticker autocomplete検索
 
-      //autocomplete option 初期化
-      setTickerOptions([]);
-      //関数内利用
-      let tempTickers = [];
-      //autocomplete fetch
-      fetch(
-        `https://apidojo-yahoo-finance-v1.p.rapidapi.com/auto-complete?q=${searchQuery}&region=US`,
-        {
-          method: 'GET',
-          headers: {
-            'x-rapidapi-key': API_KEY,
-            'x-rapidapi-host': API_HOST,
-          },
-        },
-      )
-        .then((response) => {
-          return response.json();
-        })
-        .then((data) => {
-          if (data.quotes != undefined) {
-            if (data.quotes.length > 0) {
-              data.quotes.map((quote) => {
-                let optionExchange = quote.exchange;
-                let optionName = quote.shortname;
+  useEffect(() => {
+    //連続でautocomplete検索するのを防ぐ
+    setTimeout(() => {
+      if (tickerInput === '') {
+        setTickerOptions([]);
+      }
+      if (
+        tickerInput === tickerRef.current?.value &&
+        tickerInput !== undefined &&
+        tickerInput !== ''
+      ) {
+        const searchQuery = tickerInput;
+
+        //autocomplete search処理
+        //autocomplete option 初期化
+        setTickerOptions([]);
+        //関数内利用
+        const tempTickers: any[] = [];
+        //autocomplete fetch
+        const fetchAutoComplete = async (searchQuery: string) => {
+          const tickerOptions = await fetchAutoCompleteData(searchQuery);
+          if (tickerOptions && tickerOptions.quotes !== undefined) {
+            if (tickerOptions.quotes.length > 0) {
+              tickerOptions.quotes.map((quote: any) => {
+                const optionExchange = quote.exchange;
+                const optionName = quote.shortname;
 
                 tempTickers.push({
                   optionName: optionName,
@@ -94,28 +92,12 @@ const Navigation = ({ spMenuState, setSpMenuState }) => {
               setTickerOptions(tempTickers);
             }
           }
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
-    //autocomplete選択時処理
-    let selectedOption;
-    let autocompleteSelected = (inputValue) => {
-      let optionsData = document.getElementById('search-ticker-option-list');
-      for (let i = 0; i < optionsData.options.length; i++) {
-        if (inputValue == optionsData.options[i].value) {
-          selectedOption = optionsData.options[i].getAttribute('data-ticker');
-          return true;
-        }
+        };
+        fetchAutoComplete(searchQuery);
       }
-      return false;
-    };
-    if (autocompleteSelected(target.value)) {
-      router.push(`/quote/${selectedOption}`);
-      target.value = '';
-    }
-  };
+    }, 300);
+  }, [tickerInput]);
+
   return (
     <>
       <h1 className={navStyle['page-title']}>
@@ -124,24 +106,40 @@ const Navigation = ({ spMenuState, setSpMenuState }) => {
       </h1>
       <nav className={navStyle['auth-nav']}>
         <div className={`${navStyle['search-ticker-pc']}`}>
-          <input
-            autoComplete="off"
-            list="search-ticker-option-list"
-            type="text"
-            name="tickers"
-            id="search-tickers-input"
-            className={navStyle['search-ticker-input']}
-            onChange={handleSearchTickerInput}
-            placeholder="銘柄検索"
-          />
+          <div className="ticker-input-wrap">
+            <input
+              autoComplete="off"
+              list="search-ticker-option-list"
+              type="text"
+              name="tickers"
+              id="search-tickers-input"
+              className={navStyle['search-ticker-input']}
+              onChange={(e) => setTickerInput(e.target.value)}
+              ref={tickerRef}
+              value={tickerInput}
+              placeholder="銘柄検索"
+            />
+            <div className={navStyle['ticker-options-container']}>
+              {TickerOptions.length > 0 &&
+                TickerOptions.map((tickerOption, index) => (
+                  <Link key={index} href={`/quote/${tickerOption.ticker}`}>
+                    <div className={navStyle['ticker-option-item']} onClick={clearTickerInput}>
+                      <span className={navStyle['ticker-option-name']}>
+                        {tickerOption.optionName}
+                      </span>
+                      <span className={navStyle['ticker-option-symbol']}>
+                        {tickerOption.ticker}
+                      </span>
+                      <span className={navStyle['ticker-option-exchange']}>
+                        {tickerOption.optionExchange}
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+            </div>
+          </div>
         </div>
-        <datalist id="search-ticker-option-list">
-          {TickerOptions.map((ticker, i) => (
-            <option key={i} data-ticker={ticker.ticker}>
-              {ticker.ticker} {ticker.optionExchange} {ticker.optionName}
-            </option>
-          ))}
-        </datalist>
+
         <ul className={navStyle['auth-nav-list-pc']}>
           {loggedInState ? (
             <>
@@ -217,11 +215,10 @@ const Navigation = ({ spMenuState, setSpMenuState }) => {
             autoComplete="off"
             type="text"
             name="tickers"
-            ref={(input) => {
-              searchTickersSp = input;
-            }}
+            ref={tickerRef}
             className={navStyle['search-ticker-input']}
-            onChange={handleSearchTickerInput}
+            onChange={(e) => setTickerInput(e.target.value)}
+            value={tickerInput}
             placeholder="銘柄検索"
           />
         </div>

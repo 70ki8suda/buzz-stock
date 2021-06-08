@@ -12,24 +12,12 @@ import Footer from '../components/common/Footer';
 //style
 import '../styles/globals.scss';
 //types
-import { UserDataType } from '../type/UserDataType';
+import { UserDataType, InitialUserData } from '../type/UserDataType';
 import { LoggedInContextType } from '../type/LoggedInContextType';
 import { AuthUserContextType } from '../type/AuthUserContextType';
 
 import { getAuthUserData } from 'src/service/auth/auth.service';
 
-//AuthUserData 初期値
-const initialAuthUserData: UserDataType = {
-  id: 0,
-  display_id: '',
-  email: '',
-  followers_num: 0,
-  following_num: 0,
-  following: 0,
-  introduction: '',
-  name: '',
-  profile_image: '',
-};
 //context
 export const LoggedInContext = createContext<LoggedInContextType>({
   loggedInState: false,
@@ -40,7 +28,7 @@ export const LoggedInContext = createContext<LoggedInContextType>({
 
 export const AuthUserContext = createContext<AuthUserContextType>({
   authUserData: {
-    ...initialAuthUserData,
+    ...InitialUserData,
   },
   setAuthUserData: () => {
     return;
@@ -57,9 +45,7 @@ const App = ({ Component, pageProps }: AppProps) => {
   //スマホメニュー状態
   const [spMenuState, setSpMenuState] = useState(false);
   //ログイン済みの場合contextにプロフィールデータを入れる
-  const [authUserData, setAuthUserData] = useState<UserDataType>({
-    ...initialAuthUserData,
-  });
+  const [authUserData, setAuthUserData] = useState<UserDataType>(InitialUserData);
 
   //page load処理
   Router.events.on('routeChangeStart', () => setLoadState(false));
