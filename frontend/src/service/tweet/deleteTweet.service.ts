@@ -1,5 +1,5 @@
 const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
-import auth from '../../utils/auth.js';
+import auth from '../../utils/auth';
 
 const deleteTweetRequest = async (tweet_id: number): Promise<void> => {
   const url = baseRequestUrl + '/tweet/' + String(tweet_id);

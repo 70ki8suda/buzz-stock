@@ -1,5 +1,5 @@
 const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
-import auth from '../../utils/auth.js';
+import auth from '../../utils/auth';
 
 const favoriteTweetAction = async (tweetId: number): Promise<void> => {
   const url = baseRequestUrl + '/favorite/' + tweetId;
