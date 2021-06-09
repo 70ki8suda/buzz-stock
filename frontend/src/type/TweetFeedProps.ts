@@ -8,5 +8,6 @@ export type TweetFeedProps = {
   setTweetPostState: React.Dispatch<React.SetStateAction<number>>;
   fetchTweet: () => Promise<void>;
   fetchQuery: FetchQueryType;
+  setFetchQuery: React.Dispatch<React.SetStateAction<any>>;
   hasMoreTweet: boolean;
 };

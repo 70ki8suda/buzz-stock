@@ -2,7 +2,7 @@ import { FetchQueryType } from 'src/type/FetchQueryType';
 import auth from '../../utils/auth';
 const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
 
-const getTickerTweet = async (fetchQuery: FetchQueryType) => {
+const getTickerTweet = async (fetchQuery: FetchQueryType): Promise<any> => {
   const queryParams = { skip: String(fetchQuery.skip), take: String(fetchQuery.take) };
   const query = new URLSearchParams(queryParams);
   const requestUrl = baseRequestUrl + '/tweet/quote/' + fetchQuery.ticker + '?' + query;

@@ -11,9 +11,13 @@ import TweetFeed from '../../components/tweet/TweetFeed';
 import { AuthUserContext } from '../_app';
 import { LoggedInContext } from '../_app';
 import { GetServerSideProps } from 'next';
-import { TweetType } from '../../type/Tweet.type';
-import { FetchQueryType } from '../../type/FetchQueryType';
+
+//service
 import { getInitialUserTweet, getUserTweet } from 'src/service/tweet/userTweet.service';
+
+//type
+import { FetchQueryType } from '../../type/FetchQueryType';
+import { TweetType } from '../../type/Tweet.type';
 
 type Props = {
   userId: string;
@@ -82,6 +86,7 @@ const UserPage: React.VFC<Props> = ({ userId }) => {
         setTweetPostState={setTweetPostState}
         fetchTweet={fetchTweet}
         fetchQuery={fetchQuery}
+        setFetchQuery={setFetchQuery}
         hasMoreTweet={hasMoreTweet}
       ></TweetFeed>
     </>

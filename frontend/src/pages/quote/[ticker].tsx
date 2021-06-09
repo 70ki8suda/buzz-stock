@@ -118,6 +118,7 @@ const StockPage: React.VFC<Props> = ({ ticker, FetchedSummaryData, FetchedSummar
         setTweetPostState={setTweetPostState}
         fetchTweet={fetchTweet}
         fetchQuery={fetchQuery}
+        setFetchQuery={setFetchQuery}
         hasMoreTweet={hasMoreTweet}
       ></TweetFeed>
     </>

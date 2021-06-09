@@ -24,6 +24,7 @@ const TweetFeed = ({
   setTweetPostState,
   fetchTweet,
   fetchQuery,
+  setFetchQuery,
   hasMoreTweet,
 }: TweetFeedProps) => {
   const { authUserData } = useContext(AuthUserContext);
@@ -40,7 +41,7 @@ const TweetFeed = ({
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMoreTweet) {
           console.log('Load More Tweet');
-          fetchQuery.skip = fetchQuery.skip + 10;
+          setFetchQuery({ ...fetchQuery, skip: fetchQuery.skip + 10 });
           fetchTweet();
         }
       });

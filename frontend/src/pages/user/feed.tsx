@@ -7,49 +7,41 @@ import PostTweet from '../../components/tweet/PostTweet';
 import TweetFeed from '../../components/tweet/TweetFeed';
 
 //utils
-import auth from '../../utils/auth';
-
 //context data
-import { LoggedInContext } from '../../pages/_app';
+import { LoggedInContext } from '../_app';
+
+//service
+import { getFeedTweet } from 'src/service/tweet/feed.service';
+
+//type
+import { FetchQueryType } from '../../type/FetchQueryType';
+import { TweetType } from 'src/type/Tweet.type';
 
 //styles
 import style from '../../styles/pages/Feed.module.scss';
 
-const Feed = ({ userId }) => {
+const Feed: React.VFC<{ userId: string }> = ({ userId }) => {
   const router = useRouter();
   const { loggedInState } = useContext(LoggedInContext);
 
   //表示するtweetのデータ
-  const [DisplayTweets, setDisplayTweets] = React.useState([]);
+  const [DisplayTweets, setDisplayTweets] = useState<TweetType[]>([]);
   //Tweetをpost/delete時に状態更新する状態関数
-  const [TweetPostState, setTweetPostState] = React.useState({});
+  const [TweetPostState, setTweetPostState] = useState<number>(0);
   //tweetのfetch query
-  const [tweetLoadState, setTweetLoadState] = useState('loading');
-  const [fetchQuery, setFetchQuery] = useState({ userId: userId, skip: 0, take: 10 });
-  const [hasMoreTweet, setHasMoreTweet] = useState(true);
+  const [tweetLoadState, setTweetLoadState] = useState<string>('loading');
+  const [fetchQuery, setFetchQuery] = useState<FetchQueryType>({
+    skip: 0,
+    take: 10,
+  });
+  const [hasMoreTweet, setHasMoreTweet] = useState<boolean>(true);
 
-  const fetchTweet = async () => {
-    const queryParams = { skip: fetchQuery.skip, take: fetchQuery.take };
-    const query = new URLSearchParams(queryParams);
-    const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
-    const requestUrl = baseRequestUrl + '/tweet/following_users_feed' + '?' + query;
+  const fetchTweet = async (): Promise<void> => {
     setTweetLoadState('loading');
-    await fetch(requestUrl, {
-      method: 'GET',
-      mode: 'cors',
-      credentials: 'include',
-      headers: {
-        Authorization: auth.bearerToken(),
-      },
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .then((json) => {
-        setDisplayTweets([...DisplayTweets, ...json]);
-        setTweetLoadState('complete');
-        setHasMoreTweet(json.length > 0);
-      });
+    const tweetData = await getFeedTweet(fetchQuery);
+    setDisplayTweets([...DisplayTweets, ...tweetData]);
+    setTweetLoadState('complete');
+    setHasMoreTweet(tweetData.length > 0);
   };
 
   //未ログインならログインページへリダイレクト
@@ -75,10 +67,13 @@ const Feed = ({ userId }) => {
       {loggedInState && (
         <>
           <h1 className={style['db-ttl']}>Feed</h1>
-          <PostTweet setTweetPostState={setTweetPostState}></PostTweet>
+          <PostTweet
+            TweetPostState={TweetPostState}
+            setTweetPostState={setTweetPostState}
+            defaultTicker={undefined}
+          ></PostTweet>
           <TweetFeed
             tweetLoadState={tweetLoadState}
-            setTweetLoadState={setTweetLoadState}
             DisplayTweets={DisplayTweets}
             setDisplayTweets={setDisplayTweets}
             TweetPostState={TweetPostState}
@@ -87,7 +82,6 @@ const Feed = ({ userId }) => {
             fetchQuery={fetchQuery}
             setFetchQuery={setFetchQuery}
             hasMoreTweet={hasMoreTweet}
-            setHasMore={setHasMoreTweet}
           ></TweetFeed>
         </>
       )}
