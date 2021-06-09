@@ -1,7 +1,7 @@
-const unescapeHtml = function (target) {
+const unescapeHtml = function (target: string) {
   if (typeof target !== 'string') return target;
 
-  const patterns = {
+  const patterns: { [s: string]: string } = {
     '&lt;': '<',
     '&gt;': '>',
     '&amp;': '&',
@@ -16,4 +16,4 @@ const unescapeHtml = function (target) {
 };
 
 export default unescapeHtml;
-//test
+//https://qiita.com/hrdaya/items/291276a5a20971592216

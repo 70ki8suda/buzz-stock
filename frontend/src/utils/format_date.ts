@@ -1,14 +1,14 @@
-function format_date(_input) {
-  let tempDate = new Date(_input);
+function format_date(_input: Date) {
+  const tempDate = new Date(_input);
 
-  let year = tempDate.getFullYear();
-  let month = tempDate.getMonth() + 1;
-  let day = tempDate.getDate();
-  let hours = tempDate.getHours();
-  let minutes = tempDate.getMinutes();
+  const year = tempDate.getFullYear();
+  const month = tempDate.getMonth() + 1;
+  const day = tempDate.getDate();
+  const hours = tempDate.getHours();
+  const minutes = tempDate.getMinutes();
 
-  var diff = new Date().getTime() - tempDate.getTime();
-  var elapsed = new Date(diff);
+  const diff = new Date().getTime() - tempDate.getTime();
+  const elapsed = new Date(diff);
 
   if (elapsed.getUTCFullYear() - 1970) {
     return year + '年' + month + '月' + day + '日' + hours + '時' + minutes + '分';
