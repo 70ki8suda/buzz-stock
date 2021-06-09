@@ -1,36 +1,37 @@
-import React, { useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 
-//components
 //utils
 import auth from '../../utils/auth';
-//style
-import authStyle from '../../styles/pages/Auth.module.scss';
 //context
 import { LoggedInContext } from '../_app';
-import { AuthUserContext } from '../_app';
+//service
+import { signupRequest } from 'src/service/auth/signup.service';
+import { loginRequest } from 'src/service/auth/login.service';
+//style
+import authStyle from '../../styles/pages/Auth.module.scss';
+
 const Signup = () => {
   const { setLoggedInState } = useContext(LoggedInContext);
-  const { authUserData } = useContext(AuthUserContext);
   const router = useRouter();
-  const [data, setData] = React.useState({
+  const [data, setData] = useState({
     name: '',
     display_id: '',
     email: '',
     password: '',
   });
 
-  const [messages, setMessages] = React.useState({
+  const [messages, setMessages] = useState({
     name: '',
     display_id: '',
     email: '',
     password: '',
   });
 
-  const [serverResponse, setServerResponse] = React.useState([]);
+  const [serverResponse, setServerResponse] = useState<string[]>([]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const target = e.target;
     const name = target.name;
     const value = target.value;
@@ -42,7 +43,7 @@ const Signup = () => {
     });
   };
 
-  const formValidate = (name, value) => {
+  const formValidate = (name: string, value: string) => {
     switch (name) {
       case 'name':
         return nameValidation(value);
@@ -54,12 +55,12 @@ const Signup = () => {
         return passwordValidation(value);
     }
   };
-  const nameValidation = (name) => {
+  const nameValidation = (name: string) => {
     if (!name) return 'nameを入力してください';
     return '';
   };
 
-  const idValidation = (id) => {
+  const idValidation = (id: string) => {
     if (!id) return 'idを入力してください';
     if (id.length > 20) return 'IDは20文字以下でお願いします';
     const regex = /^[a-z_0-9]+$/i;
@@ -68,7 +69,7 @@ const Signup = () => {
     return '';
   };
 
-  const emailValidation = (email) => {
+  const emailValidation = (email: string) => {
     if (!email) return 'メールアドレスを入力してください';
 
     const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -77,79 +78,56 @@ const Signup = () => {
     return '';
   };
 
-  const passwordValidation = (password) => {
+  const passwordValidation = (password: string) => {
     if (!password) return 'passwordを入力してください';
     if (password.length < 4) return 'パスワードは4文字以上でお願いします';
     return '';
   };
 
   // 3. handleSignUpメソッドの定義
-  async function handleSignUp(e) {
+  async function handleSignUp(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
 
     const { name, display_id, email, password } = data;
     let siguUpSuccess = false;
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append('name', name);
     formData.append('display_id', display_id);
     formData.append('email', email);
     formData.append('password', password);
-    const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
-    const signup_api_path = baseRequestUrl + '/auth/signup';
-
-    const requestOptions = {
-      method: 'POST',
-      mode: 'cors',
-      credentials: 'include',
-      headers: {
-        Authorization: auth.bearerToken(),
-      },
-      body: formData,
-    };
 
     //ユーザーデータ作成
-    await fetch(signup_api_path, requestOptions)
-      .then((response) => response.json())
-      .then((data) => {
-        if (!data.error) {
-          siguUpSuccess = true;
+    const signup = async (): Promise<void> => {
+      const result = await signupRequest(formData);
+      if (!result.error) {
+        siguUpSuccess = true;
+      } else {
+        setServerResponse([]);
+        if (typeof result.message == 'string') {
+          setServerResponse([result.message]);
         } else {
-          setServerResponse([]);
-          if (typeof data.message == 'string') {
-            setServerResponse([data.message]);
-          } else {
-            setServerResponse(data.message);
-          }
-          console.log(serverResponse);
+          setServerResponse(result.message);
         }
-        console.log(data);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-
+        console.log(serverResponse);
+      }
+      console.log(result);
+    };
+    signup();
+    //一秒待機
+    await new Promise((r) => setTimeout(r, 1000));
     //そのあと自動でtoken発行してログイン処理
     if (siguUpSuccess) {
-      const login_api_path = baseRequestUrl + '/auth/signin';
-      let formData2 = new FormData();
+      const formData2 = new FormData();
       formData2.append('email', email);
       formData2.append('password', password);
-      const loginApi = await fetch(login_api_path, {
-        method: 'POST',
-        mode: 'cors',
-        credentials: 'include',
-        body: formData2,
-      }).catch((error) => {
-        console.error('Error:', error);
-      });
-
-      const result = await loginApi.json();
-      auth.login(result);
-
-      setLoggedInState(auth.isAuthenticated());
-      //console.log(authUserData);
-      let userId = result.userId;
-      router.push(`/user/${userId}`);
+      const login = async (): Promise<void> => {
+        const result = await loginRequest(formData2);
+        auth.login(result);
+        setLoggedInState(auth.isAuthenticated());
+        const userId = result.userId;
+        router.push(`/user/${userId}`);
+      };
+      login();
     }
   }
 

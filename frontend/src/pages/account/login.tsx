@@ -1,28 +1,31 @@
-import React, { useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-//components
+
 //utils
 import auth from '../../utils/auth';
-//style
-import authStyle from '../../styles/pages/Auth.module.scss';
 //Context
 import { LoggedInContext } from '../_app';
-const Login = () => {
+//service
+import { loginRequest } from 'src/service/auth/login.service';
+//style
+import authStyle from '../../styles/pages/Auth.module.scss';
+
+const Login: React.FC = () => {
   const { setLoggedInState } = useContext(LoggedInContext);
   const router = useRouter();
-  const [data, setData] = React.useState({
+  const [data, setData] = useState({
     email: '',
     password: '',
   });
-  const [messages, setMessages] = React.useState({
+  const [messages, setMessages] = useState({
     name: '',
     display_id: '',
     email: '',
     password: '',
   });
-  const [serverResponse, setServerResponse] = React.useState([]);
-  const handleInputChange = (e) => {
+  const [serverResponse, setServerResponse] = useState<string[]>([]);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const target = e.target;
     const name = target.name;
     const value = target.value;
@@ -33,7 +36,7 @@ const Login = () => {
       return { ...messages, [name]: formValidate(name, value) };
     });
   };
-  const formValidate = (name, value) => {
+  const formValidate = (name: string, value: string) => {
     switch (name) {
       case 'email':
         return emailValidation(value);
@@ -42,7 +45,7 @@ const Login = () => {
     }
   };
 
-  const emailValidation = (email) => {
+  const emailValidation = (email: string) => {
     if (!email) return 'メールアドレスを入力してください';
 
     const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -51,50 +54,38 @@ const Login = () => {
     return '';
   };
 
-  const passwordValidation = (password) => {
+  const passwordValidation = (password: string) => {
     if (!password) return 'passwordを入力してください';
     if (password.length < 4) return 'パスワードは4文字以上でお願いします';
     return '';
   };
 
-  async function onSubmitHandler(e) {
+  async function onSubmitHandler(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
     // stateからemailとpasswordを取得する
     const { email, password } = data;
 
-    const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
-    const api_path = baseRequestUrl + '/auth/signin';
-    // 4. firebaseにemailとpasswordをPOST
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append('email', email);
     formData.append('password', password);
-    const loginApi = await fetch(api_path, {
-      method: 'POST',
-      mode: 'cors',
-      credentials: 'include',
-      headers: {
-        Authorization: auth.bearerToken(),
-      },
-      body: formData,
-    }).catch((error) => {
-      console.error('Error:', error);
-    });
-    const result = await loginApi.json();
-    console.log(result);
-    if (!result.error) {
-      auth.login(result);
-      setLoggedInState(auth.isAuthenticated());
-      let userId = result.userId;
-      router.push(`/user/${userId}`);
-    } else {
-      setServerResponse([]);
-      if (typeof result.message == 'string') {
-        setServerResponse([result.message]);
+    const login = async (): Promise<void> => {
+      const result = await loginRequest(formData);
+      if (!result.error) {
+        auth.login(result);
+        setLoggedInState(auth.isAuthenticated());
+        const userId = result.userId;
+        router.push(`/user/${userId}`);
       } else {
-        setServerResponse(result.message);
+        setServerResponse([]);
+        if (typeof result.message == 'string') {
+          setServerResponse([result.message]);
+        } else {
+          setServerResponse(result.message);
+        }
+        console.log(data);
       }
-      console.log(data);
-    }
+    };
+    login();
   }
 
   return (
