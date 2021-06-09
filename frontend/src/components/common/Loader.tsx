@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import Head from 'next/head';
+import React, { useEffect } from 'react';
+
 import styles from './Loader.module.scss';
 
-const Loader = () => {
-  const [RandomInt, setRandomInt] = React.useState();
-  const [RandomString, setRandomString] = React.useState();
+const Loader: React.FC = () => {
+  const [RandomInt, setRandomInt] = React.useState<string>();
+  const [RandomString, setRandomString] = React.useState<string>();
 
-  let generateRand = () => {
+  const generateRand = () => {
     setRandomInt(new String(Math.floor(Math.random() * 1000000)) + '...');
     setRandomString(
       Math.random().toString(16).substring(2) + Math.random().toString(16).substring(4),
@@ -14,7 +14,7 @@ const Loader = () => {
     //console.log('generate rand');
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const interval = setInterval(() => {
       generateRand();
     }, 200);

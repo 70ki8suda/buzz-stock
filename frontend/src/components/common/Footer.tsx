@@ -1,7 +1,7 @@
 import React from 'react';
 import style from './Footer.module.scss';
 
-const Footer = () => {
+const Footer: React.FC = () => {
   return (
     <footer className={style['wrap']}>
       <div className={style['yarn left']}>
