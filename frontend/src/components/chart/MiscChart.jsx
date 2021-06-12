@@ -1,15 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { format } from 'd3-format';
-import { timeFormat } from 'd3-time-format';
-
 import { ChartCanvas, Chart } from 'react-stockcharts';
-import { BarSeries, AreaSeries } from 'react-stockcharts/lib/series';
+import { AreaSeries } from 'react-stockcharts/lib/series';
 import { discontinuousTimeScaleProvider } from 'react-stockcharts/lib/scale';
 import { XAxis, YAxis } from 'react-stockcharts/lib/axes';
 
-import { SingleValueTooltip } from 'react-stockcharts/lib/tooltip';
 import { fitWidth } from 'react-stockcharts/lib/helper';
 import { last } from 'react-stockcharts/lib/utils';
 
@@ -63,6 +59,7 @@ AreaChartWithEdge.propTypes = {
 AreaChartWithEdge.defaultProps = {
   type: 'svg',
 };
+// eslint-disable-next-line
 AreaChartWithEdge = fitWidth(AreaChartWithEdge);
 
 export default AreaChartWithEdge;

@@ -1,8 +1,8 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import { format } from 'd3-format';
-import { timeFormat, timeParse } from 'd3-time-format';
+import { timeFormat } from 'd3-time-format';
 
 import { ChartCanvas, Chart } from 'react-stockcharts';
 import { BarSeries, CandlestickSeries } from 'react-stockcharts/lib/series';
@@ -32,15 +32,15 @@ class CandleStickChart extends React.Component {
     let ticksNum = 6;
     const { gridProps } = this.props;
     let margin = { left: 40, right: 40, top: 10, bottom: 40 };
-    let devise = 'pc';
-    if (window.innerWidth < 600) {
-      devise = 'sp';
-      margin = { left: 40, right: 40, top: 10, bottom: 30 };
-      ticksNum = 3;
-      if (dataRange == '5d') {
-        ticksNum = 2;
-      }
-    }
+    //let devise = 'pc';
+    // if (window.innerWidth < 600) {
+    //   devise = 'sp';
+    //   margin = { left: 40, right: 40, top: 10, bottom: 30 };
+    //   ticksNum = 3;
+    //   if (dataRange == '5d') {
+    //     ticksNum = 2;
+    //   }
+    // }
 
     const gridHeight = height - margin.top - margin.bottom;
     const gridWidth = width - margin.left - margin.right;
@@ -125,6 +125,7 @@ CandleStickChart.propTypes = {
 CandleStickChart.defaultProps = {
   type: 'hybrid',
 };
+// eslint-disable-next-line
 CandleStickChart = fitWidth(CandleStickChart);
 
 export default CandleStickChart;
