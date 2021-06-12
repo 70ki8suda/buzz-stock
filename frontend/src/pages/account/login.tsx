@@ -9,7 +9,7 @@ import { LoggedInContext } from '../_app';
 //service
 import { loginRequest } from 'src/service/auth/login.service';
 //style
-import authStyle from '../../styles/pages/Auth.module.scss';
+import style from './Auth.module.scss';
 
 const Login: React.FC = () => {
   const { setLoggedInState } = useContext(LoggedInContext);
@@ -48,7 +48,8 @@ const Login: React.FC = () => {
   const emailValidation = (email: string) => {
     if (!email) return 'メールアドレスを入力してください';
 
-    const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const regex =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!regex.test(email)) return '正しい形式でメールアドレスを入力してください';
 
     return '';
@@ -93,21 +94,21 @@ const Login: React.FC = () => {
       <Head>
         <title>Buzz Stock .com | Log In</title>
       </Head>
-      <div className={authStyle['auth-wrap']}>
-        <h2 className={authStyle['auth-title']}>Log In</h2>
-        <div className={authStyle['server-response-container']}>
+      <div className={style['auth-wrap']}>
+        <h2 className={style['auth-title']}>Log In</h2>
+        <div className={style['server-response-container']}>
           {serverResponse.map((message, index) => (
-            <p className={authStyle['server-response']} key={index}>
+            <p className={style['server-response']} key={index}>
               {message}
             </p>
           ))}
         </div>
-        <div className={authStyle['form-container']}>
-          <form className={authStyle['form']}>
+        <div className={style['form-container']}>
+          <form className={style['form']}>
             <div className="form-item">
               <label htmlFor="email">
                 メールアドレス
-                <span className={authStyle['validation-message']}>{messages.email}</span>
+                <span className={style['validation-message']}>{messages.email}</span>
               </label>
               <input
                 type="text"
@@ -116,13 +117,13 @@ const Login: React.FC = () => {
                 name="email"
                 value={data.email}
                 onChange={handleInputChange}
-                className={authStyle['text-input']}
+                className={style['text-input']}
               />
             </div>
             <div className="form-item">
               <label htmlFor="password">
                 パスワード
-                <span className={authStyle['validation-message']}>{messages.password}</span>
+                <span className={style['validation-message']}>{messages.password}</span>
               </label>
               <input
                 type="password"
@@ -130,10 +131,10 @@ const Login: React.FC = () => {
                 placeholder="password"
                 name="password"
                 onChange={handleInputChange}
-                className={authStyle['text-input']}
+                className={style['text-input']}
               />
             </div>
-            <button className={authStyle['auth-submit']} onClick={(e) => onSubmitHandler(e)}>
+            <button className={style['auth-submit']} onClick={(e) => onSubmitHandler(e)}>
               Log In
             </button>
           </form>

@@ -10,7 +10,7 @@ import { LoggedInContext } from '../_app';
 import { signupRequest } from 'src/service/auth/signup.service';
 import { loginRequest } from 'src/service/auth/login.service';
 //style
-import authStyle from '../../styles/pages/Auth.module.scss';
+import style from './Auth.module.scss';
 
 const Signup = () => {
   const { setLoggedInState } = useContext(LoggedInContext);
@@ -72,7 +72,8 @@ const Signup = () => {
   const emailValidation = (email: string) => {
     if (!email) return 'メールアドレスを入力してください';
 
-    const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const regex =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!regex.test(email)) return '正しい形式でメールアドレスを入力してください';
 
     return '';
@@ -136,20 +137,20 @@ const Signup = () => {
       <Head>
         <title>Buzz Stock .com | Sign Up</title>
       </Head>
-      <div className={authStyle['auth-wrap']}>
-        <h2 className={authStyle['auth-title']}>Sign Up</h2>
-        <div className={authStyle['server-response-container']}>
+      <div className={style['auth-wrap']}>
+        <h2 className={style['auth-title']}>Sign Up</h2>
+        <div className={style['server-response-container']}>
           {serverResponse.map((message, index) => (
-            <p className={authStyle['server-response']} key={index}>
+            <p className={style['server-response']} key={index}>
               {message}
             </p>
           ))}
         </div>
-        <div className={authStyle['form-container']}>
-          <form className={authStyle['form']}>
+        <div className={style['form-container']}>
+          <form className={style['form']}>
             <div className="form-item">
               <label htmlFor="name">
-                名前<span className={authStyle['validation-message']}>{messages.name}</span>
+                名前<span className={style['validation-message']}>{messages.name}</span>
               </label>
               <input
                 type="text"
@@ -157,13 +158,13 @@ const Signup = () => {
                 name="name"
                 value={data.name}
                 onChange={handleInputChange}
-                className={authStyle['text-input']}
+                className={style['text-input']}
               />
             </div>
             <div className="form-item">
               <label htmlFor="name">
                 ユーザーID (英・数字・_ )
-                <span className={authStyle['validation-message']}>{messages.display_id}</span>
+                <span className={style['validation-message']}>{messages.display_id}</span>
               </label>
               <input
                 required={true}
@@ -172,13 +173,13 @@ const Signup = () => {
                 name="display_id"
                 value={data.display_id}
                 onChange={handleInputChange}
-                className={authStyle['text-input']}
+                className={style['text-input']}
               />
             </div>
             <div className="form-item">
               <label htmlFor="name">
                 メールアドレス
-                <span className={authStyle['validation-message']}>{messages.email}</span>
+                <span className={style['validation-message']}>{messages.email}</span>
               </label>
               <input
                 type="text"
@@ -187,13 +188,13 @@ const Signup = () => {
                 name="email"
                 value={data.email}
                 onChange={handleInputChange}
-                className={authStyle['text-input']}
+                className={style['text-input']}
               />
             </div>
             <div className="form-item">
               <label htmlFor="name">
                 パスワード
-                <span className={authStyle['validation-message']}>{messages.password}</span>
+                <span className={style['validation-message']}>{messages.password}</span>
               </label>
               <input
                 type="password"
@@ -201,11 +202,11 @@ const Signup = () => {
                 placeholder="password"
                 name="password"
                 onChange={handleInputChange}
-                className={authStyle['text-input']}
+                className={style['text-input']}
               />
             </div>
 
-            <button className={authStyle['auth-submit']} onClick={(e) => handleSignUp(e)}>
+            <button className={style['auth-submit']} onClick={(e) => handleSignUp(e)}>
               Sign Up
             </button>
           </form>

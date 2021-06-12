@@ -3,9 +3,8 @@ import Head from 'next/head';
 import Link from 'next/link';
 //components
 import StockInfo from '../components/top-page-chart/TopStockInfo';
-
 //style
-import styles from '../styles/pages/Top.module.scss';
+import styles from './index.module.scss';
 //types
 import { GetStaticProps } from 'next';
 import { getPropsData } from 'src/service/top/getPropsData';
@@ -75,12 +74,8 @@ const Home: React.FC<Props> = ({
 
 //ISR
 export const getStaticProps: GetStaticProps = async () => {
-  const {
-    ActiveChartData,
-    ActiveSummaryData,
-    GainerChartData,
-    GainerSummaryData,
-  } = await getPropsData();
+  const { ActiveChartData, ActiveSummaryData, GainerChartData, GainerSummaryData } =
+    await getPropsData();
   //ISR
   return {
     props: { ActiveChartData, ActiveSummaryData, GainerChartData, GainerSummaryData },

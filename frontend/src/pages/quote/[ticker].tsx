@@ -6,7 +6,7 @@ import StockInfo from '../../components/stock-info/StockInfo';
 import TweetFeed from '../../components/tweet/TweetFeed';
 import PostTweet from '../../components/tweet/PostTweet';
 //style
-import pageStyle from '../../styles/pages/Ticker.module.scss';
+import pageStyle from './Ticker.module.scss';
 //utils
 //service
 import { getTickerTweet, getInitialTickerTweet } from '../../service/tweet/tickerTweet.service';
@@ -35,8 +35,8 @@ const StockPage: React.VFC<Props> = ({ ticker, FetchedSummaryData, FetchedSummar
     initialData: FetchedSummaryData,
     revalidateOnMount: true,
   }).data;
-  const [SummaryData, setSummaryData] = React.useState(FetchedSummaryData);
-  const [SummaryState, setSummaryState] = React.useState(FetchedSummaryState);
+  const [SummaryData, setSummaryData] = useState(FetchedSummaryData);
+  const [SummaryState, setSummaryState] = useState(FetchedSummaryState);
 
   //表示するtweetのデータ
   const [DisplayTweets, setDisplayTweets] = useState<any[]>([]);

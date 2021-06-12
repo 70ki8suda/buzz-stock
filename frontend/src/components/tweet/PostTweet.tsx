@@ -135,7 +135,7 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }: Props) 
 
   //sp tweet ui
 
-  const [SpTweetWindow, setSpTweetWindow] = React.useState(false);
+  const [SpTweetWindow, setSpTweetWindow] = useState(false);
   const tweetTextSp = useRef<HTMLTextAreaElement>(null);
   const spTweetTrigger = () => {
     setSpTweetWindow(!SpTweetWindow);

@@ -9,14 +9,15 @@ import { getWindowWidth } from 'src/utils/getWindowWidth';
 import Navigation from '../components/common/Navigation';
 import Loader from '../components/common/Loader';
 import Footer from '../components/common/Footer';
-//style
-import '../styles/globals.scss';
+
 //types
 import { UserDataType, InitialUserData } from '../type/UserDataType';
 import { LoggedInContextType } from '../type/LoggedInContextType';
 import { AuthUserContextType } from '../type/AuthUserContextType';
-
+//service
 import { getAuthUserData } from 'src/service/auth/auth.service';
+//style
+import './app.scss';
 
 //context
 export const LoggedInContext = createContext<LoggedInContextType>({

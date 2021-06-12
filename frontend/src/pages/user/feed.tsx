@@ -18,7 +18,7 @@ import { FetchQueryType } from '../../type/FetchQueryType';
 import { TweetType } from 'src/type/Tweet.type';
 
 //styles
-import style from '../../styles/pages/Feed.module.scss';
+import style from './Feed.module.scss';
 
 const Feed: React.VFC<{ userId: string }> = ({ userId }) => {
   const router = useRouter();

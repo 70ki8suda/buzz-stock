@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import styles from './Loader.module.scss';
 
 const Loader: React.FC = () => {
-  const [RandomInt, setRandomInt] = React.useState<string>();
-  const [RandomString, setRandomString] = React.useState<string>();
+  const [RandomInt, setRandomInt] = useState<string>();
+  const [RandomString, setRandomString] = useState<string>();
 
   const generateRand = () => {
     setRandomInt(new String(Math.floor(Math.random() * 1000000)) + '...');
