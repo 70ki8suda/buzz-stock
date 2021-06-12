@@ -6,12 +6,12 @@ import style from './StockSummary.module.scss';
 //components
 import Loader from '../common/Loader';
 
-function changePecent(_raw) {
-  let n1 = parseFloat(_raw);
-  let n2 = Math.floor(n1 * 10000);
+function changePecent(_raw: string) {
+  const n1 = parseFloat(_raw);
+  const n2 = Math.floor(n1 * 10000);
   return n2 / 100;
 }
-const StockSummary = ({ SummaryData, SummaryState }) => {
+const StockSummary = ({ SummaryData, SummaryState }: { SummaryData: any; SummaryState: any }) => {
   return (
     <>
       {SummaryState === 'complete' ? (

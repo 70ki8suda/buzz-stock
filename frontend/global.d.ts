@@ -11,3 +11,8 @@ declare module '*.svg' {
   const content: any;
   export default content;
 }
+
+declare module 'react-use-dimensions' {
+  const type: any;
+  export default type;
+}

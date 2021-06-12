@@ -18,12 +18,6 @@
       "src/*": ["src/*"]
     }
   },
-  "include": [
-    "src/pages/_app.tsx",
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "src/service/tweet/getTickerTweet.js"
-  ],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
 }

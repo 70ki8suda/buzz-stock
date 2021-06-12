@@ -1,14 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 //style
 import style from './StockKeyData.module.scss';
 //components
 import Loader from '../common/Loader';
 
-const StockKeyData = ({ SummaryData }) => {
+const StockKeyData = ({
+  SummaryData,
+  SummaryState,
+}: {
+  SummaryData: any;
+  SummaryState: string;
+}) => {
   return (
     <>
-      {SummaryData.financialData !== undefined &&
+      {SummaryState === 'complete' &&
+      SummaryData.financialData !== undefined &&
       SummaryData.summaryDetail !== undefined &&
       SummaryData.price !== undefined ? (
         <>

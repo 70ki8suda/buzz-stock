@@ -1,16 +1,18 @@
 import React from 'react';
 React.useLayoutEffect = React.useEffect;
+
 import useDimensions from 'react-use-dimensions';
-import ChartFetch from './TopChartFetch';
+//components
+import ChartFetch from './ChartFetch.jsx';
 //import useSWR from 'swr';
 
-const ChartWrapper = React.memo((props) => {
+const ChartWrapper = React.memo((props: { ticker: string }) => {
   const [ref, { width, height }] = useDimensions({ liveMeasure: false });
-  const { ticker, chartData } = props;
+  const { ticker } = props;
 
   return (
     <div ref={ref} className="chart-wrapper" style={{ width: '100%', height: '100%' }}>
-      <ChartFetch height={height} width={width} ticker={ticker} chartData={chartData} />
+      <ChartFetch height={height} width={width} ticker={ticker} />
     </div>
   );
 });

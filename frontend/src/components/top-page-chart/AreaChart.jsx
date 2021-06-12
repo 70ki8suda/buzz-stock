@@ -1,16 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { format } from 'd3-format';
-import { timeFormat } from 'd3-time-format';
-import { scaleTime } from 'd3-scale';
 import { curveMonotoneX } from 'd3-shape';
 import { discontinuousTimeScaleProvider } from 'react-stockcharts/lib/scale';
 import { ChartCanvas, Chart } from 'react-stockcharts';
 import { AreaSeries } from 'react-stockcharts/lib/series';
 import { XAxis, YAxis } from 'react-stockcharts/lib/axes';
 import { fitWidth } from 'react-stockcharts/lib/helper';
-import { createVerticalLinearGradient, hexToRGBA } from 'react-stockcharts/lib/utils';
 import { last } from 'react-stockcharts/lib/utils';
 
 class AreaChart extends React.Component {
@@ -20,15 +16,15 @@ class AreaChart extends React.Component {
     const { data, xScale, xAccessor, displayXAccessor } = xScaleProvider(initialData);
     const start = xAccessor(last(data));
     const end = xAccessor(data[Math.max(0, data.length - 150)]);
-    const margin = { left: 40, right: 40, top: 0, bottom: 30 };
+    let margin = { left: 40, right: 40, top: 0, bottom: 30 };
     let devise = 'pc';
     if (window.innerWidth < 600) {
       devise = 'sp';
-      const margin = { left: 40, right: 40, top: 0, bottom: 0 };
+      margin = { left: 40, right: 40, top: 0, bottom: 0 };
     }
     const xExtents = [start, end];
     const { gridProps } = this.props;
-    const gridHeight = height - margin.top - margin.bottom;
+    //const gridHeight = height - margin.top - margin.bottom;
     const gridWidth = width - margin.left - margin.right;
     const showGrid = true;
     const yGrid = showGrid
@@ -39,14 +35,14 @@ class AreaChart extends React.Component {
           tickStrokeWidth: 1,
         }
       : {};
-    const xGrid = showGrid
-      ? {
-          innerTickSize: -1 * gridHeight,
-          tickStrokeDasharray: 'Solid',
-          tickStrokeOpacity: 0.2,
-          tickStrokeWidth: 1,
-        }
-      : {};
+    // const xGrid = showGrid
+    //   ? {
+    //       innerTickSize: -1 * gridHeight,
+    //       tickStrokeDasharray: 'Solid',
+    //       tickStrokeOpacity: 0.2,
+    //       tickStrokeWidth: 1,
+    //     }
+    //   : {};
     return (
       <ChartCanvas
         ratio={ratio}
@@ -89,6 +85,7 @@ AreaChart.propTypes = {
 AreaChart.defaultProps = {
   type: 'svg',
 };
+// eslint-disable-next-line
 AreaChart = fitWidth(AreaChart);
 
 export default AreaChart;

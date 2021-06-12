@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 //components
 import ChartWrapper from './TopChartWrapper';
 import StockSummary from '../stock-info/StockSummary';
@@ -7,8 +7,12 @@ import StockKeyData from '../stock-info/StockKeyData';
 //utils
 //style
 import infoStyle from './TopStockInfo.module.scss';
-
-const StockInfo = ({ ticker, chartData, SummaryData }) => {
+type Props = {
+  ticker: string;
+  chartData: any;
+  SummaryData: any;
+};
+const StockInfo = ({ ticker, chartData, SummaryData }: Props) => {
   return (
     <>
       <StockSummary SummaryData={SummaryData} SummaryState="complete"></StockSummary>
