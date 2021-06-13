@@ -12,8 +12,8 @@ import Footer from '../components/common/Footer';
 
 //types
 import { UserDataType, InitialUserData } from '../type/UserDataType';
-import { LoggedInContextType } from '../type/LoggedInContextType';
-import { AuthUserContextType } from '../type/AuthUserContextType';
+import { LoggedInContextType } from '../type/LoggedInContext.type';
+import { AuthUserContextType } from '../type/AuthUserContext.type';
 //service
 import { getAuthUserData } from 'src/service/auth/auth.service';
 //style

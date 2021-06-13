@@ -6,7 +6,7 @@ import { LoggedInContext } from '../../pages/_app';
 //components
 
 //utils
-import formatDate from '../../utils/format_date';
+import formatDate from '../../utils/formatDate';
 //style
 import style from './TweetFeed.module.scss';
 import FavStarSVG from '../../../public/images/star.svg';

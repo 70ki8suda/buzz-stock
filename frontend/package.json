@@ -11,7 +11,6 @@
     "format": "prettier --config .prettierrc.json --write '**/*.tsx'"
   },
   "dependencies": {
-    "@reduxjs/toolkit": "^1.5.1",
     "@types/js-cookie": "^2.2.6",
     "babel-plugin-inline-react-svg": "^2.0.1",
     "cookie": "^0.4.1",
@@ -29,8 +28,6 @@
     "react-redux": "^7.2.3",
     "react-stockcharts": "^0.7.8",
     "react-use-dimensions": "^1.2.1",
-    "redux": "^4.0.5",
-    "redux-logger": "^3.0.6",
     "sass": "^1.32.8",
     "shortid": "^2.2.16",
     "swr": "^0.5.5",

@@ -1,4 +1,4 @@
-function format_date(_input: Date) {
+function formatDate(_input: Date) {
   const tempDate = new Date(_input);
 
   const year = tempDate.getFullYear();
@@ -25,4 +25,4 @@ function format_date(_input: Date) {
   }
 }
 
-export default format_date;
+export default formatDate;

@@ -14,7 +14,7 @@ import { getSummary } from '../../service/summary/summary.serivce';
 
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { ParsedUrlQuery } from 'querystring';
-import { FetchQueryType } from 'src/type/FetchQueryType';
+import { FetchQueryType } from 'src/type/FetchQuery.type';
 
 const API_KEY = process.env.NEXT_PUBLIC_RAPIDAPI_KEY;
 const API_HOST = process.env.NEXT_PUBLIC_RAPIDAPI_HOST;

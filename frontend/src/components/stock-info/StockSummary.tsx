@@ -1,6 +1,6 @@
 import React from 'react';
 //utils
-import unescapeHtml from '../../utils/unescape-html';
+import unescapeHtml from '../../utils/unescapeHtml';
 //style
 import style from './StockSummary.module.scss';
 //components
