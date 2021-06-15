@@ -1,4 +1,4 @@
-import { FetchQueryType } from 'src/type/FetchQueryType';
+import { FetchQueryType } from 'src/type/FetchQuery.type';
 import auth from '../../utils/auth';
 const baseRequestUrl = process.env.NEXT_PUBLIC_DEV_BACKEND_URL;
 

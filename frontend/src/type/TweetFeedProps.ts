@@ -1,4 +1,4 @@
-import { FetchQueryType } from './FetchQueryType';
+import { FetchQueryType } from './FetchQuery.type';
 
 export type TweetFeedProps = {
   tweetLoadState: string;
