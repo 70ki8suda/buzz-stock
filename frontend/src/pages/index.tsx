@@ -31,20 +31,24 @@ const Home: React.FC<Props> = ({
         </h1>
       </div>
       <div className={styles['wrap']}>
-        {Object.keys(ActiveChartData).map((key, i) => (
-          <div className={styles['chart-container']} key={i}>
-            <StockInfo
-              ticker={key}
-              chartData={ActiveChartData[key]}
-              SummaryData={ActiveSummaryData[key]}
-            ></StockInfo>
-            <div className={styles['discuss-btn']}>
-              <div className={styles['discuss-btn-inner']}>
-                <Link href={`./quote/${key}`}>Discuss</Link>
+        {ActiveSummaryData !== undefined && ActiveChartData !== undefined ? (
+          Object.keys(ActiveChartData).map((key, i) => (
+            <div className={styles['chart-container']} key={i}>
+              <StockInfo
+                ticker={key}
+                chartData={ActiveChartData[key]}
+                SummaryData={ActiveSummaryData[key]}
+              ></StockInfo>
+              <div className={styles['discuss-btn']}>
+                <div className={styles['discuss-btn-inner']}>
+                  <Link href={`./quote/${key}`}>Discuss</Link>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <div>Sorry Page Loading Failed! Please Reload in Some Minutes!</div>
+        )}
       </div>
       <div className={styles['section-border']}></div>
       <div className={styles['ttl-wrapper']}>
@@ -53,20 +57,24 @@ const Home: React.FC<Props> = ({
         </h1>
       </div>
       <div className={styles['wrap']}>
-        {Object.keys(GainerChartData).map((key, i) => (
-          <div className={styles['chart-container']} key={i}>
-            <StockInfo
-              ticker={key}
-              chartData={GainerChartData[key]}
-              SummaryData={GainerSummaryData[key]}
-            ></StockInfo>
-            <div className={styles['discuss-btn']}>
-              <div className={styles['discuss-btn-inner']}>
-                <Link href={`./quote/${key}`}>Discuss</Link>
+        {GainerSummaryData !== undefined && GainerChartData !== undefined ? (
+          Object.keys(GainerChartData).map((key, i) => (
+            <div className={styles['chart-container']} key={i}>
+              <StockInfo
+                ticker={key}
+                chartData={GainerChartData[key]}
+                SummaryData={GainerSummaryData[key]}
+              ></StockInfo>
+              <div className={styles['discuss-btn']}>
+                <div className={styles['discuss-btn-inner']}>
+                  <Link href={`./quote/${key}`}>Discuss</Link>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <div>Sorry Page Loading Failed! Please Reload in Some Minutes!</div>
+        )}
       </div>
     </>
   );

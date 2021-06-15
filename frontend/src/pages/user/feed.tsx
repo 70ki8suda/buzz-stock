@@ -14,7 +14,7 @@ import { LoggedInContext } from '../_app';
 import { getFeedTweet } from 'src/service/tweet/feed.service';
 
 //type
-import { FetchQueryType } from '../../type/FetchQueryType';
+import { FetchQueryType } from '../../type/FetchQuery.type';
 import { TweetType } from 'src/type/Tweet.type';
 
 //styles

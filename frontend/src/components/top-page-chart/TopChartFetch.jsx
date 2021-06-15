@@ -66,7 +66,6 @@ class ChartComponent extends React.Component {
         </div>
       );
     }
-
     /* eslint-disable */
     return (
       <TypeChooser>

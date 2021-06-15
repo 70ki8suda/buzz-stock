@@ -16,7 +16,7 @@ import { GetServerSideProps } from 'next';
 import { getInitialUserTweet, getUserTweet } from 'src/service/tweet/userTweet.service';
 
 //type
-import { FetchQueryType } from '../../type/FetchQueryType';
+import { FetchQueryType } from '../../type/FetchQuery.type';
 import { TweetType } from '../../type/Tweet.type';
 
 type Props = {
