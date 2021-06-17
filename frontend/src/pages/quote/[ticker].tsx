@@ -46,7 +46,7 @@ const StockPage: React.VFC<Props> = ({ ticker, FetchedSummaryData, FetchedSummar
   const [tweetLoadState, setTweetLoadState] = useState('loading');
   const [fetchQuery, setFetchQuery] = useState<FetchQueryType>({
     ticker: ticker,
-    skip: 0,
+    skip: 10,
     take: 10,
   });
   const [hasMoreTweet, setHasMoreTweet] = useState(true);
@@ -56,6 +56,7 @@ const StockPage: React.VFC<Props> = ({ ticker, FetchedSummaryData, FetchedSummar
     setTweetLoadState('loading');
     const tweetData = await getTickerTweet(fetchQuery);
     setDisplayTweets([...DisplayTweets, ...tweetData]);
+
     setTweetLoadState('complete');
     setHasMoreTweet(tweetData.length > 0);
   };
@@ -65,7 +66,6 @@ const StockPage: React.VFC<Props> = ({ ticker, FetchedSummaryData, FetchedSummar
     //ticker→tickerページ遷移時にリフレッシュ
     const freshQuery = { ticker: ticker, skip: 0, take: 10 };
     setDisplayTweets([]);
-    setFetchQuery(freshQuery);
     setTweetLoadState('loading');
     async function fetchInitialTweet() {
       const tweetData = await getInitialTickerTweet(freshQuery);

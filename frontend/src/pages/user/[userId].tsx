@@ -36,7 +36,7 @@ const UserPage: React.VFC<Props> = ({ userId }) => {
   const [tweetLoadState, setTweetLoadState] = useState<string>('loading');
   const [fetchQuery, setFetchQuery] = useState<FetchQueryType>({
     userId: userId,
-    skip: 0,
+    skip: 10,
     take: 10,
   });
   const [hasMoreTweet, setHasMoreTweet] = useState<boolean>(true);
@@ -53,7 +53,6 @@ const UserPage: React.VFC<Props> = ({ userId }) => {
   //user→user切り替え時にリフレッシュ
   useEffect(() => {
     const freshQuery = { userId: userId, skip: 0, take: 10 };
-    setFetchQuery(freshQuery);
     setTweetLoadState('loading');
     async function fetchInitialTweet() {
       const tweetData = await getInitialUserTweet(freshQuery);

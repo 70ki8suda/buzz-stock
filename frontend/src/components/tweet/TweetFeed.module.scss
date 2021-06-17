@@ -21,19 +21,6 @@
   }
 }
 
-.fav-star {
-  fill: #dddddd;
-
-  &.fav-star--favorited {
-    fill: $blue;
-  }
-
-  path {
-    stroke: #000000;
-    stroke-width: 2px;
-  }
-}
-
 .delete-btn {
   @include btn($red);
   border: 1px solid $red;

@@ -162,7 +162,7 @@ const Signup = () => {
               />
             </div>
             <div className="form-item">
-              <label htmlFor="name">
+              <label htmlFor="display_id">
                 ユーザーID (英・数字・_ )
                 <span className={style['validation-message']}>{messages.display_id}</span>
               </label>
@@ -177,7 +177,7 @@ const Signup = () => {
               />
             </div>
             <div className="form-item">
-              <label htmlFor="name">
+              <label htmlFor="email">
                 メールアドレス
                 <span className={style['validation-message']}>{messages.email}</span>
               </label>
@@ -192,7 +192,7 @@ const Signup = () => {
               />
             </div>
             <div className="form-item">
-              <label htmlFor="name">
+              <label htmlFor="password">
                 パスワード
                 <span className={style['validation-message']}>{messages.password}</span>
               </label>
@@ -206,7 +206,11 @@ const Signup = () => {
               />
             </div>
 
-            <button className={style['auth-submit']} onClick={(e) => handleSignUp(e)}>
+            <button
+              className={style['auth-submit']}
+              onClick={(e) => handleSignUp(e)}
+              data-test="signUp-submit"
+            >
               Sign Up
             </button>
           </form>

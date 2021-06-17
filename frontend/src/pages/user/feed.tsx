@@ -31,7 +31,7 @@ const Feed: React.VFC<{ userId: string }> = ({ userId }) => {
   //tweetのfetch query
   const [tweetLoadState, setTweetLoadState] = useState<string>('loading');
   const [fetchQuery, setFetchQuery] = useState<FetchQueryType>({
-    skip: 0,
+    skip: 10,
     take: 10,
   });
   const [hasMoreTweet, setHasMoreTweet] = useState<boolean>(true);

@@ -9,7 +9,8 @@ import { LoggedInContext } from '../../pages/_app';
 import formatDate from '../../utils/formatDate';
 //style
 import style from './TweetFeed.module.scss';
-import FavStarSVG from '../../../public/images/star.svg';
+//svg
+import FavStar from './FavStar';
 //utils
 import { TweetFeedProps } from 'src/type/TweetFeedProps';
 import { TickerType } from 'src/type/Ticker.type';
@@ -40,9 +41,8 @@ const TweetFeed = ({
       if (observer.current) observer.current!.disconnect();
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMoreTweet) {
-          console.log('Load More Tweet');
-          setFetchQuery({ ...fetchQuery, skip: fetchQuery.skip + 10 });
           fetchTweet();
+          setFetchQuery({ ...fetchQuery, take: 10, skip: fetchQuery.skip + 10 });
         }
       });
       if (node) observer.current.observe(node);
@@ -67,10 +67,8 @@ const TweetFeed = ({
     });
     if (favorite.length > 0) return true;
   };
-  const FavoriteHandler = (e: React.MouseEvent<HTMLInputElement>, tweet: TweetType, i: number) => {
+  const FavoriteHandler = (e: React.MouseEvent<HTMLElement>, tweet: TweetType, i: number) => {
     if (loggedInState) {
-      e.preventDefault();
-
       const tempTweetData = [...DisplayTweets];
       const tweet_favorites = tweet.favorites;
 
@@ -135,13 +133,11 @@ const TweetFeed = ({
 
               <div className={style['fav-container']}>
                 <div className={style['fav-wrapper']}>
-                  <FavStarSVG
-                    onClick={(e: React.MouseEvent<HTMLInputElement>) =>
-                      FavoriteHandler(e, tweet, i)
-                    }
-                    className={`${style['fav-star']} ${
-                      favoritedByUser(tweet) && style['fav-star--favorited']
-                    }`}
+                  <FavStar
+                    FavoriteHandler={FavoriteHandler}
+                    favoritedByUser={favoritedByUser}
+                    tweet={tweet}
+                    i={i}
                   />
                 </div>
                 <span className={style['fav-num']}>{tweet.favorites.length}</span>
