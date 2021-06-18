@@ -1,1 +1,4 @@
-{}
+{
+  "baseUrl": "http://localhost:3001",
+  "testFiles": ["signup_spec.js", "loginActions_spec.js"]
+}

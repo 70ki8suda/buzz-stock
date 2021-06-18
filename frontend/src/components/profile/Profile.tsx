@@ -13,13 +13,11 @@ import { getProfileData, updateProfileRequest } from 'src/service/profile/profil
 import { followUserRequest, unfollowUserRequest } from 'src/service/follow/follow.service';
 const Profile = ({ userId }: { userId: string }) => {
   //profileデータ
-  const [profileDisplayData, setProfileDisplayData] = useState<ProfileDisplayDataType>(
-    InitialProfileDisplayData,
-  );
+  const [profileDisplayData, setProfileDisplayData] =
+    useState<ProfileDisplayDataType>(InitialProfileDisplayData);
   const [profileUpdateState, setProfileUpdateState] = useState<number>(0);
-  const [profileUpdateData, setProfileUpdateData] = useState<ProfileUpdateDataType>(
-    InitialProfileUpdateData,
-  );
+  const [profileUpdateData, setProfileUpdateData] =
+    useState<ProfileUpdateDataType>(InitialProfileUpdateData);
   //editToggleState
   const [editToggleState, setEditToggleState] = useState(false);
 
@@ -117,14 +115,16 @@ const Profile = ({ userId }: { userId: string }) => {
           )}
         </div>
         <div className="info">
-          <h2 className={style['name']}>{profileDisplayData.name}</h2>
+          <h2 className={style['name']} data-test="display-name">
+            {profileDisplayData.name}
+          </h2>
           <div className={style['display-id']}> @{profileDisplayData.display_id}</div>
           <div className={style['introduction']}> {profileDisplayData.introduction}</div>
           <div className={style['relationship-info']}>
-            <span className={style['relationship-num']}>
+            <span className={style['relationship-num']} data-test="following-num">
               Following: {profileDisplayData.following_num}
             </span>
-            <span className={style['relationship-num']}>
+            <span className={style['relationship-num']} data-test="follower-num">
               Follower: {profileDisplayData.followers_num}
             </span>
           </div>
@@ -195,6 +195,7 @@ const Profile = ({ userId }: { userId: string }) => {
         <button
           className={style['follow-btn']}
           onClick={(e: React.MouseEvent<HTMLButtonElement>) => followUser(e)}
+          data-test="follow-btn"
         >
           FOLLOW
         </button>

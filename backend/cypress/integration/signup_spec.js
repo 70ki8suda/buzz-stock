@@ -1,4 +1,4 @@
-describe('My First Test', () => {
+describe('Auth Test', () => {
   it('sign up test', () => {
     cy.exec('npx prisma migrate reset --force ');
     cy.visit('localhost:3000/account/signup');
@@ -26,6 +26,7 @@ describe('My First Test', () => {
 
     cy.get('button[data-test="signUp-submit"]').click();
 
-    cy.visit('localhost:3000/user/1');
+    cy.url().should('contain', '/user/');
+    cy.get('[data-test="display-name"]').should('have.text', 'cypress-test');
   });
 });

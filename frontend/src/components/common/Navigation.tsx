@@ -143,7 +143,7 @@ const Navigation = ({ spMenuState, setSpMenuState }: NavigationProps) => {
         <ul className={navStyle['auth-nav-list-pc']}>
           {loggedInState ? (
             <>
-              <li className={navStyle['auth-nav-item']}>
+              <li className={navStyle['auth-nav-item']} data-test="nav-profile">
                 <Link href={`/user/${loggedin_userID}`}>Profile</Link>
               </li>
               <li className={navStyle['auth-nav-item']}>

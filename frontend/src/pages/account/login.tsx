@@ -134,7 +134,11 @@ const Login: React.FC = () => {
                 className={style['text-input']}
               />
             </div>
-            <button className={style['auth-submit']} onClick={(e) => onSubmitHandler(e)}>
+            <button
+              className={style['auth-submit']}
+              onClick={(e) => onSubmitHandler(e)}
+              data-test="login-submit"
+            >
               Log In
             </button>
           </form>

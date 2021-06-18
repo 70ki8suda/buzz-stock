@@ -14,36 +14,33 @@ async function main() {
   console.log('seeding');
   const salt = await bcrypt.genSalt();
   const password = await hashPassword('password', salt);
-  await prisma.user.create({
-    data: {
-      email: 'test1@gmail.com',
-      name: 'test1',
-      display_id: 'test1',
-      password: password,
-      salt: salt,
-      tweets: {
-        create: [
-          {
-            content: 'test1 post1',
-          },
-          {
-            content: 'test1 post2',
-          },
-        ],
+  //*user IDは1 start
+  for (let i = 1; i < 6; i++) {
+    await prisma.user.create({
+      data: {
+        email: `test${i}@gmail.com`,
+        name: `test${i}`,
+        display_id: `test${i}`,
+        password: password,
+        salt: salt,
       },
-    },
-  });
-
-  await prisma.tweet.create({
-    data: {
-      user: {
-        connect: {
-          id: 1,
+    });
+  }
+  //*user IDは1 start
+  for (let i = 1; i < 6; i++) {
+    for (let j = 0; j < 15; j++) {
+      await prisma.tweet.create({
+        data: {
+          user: {
+            connect: {
+              id: i,
+            },
+          },
+          content: `user${i} post${j}`,
         },
-      },
-      content: 'user1 post3',
-    },
-  });
+      });
+    }
+  }
 }
 
 main()
