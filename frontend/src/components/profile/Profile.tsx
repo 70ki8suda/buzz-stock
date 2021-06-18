@@ -204,6 +204,7 @@ const Profile = ({ userId }: { userId: string }) => {
         <button
           className={style['unfollow-btn']}
           onClick={(e: React.MouseEvent<HTMLButtonElement>) => unfollowUser(e)}
+          data-test="unfollow-btn"
         >
           UNFOLLOW
         </button>

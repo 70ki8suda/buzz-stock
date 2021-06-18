@@ -53,6 +53,8 @@ const UserPage: React.VFC<Props> = ({ userId }) => {
   //user→user切り替え時にリフレッシュ
   useEffect(() => {
     const freshQuery = { userId: userId, skip: 0, take: 10 };
+    setFetchQuery({ userId: userId, skip: 10, take: 10 });
+    setDisplayTweets([]);
     setTweetLoadState('loading');
     async function fetchInitialTweet() {
       const tweetData = await getInitialUserTweet(freshQuery);

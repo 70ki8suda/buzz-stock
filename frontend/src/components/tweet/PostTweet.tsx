@@ -214,6 +214,7 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }: Props) 
               name="tweet_text"
               id="tweetText"
               data-input="tweet-input"
+              data-test="tweet-content-input"
             ></textarea>
             <div className={`form-item ${postStyle['ticker-box']}`}>
               <label htmlFor="tickers-input" className={postStyle['ticker-label']}>
@@ -300,7 +301,11 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }: Props) 
         </form>
       </div>
       {loggedInState && (
-        <div className={postStyle['sp-post-trigger']} onClick={spTweetTrigger}>
+        <div
+          className={postStyle['sp-post-trigger']}
+          onClick={spTweetTrigger}
+          data-test="post-tweet-btn"
+        >
           Post
         </div>
       )}

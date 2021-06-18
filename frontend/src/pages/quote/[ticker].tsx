@@ -65,6 +65,7 @@ const StockPage: React.VFC<Props> = ({ ticker, FetchedSummaryData, FetchedSummar
   useEffect(() => {
     //ticker→tickerページ遷移時にリフレッシュ
     const freshQuery = { ticker: ticker, skip: 0, take: 10 };
+    setFetchQuery({ ticker: ticker, skip: 10, take: 10 });
     setDisplayTweets([]);
     setTweetLoadState('loading');
     async function fetchInitialTweet() {
