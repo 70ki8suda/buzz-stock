@@ -10,7 +10,24 @@
 //
 //
 // -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
+
+Cypress.Commands.add('login', () => {
+  const url = 'http://localhost:3001/auth/signin';
+  cy.request({
+    method: 'POST',
+    url: url,
+    body: {
+      email: 'cypress-test@gmail.com',
+      password: 'password',
+    },
+  }).then((response) => {
+    //string型じゃないとcookieにセットできない
+    const expires = String(response.body.expires);
+    const jwt = response.body.jwt;
+    cy.setCookie('expires', expires);
+    cy.setCookie('jwt', jwt);
+  });
+});
 //
 //
 // -- This is a child command --

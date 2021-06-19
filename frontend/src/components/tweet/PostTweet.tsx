@@ -230,6 +230,7 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }: Props) 
                   onChange={(e) => setTickerInput(e.target.value)}
                   ref={tickerRef}
                   value={tickerInput}
+                  data-test="tweet-ticker-input"
                 />
                 <div
                   className={`${postStyle['ticker-options-container']} ${postStyle['ticker-options-container--pc']}`}
@@ -240,6 +241,7 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }: Props) 
                         className={postStyle['ticker-option-item']}
                         onClick={() => addTicker(tickerOption.ticker)}
                         key={index}
+                        data-test="ticker-option-item"
                       >
                         <span className={postStyle['ticker-option-name']}>
                           {tickerOption.optionName}
@@ -289,7 +291,11 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }: Props) 
                   className="image-input"
                 />
               </div>
-              <button className="submit-btn" onClick={(e) => PostTweet(e)}>
+              <button
+                className="submit-btn"
+                onClick={(e) => PostTweet(e)}
+                data-test="post-tweet-btn-pc"
+              >
                 投稿
               </button>
             </div>
@@ -301,11 +307,7 @@ const PostTweet = ({ TweetPostState, setTweetPostState, defaultTicker }: Props) 
         </form>
       </div>
       {loggedInState && (
-        <div
-          className={postStyle['sp-post-trigger']}
-          onClick={spTweetTrigger}
-          data-test="post-tweet-btn"
-        >
+        <div className={postStyle['sp-post-trigger']} onClick={spTweetTrigger}>
           Post
         </div>
       )}

@@ -90,15 +90,16 @@ const TweetFeed = ({
     }
   };
   return (
-    <div className={style['tweet-container']}>
+    <ul className={style['tweet-container']}>
       {tweetLoadState === 'loading' && <div className={style['loading-tweet']}></div>}
       {DisplayTweets && DisplayTweets.length > 0 ? (
         DisplayTweets.map((tweet, i) => (
-          <div
+          <li
             key={i}
             id={tweet.id}
             className={style['tweet-box']}
             {...(i + 1 === DisplayTweets.length && { ref: lastTweetElement })}
+            data-test="tweet-item"
           >
             <div className={style['profile-image-wrap']}>
               <Link href={`/user/${tweet.user.id}`}>
@@ -115,7 +116,9 @@ const TweetFeed = ({
                 <div className={style['display-id']}> @{tweet.user.display_id}</div>
                 <div className={style['tweet-date']}>{formatDate(tweet.created_at)}</div>
               </div>
-              <div className={style['tweet-text']}> {tweet.content}</div>
+              <div className={style['tweet-text']} data-test="tweet-item-content">
+                {tweet.content}
+              </div>
               {tweet.tweet_image != null && (
                 <div className={style['tweet-image']}>
                   <img src={tweet.tweet_image.url} />
@@ -126,7 +129,9 @@ const TweetFeed = ({
                   tweet.tickers.length > 0 &&
                   tweet.tickers.map((ticker: TickerType, j: number) => (
                     <Link href={`/quote/${ticker.name}`} key={j}>
-                      <span className={style['ticker']}>#{ticker.name}</span>
+                      <span className={style['ticker']} data-test="tweet-ticker">
+                        #{ticker.name}
+                      </span>
                     </Link>
                   ))}
               </div>
@@ -140,7 +145,9 @@ const TweetFeed = ({
                     i={i}
                   />
                 </div>
-                <span className={style['fav-num']}>{tweet.favorites.length}</span>
+                <span className={style['fav-num']} data-test="tweet-fav-num">
+                  {tweet.favorites.length}
+                </span>
               </div>
               {tweet.user.id == loggedin_userID && (
                 <button
@@ -148,12 +155,13 @@ const TweetFeed = ({
                   onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
                     onTweetDeleteHandler(e, tweet.id)
                   }
+                  data-test="tweet-delete-btn"
                 >
                   削除
                 </button>
               )}
             </div>
-          </div>
+          </li>
         ))
       ) : (
         <div className={style['no-tweet-yet']}>
@@ -162,7 +170,7 @@ const TweetFeed = ({
           この株式に関するツイートはまだありません
         </div>
       )}
-    </div>
+    </ul>
   );
 };
 

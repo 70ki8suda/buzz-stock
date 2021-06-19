@@ -6,6 +6,7 @@ const FavStar = ({ FavoriteHandler, favoritedByUser, tweet, i }: any) => {
     <div
       onClick={(e: React.MouseEvent<HTMLElement>) => FavoriteHandler(e, tweet, i)}
       className={`${style['fav-star']} ${favoritedByUser(tweet) && style['fav-star--favorited']}`}
+      data-test="tweet-fav-button"
     >
       <svg version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 443.442 443.442">
         <g>
