@@ -5,6 +5,7 @@ import { AppProps } from 'next/dist/next-server/lib/router/router';
 //utils
 import auth from '../utils/auth';
 import { getWindowWidth } from 'src/utils/getWindowWidth';
+import * as gtag from 'src/utils/gtag';
 //components
 import Navigation from '../components/common/Navigation';
 import Loader from '../components/common/Loader';
@@ -74,6 +75,21 @@ const App = ({ Component, pageProps }: AppProps) => {
     window.addEventListener('resize', resizeListener);
   }, []);
 
+  useEffect(() => {
+    if (!gtag.existsGaId) {
+      return;
+    }
+
+    const handleRouteChange = (path: any) => {
+      gtag.pageview(path);
+    };
+
+    Router.events.on('routeChangeComplete', handleRouteChange);
+    return () => {
+      Router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [Router.events]);
+
   return (
     <>
       {!loadState && (
@@ -92,6 +108,23 @@ const App = ({ Component, pageProps }: AppProps) => {
             />
             <link rel="preload" href="/fonts/rifton-norm.ttf" as="font" crossOrigin="" />
             <link rel="preload" href="/fonts/nulshock-bd.ttf" as="font" crossOrigin="" />
+            {/* Google Analytics */}
+            {gtag.existsGaId && (
+              <>
+                <script async src={`https://www.googletagmanager.com/gtag/js?id=${gtag.GA_ID}`} />
+                <script
+                  dangerouslySetInnerHTML={{
+                    __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${gtag.GA_ID}', {
+                    page_path: window.location.pathname,
+                  });`,
+                  }}
+                />
+              </>
+            )}
           </Head>
           <div className="page-container">
             <div className={`page-wrapper ${spMenuState && 'sp-menu-trigger-active'}`}>
