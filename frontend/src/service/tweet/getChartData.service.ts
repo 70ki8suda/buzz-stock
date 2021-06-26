@@ -74,12 +74,15 @@ const getChartData = async (ticker: string, range: string, retryNum: number): Pr
           return convertData(response);
         } else {
           const data1 = convertData(response);
+          console.log('data1');
+          console.log(data1);
           let data2;
           if (spRange !== undefined) {
             data2 = spConvertData(data1, spRange);
           } else if (!pcRange !== undefined) {
             data2 = pcConvertData(data1, pcRange);
           }
+          console.log('data2');
           console.log(data2);
           const data3 = [];
           for (let i = 0; i < data2.length; i++) {

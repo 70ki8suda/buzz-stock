@@ -31,7 +31,7 @@ const convertData = (data: any) => {
 //配列のデータをまとめる(2日分のデータを1スティックに変換したりする)
 const arrayChunk = ([...array], size: number = 1) => {
   return array.reduce(
-    (acc, index) => (index % size ? acc : [...acc, array.slice(index, index + size)]),
+    (acc, _value, index) => (index % size ? acc : [...acc, array.slice(index, index + size)]),
     [],
   );
 };
@@ -51,13 +51,14 @@ const spConvertData = (_convertData: any, _spRange: string) => {
 
 //pc用のデータ圧縮
 const pcConvertData = (_convertData: any, _pcRange: string) => {
-  if (_pcRange == '1m') {
+  if (_pcRange === '1m') {
     return arrayChunk(_convertData, 8);
   }
-  if (_pcRange == '1y') {
-    return arrayChunk(_convertData, 2);
+  if (_pcRange === '1y') {
+    const data = arrayChunk(_convertData, 2);
+    return data;
   }
-  if (_pcRange == '2y') {
+  if (_pcRange === '2y') {
     return arrayChunk(_convertData, 4);
   }
 };

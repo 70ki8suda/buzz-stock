@@ -29,7 +29,7 @@ class ChartComponent extends React.Component {
       });
     }
     async function waitAndSet() {
-      await getChartData(ticker, range, 4).then((data) => {
+      await getChartData(ticker, range, 2).then((data) => {
         self.setState({
           data: data,
           dataState: 'complete',
