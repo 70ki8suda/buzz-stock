@@ -58,7 +58,8 @@ const Navigation = ({ spMenuState, setSpMenuState }: NavigationProps) => {
 
   useEffect(() => {
     //連続でautocomplete検索するのを防ぐ
-    setTimeout(() => {
+    //.6秒後に 入力のstateの値とフォームが一致していたらapiリクエスト
+    const delayDebounceFn = setTimeout(() => {
       if (tickerInput === '') {
         setTickerOptions([]);
       }
@@ -95,7 +96,8 @@ const Navigation = ({ spMenuState, setSpMenuState }: NavigationProps) => {
         };
         fetchAutoComplete(searchQuery);
       }
-    }, 300);
+    }, 600);
+    return () => clearTimeout(delayDebounceFn);
   }, [tickerInput]);
 
   return (

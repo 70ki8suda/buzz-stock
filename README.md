@@ -13,11 +13,6 @@
 ## 設計書
 
 [API 設計](https://docs.google.com/spreadsheets/d/1nVxSBZcZD90IaEu8aTSGJ7LG71RndOzKpVPTrfhpWCo/edit)
-<br>
-<br>
-サービス構成図
-<br>
-![stock-graph](https://user-images.githubusercontent.com/24717695/119268484-347c2200-bc2e-11eb-93bf-741c8f756f01.jpg)
 
 ## 機能一覧
 

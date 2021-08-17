@@ -38,6 +38,11 @@ const StockPage: React.VFC<Props> = ({ ticker, FetchedSummaryData, FetchedSummar
   const [SummaryData, setSummaryData] = useState(FetchedSummaryData);
   const [SummaryState, setSummaryState] = useState(FetchedSummaryState);
 
+  //swrでsummaryData更新されたらstateに反映
+  useEffect(() => {
+    setSummaryData(FetchedSummaryData);
+  }, [FetchedSummaryData]);
+
   //表示するtweetのデータ
   const [DisplayTweets, setDisplayTweets] = useState<any[]>([]);
   //Tweetをpost/delete時に状態更新する状態関数
