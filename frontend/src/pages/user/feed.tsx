@@ -54,7 +54,16 @@ const Feed: React.VFC<{ userId: string }> = ({ userId }) => {
   //did mount 初期表示tweetデータ
   useEffect(() => {
     setDisplayTweets([]);
-    fetchTweet();
+    const InitialQuery = { userId: userId, skip: 0, take: 10 };
+    const fetchInitialTweet = async (): Promise<void> => {
+      setTweetLoadState('loading');
+      const tweetData = await getFeedTweet(InitialQuery);
+      setDisplayTweets([...DisplayTweets, ...tweetData]);
+      setTweetLoadState('complete');
+      setHasMoreTweet(tweetData.length > 0);
+    };
+    fetchInitialTweet();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [TweetPostState, userId]);
 
